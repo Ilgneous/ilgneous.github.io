@@ -113,6 +113,17 @@ main p {
     background: #444;
 }
 
+/* Dropdown container, hidden by default */
+.dropdown-container {
+    display: none;
+    padding-left: 20px;  /* Indent nested items */
+}
+
+/* Show the dropdown menu */
+.sidebar ul li.active .dropdown-container {
+    display: block;
+}
+
 /* Content */
 .content {
     margin-left: 80px;  /* Space for initial sidebar width + some margin */

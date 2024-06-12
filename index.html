@@ -4,27 +4,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link rel="stylesheet" href="./src/styles.css">
+    <title>Main Page</title>
     <link href="https://fonts.googleapis.com/css2?family=Reddit+Mono:wght@200..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="sidebar">
-        <h2>Sidebar Title</h2>
+        <h2>Projects and Guides</h2>
         <ul>
-            <li><a href="#section1">Section 1</a></li>
-            <li><a href="#section2">Section 2</a></li>
+            <li>
+                <a href="#section1" class="dropdown-btn">Section 1</a>
+                <ul class="dropdown-container">
+                    <li><a href="#subsection1-1">Subsection 1.1</a></li>
+                    <li><a href="#subsection1-2">Subsection 1.2</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#section2" class="dropdown-btn">Section 2</a>
+                <ul class="dropdown-container">
+                    <li><a href="#subsection2-1">Subsection 2.1</a></li>
+                    <li><a href="#subsection2-2">Subsection 2.2</a></li>
+                </ul>
+            </li>
             <li><a href="#section3">Section 3</a></li>
             <li><a href="#section4">Section 4</a></li>
         </ul>
     </div>
-    
-    <div class="container">
-        <h1 class="welcome-title" id="WelcomeHome">Welcome to my page!</h1>
-        <h3 class="textarea" id="image">Image Placeholder</h3> 
+
+    <div class="content">
+        <h1>Main Content</h1>
+        <p>This is the main content area.</p>
+        <section id="section1">
+            <h2>Section 1</h2>
+            <p>Content for section 1.</p>
+        </section>
+        <section id="subsection1-1">
+            <h2>Subsection 1.1</h2>
+            <p>Content for subsection 1.1.</p>
+        </section>
+        <section id="subsection1-2">
+            <h2>Subsection 1.2</h2>
+            <p>Content for subsection 1.2.</p>
+        </section>
+        <section id="section2">
+            <h2>Section 2</h2>
+            <p>Content for section 2.</p>
+        </section>
+        <section id="subsection2-1">
+            <h2>Subsection 2.1</h2>
+            <p>Content for subsection 2.1.</p>
+        </section>
+        <section id="subsection2-2">
+            <h2>Subsection 2.2</h2>
+            <p>Content for subsection 2.2.</p>
+        </section>
+        <section id="section3">
+            <h2>Section 3</h2>
+            <p>Content for section 3.</p>
+        </section>
+        <section id="section4">
+            <h2>Section 4</h2>
+            <p>Content for section 4.</p>
+        </section>
+
         <button class="form__button" id="login-button">Login</button>
         <button class="form__button" id="signup-button">Sign up</button>
         <button class="form__button "id="toggle-dark-mode">Toggle Dark Mode</button>
     </div>
 
+    <script src="scripts.js"></script>
     <script src="dark-mode.js"></script>
 </body>
 </html>
