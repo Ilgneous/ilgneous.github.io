@@ -113,6 +113,11 @@ main p {
     background: #444;
 }
 
+.subsection-link {
+    font-size: 0.9em; /* Slightly smaller than normal links */
+    padding-left: 20px; /* Indented to the right */
+}
+
 /* Dropdown container, hidden by default */
 .dropdown-container {
     display: none;
@@ -140,6 +145,7 @@ main p {
 }
 
 .content h1 {
+    font-size: 2em;
     margin-bottom: 20px;
 }
 
@@ -148,7 +154,14 @@ main p {
 }
 
 .content section h2 {
+    font-size: 1.75em;
     color: #008000;
+}
+
+.content h3 {
+    font-size: 1.35em;
+    color: #008000;
+    margin-bottom: 10px;
 }
 
 /* Responsive design */
@@ -251,6 +264,17 @@ form textarea:focus {
     visibility: hidden;
 }
 
+.footer .icons a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 20px;
+}
+
+.footer .icons a:hover {
+    color: #008000; /* Dark green accent */
+}
+
 .icons .fa {
     color:#32a871;
     margin:0 13px;
@@ -260,6 +284,11 @@ form textarea:focus {
 
 .icons .fa:hover {
     box-shadow: 0 0 10px 10px rgba(0,0,0,0.2);
+}
+
+/* Ensuring footer visibility */
+body > .content + .footer {
+    flex-shrink: 0;
 }
 
 /* Responsive design */
