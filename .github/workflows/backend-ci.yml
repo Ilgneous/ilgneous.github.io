@@ -1,0 +1,29 @@
+name: Backend CI
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Import check
+        run: |
+          python - << 'PY'
+import importlib.util, sys
+spec = importlib.util.spec_from_file_location("app.main", "backend/app/main.py")
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+print("FastAPI app title:", m.app.title)
+PY

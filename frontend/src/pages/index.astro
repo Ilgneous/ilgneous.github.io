@@ -1,0 +1,49 @@
+---
+import Counter from "../components/Counter.svelte";
+const projects = await fetch(import.meta.env.PUBLIC_API_URL ?? "https://api.example.com/api/projects")
+  .then(r => r.ok ? r.json() : [])
+  .catch(() => []);
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sivan Syed – Portfolio</title>
+    <meta name="description" content="Physics & ECE @ UT Austin • Robotics, controls, and systems." />
+    <!-- OpenGraph -->
+    <meta property="og:title" content="Sivan Syed – Portfolio" />
+    <meta property="og:description" content="Physics & ECE @ UT Austin • Robotics, controls, and systems." />
+    <meta property="og:image" content="/og.png" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/styles/global.css" />
+  </head>
+  <body class="mx-auto max-w-3xl p-6">
+    <header class="flex items-center gap-4">
+      <img src="/favicon.svg" alt="Logo" class="size-10" />
+      <div>
+        <h1 class="text-3xl font-bold">Sivan Syed</h1>
+        <p class="opacity-80">Physics & ECE • Robotics • Controls • Systems</p>
+      </div>
+    </header>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">Interactive demo</h2>
+      <Counter client:load />
+    </section>
+
+    <section class="mt-8">
+      <h2 class="text-xl font-semibold">Projects</h2>
+      <ul class="list-disc pl-5">
+        {projects.map((p) => (
+          <li><a class="underline" href={p.href ?? "#"}>{p.title}</a> — <span class="opacity-70">{p.tech?.join(" • ")}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="mt-8 grid gap-2">
+      <a class="underline" href="/projects">All projects</a>
+      <a class="underline" href="/now">/now</a>
+      <a class="underline" href="/uses">/uses</a>
+    </section>
+  </body>
+</html>

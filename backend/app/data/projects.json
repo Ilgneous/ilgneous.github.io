@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Ping-Pong Balancer",
+    "tech": [
+      "Python",
+      "OpenCV",
+      "Dynamixel"
+    ],
+    "blurb": "3-axis platform that tracks and stabilizes a ping-pong ball."
+  },
+  {
+    "title": "Boost Converter",
+    "tech": [
+      "KiCad",
+      "LTspice",
+      "Embedded"
+    ],
+    "blurb": "E-bike battery boost converter: design \u2192 sim \u2192 test."
+  }
+]
