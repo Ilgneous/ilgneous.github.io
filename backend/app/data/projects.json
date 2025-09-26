@@ -9,12 +9,127 @@
     "blurb": "3-axis platform that tracks and stabilizes a ping-pong ball."
   },
   {
-    "title": "Boost Converter",
+    "title": "Steering Gearbox",
     "tech": [
-      "KiCad",
-      "LTspice",
-      "Embedded"
+      "CAD",
+      "SOLIDWORKS",
+      "ANSYS",
+      "Manufacturing"
     ],
-    "blurb": "E-bike battery boost converter: design \u2192 sim \u2192 test."
+    "blurb": "Designed gearbox and steering racks in SOLIDWORKS; FEA analysis for load and stress."
+  },
+
+  {
+    "title": "E-Bike Design",
+    "tech": [
+      "Power Electronics",
+      "Embedded Systems", 
+      "PWM", 
+      "ADC"
+    ],
+    "blurb": "Designed a boost converter for an e-bike battery, interfacing with PWMs and ADCs."
+  },
+
+
+  {
+    "title": "Crystal Oscillator Resonant Frequency Tracker",
+    "tech": [
+      "Circuit Design", 
+      "KiCad", 
+      "PCB Design"
+    ],
+    "blurb": "Sensor to measure resonant frequency of a Quartz Oscillator with <5% error; prototyped with breadboards and 3D prints."
+  },
+
+  {
+    "title": "Buck Converter",
+    "tech": [
+      "Circuit Theory", 
+      "KiCad", 
+      "PCB Design"],
+    "blurb": "Developed modular PCB buck converter and tested MOSFET switching with PWM."
+  },
+  
+
+  {
+    "title": "Wireless Communication via Infrared LED and UART",
+    "tech": [
+      "Embedded C", 
+      "UART", 
+      "SPI", 
+      "Oscilloscope"
+    ],
+    "blurb": "Implemented UART firmware to transmit data via IR LED; verified with oscilloscope."
+  },
+
+  {
+    "title": "Transformer Model for Pulse Shape Discrimination",
+    "tech": [
+      "Neural Networks", 
+      "Transformer", 
+      "Data Cleaning"
+    ],
+    "blurb": "Developed model to optimize radioactive source discrimination with >98% accuracy."
+  },
+  {
+    "title": "Surrogate ML Model for Magneto-Hydrodynamics Prediction",
+    "tech": [
+      "Neural Networks", 
+      "MATLAB"
+    ],
+    "blurb": "Implemented FNN surrogate model to replicate MHD simulations with >98% fidelity."
+  },
+  {
+    "title": "Weather-Damage Forecasting",
+    "tech": [
+      "Python", 
+      "XGBoost", 
+      "PyTorch", 
+      "LSTM"
+    ],
+    "blurb": "Predicted weather damage and optimized insurance pricing with >98% accuracy."
+  },
+  {
+    "title": "Plasma Physics Fusion Reactor Anomaly Detector",
+    "tech": [
+      "Python", 
+      "XGBoost", 
+      "sklearn", 
+      "RNN"
+    ],
+    "blurb": "Built anomaly detection models for MIT’s tokamak fusion reactor using PCA and RNN."
+  },
+
+
+  {
+    "title": "Attenuation Lengths of Scintillating Fibers",
+    "tech": [
+      "Python", 
+      "SOLIDWORKS", 
+      "3D Printing", 
+      "Sensors"
+    ],
+    "blurb": "Measured attenuation of >100 wavelength-shifting fibers with custom mounts."
+  },
+  {
+    "title": "Vehicle Dynamics and Modeling",
+    "tech": [
+      "Python", 
+      "C++", 
+      "Simulation", 
+      "Dynamics"
+    ],
+    "blurb": "Kinematic and compliance modeling for FSAE car performance optimization."
+  },
+
+  {
+    "title": "Dance-Dance Revolution Augmented Reality",
+    "tech": [
+      "Computer Vision", 
+      "OpenCV", 
+      "JavaScript", 
+      "Three.js"
+    ],
+    "blurb": "Built AR DDR-style game with OpenCV motion tracking synced to 3D graphics."
   }
 ]
