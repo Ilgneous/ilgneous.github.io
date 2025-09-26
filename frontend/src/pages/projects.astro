@@ -1,8 +1,11 @@
 ---
-const projects = await fetch(import.meta.env.PUBLIC_API_URL ?? "https://api.example.com/api/projects")
-  .then(r => r.ok ? r.json() : [])
-  .catch(() => []);
+import { getCollection } from "astro:content";
+
+// Fetch all project entries
+const projects = (await getCollection("projects"))
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999));
 ---
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -10,14 +13,28 @@ const projects = await fetch(import.meta.env.PUBLIC_API_URL ?? "https://api.exam
     <link rel="stylesheet" href="/src/styles/global.css" />
   </head>
   <body class="mx-auto max-w-3xl p-6">
-    <h1 class="text-3xl font-bold mb-4">Projects</h1>
-    <div class="grid gap-4">
-      {projects.map((p) => (
-        <article class="rounded-2xl border p-4">
-          <h2 class="text-lg font-semibold">{p.title}</h2>
-          <p class="mt-1 opacity-90">{p.blurb}</p>
-          {p.tech && <p class="mt-1 text-sm opacity-70">{p.tech.join(" • ")}</p>}
-        </article>
+    <h1 class="text-3xl font-bold mb-6">Projects</h1>
+
+    <div class="grid gap-6">
+      {projects.map((entry) => (
+        <a
+          href={`/projects/${entry.slug}`}
+          class="block rounded-xl border p-4 hover:shadow-lg transition"
+        >
+          <h2 class="text-xl font-semibold">{entry.data.title}</h2>
+          <p class="mt-2 text-sm opacity-80">{entry.data.summary}</p>
+          <div class="mt-3 text-xs opacity-70">
+            {entry.data.tech.join(" • ")}
+          </div>
+          {entry.data.hero && (
+            <img
+              src={entry.data.hero}
+              alt=""
+              class="mt-3 rounded-lg"
+              loading="lazy"
+            />
+          )}
+        </a>
       ))}
     </div>
   </body>

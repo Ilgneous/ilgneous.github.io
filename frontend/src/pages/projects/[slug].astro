@@ -1,0 +1,37 @@
+---
+import { getCollection, getEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const items = await getCollection("projects");
+  return items.map((entry) => ({ params: { slug: entry.slug } }));
+}
+
+const { slug } = Astro.params;
+const entry = await getEntry("projects", slug!);
+if (!entry) throw new Error(`Project not found: ${slug}`);
+
+const { data } = entry;
+const { Content } = await entry.render();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{data.title}</title>
+    <meta name="description" content={data.summary} />
+    <link rel="stylesheet" href="/src/styles/global.css" />
+  </head>
+  <body class="mx-auto max-w-3xl p-6">
+    <a href="/projects" class="underline">← All projects</a>
+
+    <header class="mt-3">
+      <h1 class="text-3xl font-bold">{data.title}</h1>
+      <p class="opacity-80 mt-1">{data.summary}</p>
+    </header>
+
+    <!-- ⬇️ HERE is where you wrap the Markdown content -->
+    <article class="prose prose-zinc dark:prose-invert mt-8 max-w-none">
+      <Content />
+    </article>
+  </body>
+</html>

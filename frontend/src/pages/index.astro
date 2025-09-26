@@ -1,9 +1,19 @@
 ---
 import Counter from "../components/Counter.svelte";
-const projects = await fetch(import.meta.env.PUBLIC_API_URL ?? "https://api.example.com/api/projects")
+
+interface Project {
+  title: string;
+  href?: string;
+  tech?: string[];
+}
+
+const projects: Project[] = await fetch(
+  import.meta.env.PUBLIC_API_URL ?? "https://api.example.com/api/projects"
+)
   .then(r => r.ok ? r.json() : [])
   .catch(() => []);
 ---
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -35,7 +45,10 @@ const projects = await fetch(import.meta.env.PUBLIC_API_URL ?? "https://api.exam
       <h2 class="text-xl font-semibold">Projects</h2>
       <ul class="list-disc pl-5">
         {projects.map((p) => (
-          <li><a class="underline" href={p.href ?? "#"}>{p.title}</a> — <span class="opacity-70">{p.tech?.join(" • ")}</span></li>
+          <li>
+            <a class="underline" href={p.href ?? "#"}>{p.title}</a>
+            — <span class="opacity-70">{p.tech?.join(" • ")}</span>
+          </li>
         ))}
       </ul>
     </section>
