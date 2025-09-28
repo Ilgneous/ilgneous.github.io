@@ -2,7 +2,7 @@
 title: "Ping-Pong Balancer"
 slug: "ping-pong-balancer"
 summary: "3-axis platform that tracks and stabilizes a ping-pong ball in real time."
-tech: ["Svelte", "OpenCV", "Python", "Dynamixel", "Control"]
+tech: ["OpenCV", "Python", "Dynamixel", "Control"]
 date: "2025-05-01"
 order: 2
 ---
