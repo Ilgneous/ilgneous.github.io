@@ -1,8 +1,15 @@
 {
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "types": ["astro/client"],
+    "types": ["astro/client", "vite/client", "svelte"],
     "baseUrl": ".",
     "paths": { "@/*": ["src/*"] }
-  }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.astro",
+    "src/**/*.svelte",
+    "src/env.d.ts"
+  ]
 }
