@@ -1,17 +1,15 @@
-import { defineConfig } from 'astro/config';
-import svelte from '@astrojs/svelte';
-import tailwind from '@tailwindcss/vite';
+// astro.config.mjs
+import { defineConfig } from 'astro/config'
+import svelte from '@astrojs/svelte'
+
+// --- choose ONE Tailwind setup (see below) ---
+import tailwind from '@tailwindcss/vite' // if you're on Tailwind v4
 
 export default defineConfig({
-  // your GH Pages root
-  site: 'https://sivansyed.github.io',
-
-  // <-- set to your repo name
-  base: '/sivansyed.github.io/',
-
-  integrations: [svelte(), tailwind()],
-
+  site: 'https://ilgneous.github.io',   // <-- your GH username host
+  base: '/sivansyed.github.io/',        // <-- your repo name
+  integrations: [svelte()],             // don't put the Vite plugin here
   vite: {
-    plugins: [tailwind()],
+    plugins: [tailwind()],              // Tailwind v4 path (pick ONE approach)
   },
-});
+})
