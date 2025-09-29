@@ -1,8 +1,6 @@
 // astro.config.mjs
 import { defineConfig } from 'astro/config'
 import svelte from '@astrojs/svelte'
-
-// --- choose ONE Tailwind setup (see below) ---
 import tailwind from '@tailwindcss/vite' // if you're on Tailwind v4
 
 export default defineConfig({

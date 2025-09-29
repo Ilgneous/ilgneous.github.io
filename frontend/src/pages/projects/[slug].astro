@@ -1,7 +1,6 @@
 ---
 import { getCollection, getEntry } from "astro:content";
-import Layout from "../layouts/Layout.astro";        // if file is src/pages/projects/[slug].astro
-// import Layout from "../../layouts/Layout.astro";   // if your layout is at src/layouts/Layout.astro
+import Layout from "../layouts/Layout.astro";        
 
 export async function getStaticPaths() {
   const items = await getCollection("projects");
