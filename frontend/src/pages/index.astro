@@ -35,7 +35,7 @@ if (projects.length === 0) {
   }));
 }
 
-const B = import.meta.env.BASE_URL;
+// const B = import.meta.env.BASE_URL;
 ---
 
 <html lang="en">
@@ -45,22 +45,22 @@ const B = import.meta.env.BASE_URL;
     <meta name="description" content="Physics & ECE @ UT Austin • Robotics, controls, and systems." />
     <meta property="og:title" content="Sivan Syed - Portfolio" />
     <meta property="og:description" content="Physics & ECE @ UT Austin • Robotics, controls, and systems." />
-    <meta property="og:image" content={`${B}og.png`} />
-    <link rel="icon" href={`${B}favicon.svg`} />
+    <meta property="og:image" content={`/og.png`} />
+    <link rel="icon" href={`/favicon.svg`} />
   </head>
   <body class="mx-auto max-w-3xl p-6">
     <header class="flex items-center justify-between gap-4">
       <div class="flex items-center gap-4">
-        <img src={`${B}favicon.svg`} alt="Logo" class="size-10" />
+        <img src={`/favicon.svg`} alt="Logo" class="size-10" />
         <div>
           <h1 class="text-3xl font-bold">Sivan Syed</h1>
           <p class="opacity-80">Physics & ECE • Robotics • Controls • Systems</p>
         </div>
       </div>
       <nav class="text-sm">
-        <a class="underline" href={`${B}projects`}>Projects</a>
-        <a class="underline ml-3" href={`${B}now`}>/now</a>
-        <a class="underline ml-3" href={`${B}uses`}>/uses</a>
+        <a class="underline" href={`/projects`}>Projects</a>
+        <a class="underline ml-3" href={`/now`}>/now</a>
+        <a class="underline ml-3" href={`/uses`}>/uses</a>
         <a class="underline ml-3" href="#contact">Contact</a>
       </nav>
     </header>
@@ -72,7 +72,7 @@ const B = import.meta.env.BASE_URL;
 
     <section class="mt-8">
       <div class="mt-4">
-        <a class="underline" href={`${B}projects`}>See all projects →</a>
+        <a class="underline" href={`/projects`}>See all projects →</a>
       </div>
     </section>
 
