@@ -1,9 +1,17 @@
 import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
-import tailwind from '@astrojs/tailwind';
+import tailwind from '@tailwindcss/vite';
 
 export default defineConfig({
-  site: 'https://sivansyed.github.io',   // your GH Pages root
-  base: '/sivansyed.github.io/',                      // <-- set to your repo name
+  // your GH Pages root
+  site: 'https://sivansyed.github.io',
+
+  // <-- set to your repo name
+  base: '/sivansyed.github.io/',
+
   integrations: [svelte(), tailwind()],
+
+  vite: {
+    plugins: [tailwind()],
+  },
 });
