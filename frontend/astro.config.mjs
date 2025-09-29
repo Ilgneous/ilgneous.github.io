@@ -1,13 +1,10 @@
-// astro.config.mjs
-import { defineConfig } from 'astro/config'
-import svelte from '@astrojs/svelte'
-import tailwind from '@tailwindcss/vite' // if you're on Tailwind v4
+import { defineConfig } from "astro/config";
+import svelte from "@astrojs/svelte";
+import tailwind from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: 'https://ilgneous.github.io',   // <-- your GH username host
-  base: '/sivansyed.github.io/',        // <-- your repo name
-  integrations: [svelte()],             // don't put the Vite plugin here
-  vite: {
-    plugins: [tailwind()],              // Tailwind v4 path (pick ONE approach)
-  },
-})
+  site: "https://ilgneous.github.io",
+  base: "/sivansyed.github.io/",
+  integrations: [svelte()],
+  vite: { plugins: [tailwind()] },
+});

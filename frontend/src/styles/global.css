@@ -1,9 +1,5 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@source "../**/*";  
-
-:root {
-  color-scheme: light dark;
-}
-
+@source "../**/*";
+:root { color-scheme: light dark }
 .prose { max-width: 70ch }
