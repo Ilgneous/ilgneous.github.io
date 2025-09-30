@@ -12,11 +12,36 @@
   }
 </script>
 
-<form on:submit={submit} class="space-y-3 max-w-md">
-  <input class="w-full border p-2 rounded" placeholder="Name" bind:value={name} required />
-  <input class="w-full border p-2 rounded" type="email" placeholder="Email" bind:value={email} required />
-  <textarea class="w-full border p-2 rounded" rows="5" placeholder="Message" bind:value={message} required /textarea>
-  <button class="rounded bg-black text-white px-3 py-2">Send</button>
-  {#if status==="ok"}<p class="text-green-700">Thanks! I’ll reply soon.</p>{/if}
-  {#if status==="err"}<p class="text-red-700">Please check your message or try again.</p>{/if}
+<form on:submit={submit} class="space-y-3 w-full">
+  <input 
+    class="w-full border p-2 rounded" 
+    placeholder="Name" 
+    bind:value={name} 
+    required 
+  />
+  <input 
+    class="w-full border p-2 rounded" 
+    type="email" 
+    placeholder="Email" 
+    bind:value={email} 
+    required 
+  />
+  <textarea 
+    class="w-full border p-2 rounded" 
+    rows="5" 
+    placeholder="Message" 
+    bind:value={message} 
+    required
+  ></textarea>
+  <button 
+    class="w-full rounded bg-black text-white px-3 py-2 hover:bg-gray-800"
+  >
+    Send
+  </button>
+  {#if status==="ok"}
+    <p class="text-green-700">Thanks! I'll reply soon.</p>
+  {/if}
+  {#if status==="err"}
+    <p class="text-red-700">Please check your message or try again.</p>
+  {/if}
 </form>
