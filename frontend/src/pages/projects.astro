@@ -10,6 +10,10 @@ const projects = items.map((e) => ({
   title: e.data.title,
   href: `${B}projects/${e.slug}`,
   tech: e.data.tech,
+  summary: e.data.summary ?? "",
+  image: e.data.image
+    ? `${B}${e.data.image}`                              // e.g. "images/projects/ping-pong.jpg"
+    : `${B}images/projects/${e.slug}.jpg`,              // fallback convention by slug
 }));
 ---
 
@@ -32,14 +36,13 @@ const projects = items.map((e) => ({
       <nav class="text-sm">
         <a class="underline" href={`${B}`}>Home</a>
         <a class="underline ml-3" href={`${B}projects`}>Projects</a>
-        <a class="underline ml-3" href={`${B}now`}>/now</a>
-        <a class="underline ml-3" href={`${B}uses`}>/uses</a>
+        <a class="underline ml-3" href={`${B}now`}>Now</a>
+        <a class="underline ml-3" href={`/resume.pdf`} target="_blank">Resume</a>
       </nav>
     </header>
 
     <h1 class="text-3xl font-bold mt-8 mb-4">Projects</h1>
 
-    <!-- Svelte component renders/filter the list -->
-    <ProjectFilter client:load projects={projects} />
+    <ProjectFilter client:load projects={projects} baseUrl={B} />
   </body>
 </html>

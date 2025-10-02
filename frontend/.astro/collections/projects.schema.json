@@ -19,7 +19,7 @@
         "date": {
           "type": "string"
         },
-        "hero": {
+        "image": {
           "type": "string"
         },
         "repo": {
