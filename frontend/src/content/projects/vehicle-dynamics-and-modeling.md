@@ -2,16 +2,7 @@
 title: "Vehicle Dynamics and Modeling"
 slug: "vehicle-dynamics-and-modeling"
 summary: "Kinematic and compliance modeling for performance optimization; Milliken Moment Method with Python/C++ tooling."
-tech: 
-  Vehicle Modeling
-  -
-  Computational Dynamics
-  -
-  Simulation
-  -
-  Python
-  -
-  C++
+tech: ["Vehicle Modeling", "Computational Dynamics", "Simulation", "Python", "C++"]
 
 date: "2025-01-01"
 order: 20

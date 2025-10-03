@@ -10,8 +10,9 @@
   let activeTech = new Set();
 
   function toggleTech(tag) {
-    if (activeTech.has(tag)) activeTech.delete(tag);
-    else activeTech.add(tag);
+    const next = new Set(activeTech);
+    next.has(tag) ? next.delete(tag) : next.add(tag);
+    activeTech = next; // trigger reactivity
   }
 
   $: filtered = projects.filter((p) => {

@@ -2,12 +2,7 @@
 title: "Surrogate ML Model for Magneto‑Hydrodynamics Prediction"
 slug: "surrogate-ml-model-mhd"
 summary: "Built an FNN surrogate to emulate MHD simulations with >98% fidelity, reducing turnaround to <20 minutes."
-tech: 
-  Neural Network
-  -
-  MATLAB
-  -
-  Python
+tech: ["Neural Network", "MATLAB", "Python"]
 
 date: "2025-01-01"
 order: 14

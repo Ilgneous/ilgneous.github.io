@@ -2,16 +2,7 @@
 title: "Transformer Model for Pulse Shape Discrimination"
 slug: "transformer-model-pulse-shape-discrimination"
 summary: "Developed PSD for radioactive sources using a Transformer; achieved >98% classification accuracy on cleaned waveforms."
-tech: 
-  Transformer
-  -
-  Neural Network
-  -
-  Signal Processing
-  -
-  Python
-  -
-  PyTorch
+tech: ["Transformer", "Neural Network", "Signal Processing", "Python", "PyTorch"]
 
 date: "2025-01-01"
 order: 12

@@ -1,5 +1,5 @@
 ---
-title: "Vision Dance Game (HackTX)"
+title: "Dance Dance Revolution"
 slug: "vision-dance-game-hacktx"
 summary: "Real-time dance game using OpenCV to track steps and score accuracy."
 tech: ["Python", "OpenCV", "Computer Vision"]

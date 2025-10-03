@@ -2,20 +2,7 @@
 title: "Plasma Physics Fusion Reactor Anomaly Detector"
 slug: "plasma-fusion-reactor-anomaly-detector"
 summary: "Compared PCA+Random Forest and RNN approaches to detect instability periods in MIT tokamak data."
-tech: 
-  Python
-  -
-  XGBoost
-  -
-  scikit-learn
-  -
-  PCA
-  -
-  Kaggle
-  -
-  Anomaly Detection
-  -
-  RNN
+tech: ["Python", "XGBoost", "scikit-learn", "PCA", "Kaggle", "Anomaly Detection", "RNN"]
 
 date: "2025-01-01"
 order: 22
