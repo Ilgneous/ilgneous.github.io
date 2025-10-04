@@ -1,6 +1,6 @@
 ---
-title: "FSAE Steering Gearbox"
-slug: "fsae-steering-gearbox"
+title: "FSAE Steering System"
+slug: "fsae-steering-system"
 summary: "Lightweight gearbox steering system with carbon-fiber components for a Formula SAE car."
 tech: ["SolidWorks", "FEA", "Carbon Fiber", "CNC", "Controls"]
 date: "2025-03-15"

@@ -11,11 +11,14 @@ order: 5
 Quantify light yield and attenuation in WLS fibers for low-background detector readout.
 
 ![Normalized Emission Spectra Compared](/UVvBlueLED.png)
+![SiPM with Quantum Efficiency](/SiPMandQE.png)
 
 ## Approach
 - Spectral scans vs. excitation; cut-back method for attenuation length.
 - SiPM coupling tests; fixture for repeatable alignment and distances.
 - Python analysis to fit attenuation and compare fiber batches.
+
+![Attenuation Length of Fibers](/AttenuationLength.png)
 
 ## Impact
 - Data used to select fibers and routing for improved light collection.

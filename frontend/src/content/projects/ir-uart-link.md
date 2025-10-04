@@ -2,12 +2,15 @@
 title: "IR Optical UART Link"
 slug: "ir-uart-link"
 summary: "Half-duplex infrared data link implementing a lightweight UART-framed protocol over IR LED/photodiode."
-tech: ["Embedded C", "UART", "IR LED/Photodiode", "Protocols", "Oscilloscope"]
+tech: ["C", "UART", "IR LED/Photodiode", "Protocols", "Oscilloscope"]
 date: "2024-10-01"
+image: "IRTransmission.jpg"
 order: 8
 ---
 ## Problem
 Send robust serial data between two nodes without wires or RF modules in lab/robot settings.
+
+![Wireless Data Transmission](/IRTransmission.jpg)
 
 ## Approach
 - 38–56 kHz carrier modulation; UART framing with CRC.

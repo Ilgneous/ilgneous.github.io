@@ -5,6 +5,8 @@ import Counter from "../components/Counter.svelte";
 import { getCollection } from "astro:content";
 
 interface Project { title: string; href?: string; tech?: string[] }
+const B = import.meta.env.BASE_URL;
+
 
 // Choose API base: use env, else localhost in dev, else no API
 const API =
@@ -63,7 +65,7 @@ if (projects.length === 0) {
 
     <section class="mt-8">
       <h2 class="text-xl font-semibold">Interactive demo</h2>
-      <Counter client:load />
+      <Counter client:load baseUrl={B} soundSrc="/leaf-crunch.mp3" />
     </section>
 
     <section class="mt-12">
@@ -86,6 +88,21 @@ if (projects.length === 0) {
         I aim to bridge theoretical knowledge with practical systems that make an impact.
       </p>
     </section>
+
+    <figure class="mx-auto my-6 max-w-2xl text-center"></figure>
+      <img
+        src={`/vortex_animation.gif`}
+        alt="Vortex animation"
+        class="mx-auto block max-w-full h-auto"
+        loading="lazy"
+        decoding="async"
+        aria-describedby="vortex-caption"
+      />
+      <figcaption id="vortex-caption" class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <span class="font-medium">Figure 1.</span>
+        Vortex animation demonstrating fluid dynamics.
+      </figcaption>
+    </figure>
 
     <section class="mt-12">
       <h2 class="text-xl font-semibold">Academic Coursework</h2>
@@ -112,6 +129,9 @@ if (projects.length === 0) {
         a love for bouldering which has grown since I've began college. However, my favorite hobby
         is going on long walks that build relationships with my friends.
       </p>
+      <img src={`/Redrising.webp`} alt="Red Rising Image" width="800" height="600" loading="lazy"/>
+
+      <img src={`/NoLongerHuman.webp`} alt="No Longer Human Image" class="mx-auto block h-auto"  width="400" height="600" loading="lazy"/>
     </section>
   </body>
 </html>
