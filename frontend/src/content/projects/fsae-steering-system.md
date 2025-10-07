@@ -2,7 +2,7 @@
 title: "FSAE Steering System"
 slug: "fsae-steering-system"
 summary: "Lightweight gearbox steering system with carbon-fiber components for a Formula SAE car."
-tech: ["SolidWorks", "FEA", "Carbon Fiber", "CNC", "Controls"]
+tech: ["SolidWorks", "FEA", "Carbon Fiber", "CNC", "Controls", "CAD"]
 date: "2025-03-15"
 order: 4
 ---

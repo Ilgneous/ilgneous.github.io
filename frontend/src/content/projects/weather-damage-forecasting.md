@@ -2,7 +2,7 @@
 title: "Weather‑Damage Forecasting"
 slug: "weather-damage-forecasting"
 summary: "Predicted damage using LSTM‑based time‑series models; compared ARIMA, LSTM, and Transformer approaches."
-tech: ["Python", "XGBoost", "PyTorch", "Predictive Analysis", "Data Visualization", "Data Analysis", "LSTM"]
+tech: ["Python", "XGBoost", "PyTorch", "Predictive Analysis", "Data Visualization", "Data Analysis", "LSTM", "Machine Learning"]
 
 date: "2025-01-01"
 image: "WeatherForecasting.png"

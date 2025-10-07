@@ -6,6 +6,10 @@ tech:
   - KiCad
   - MCU
   - Power Electronics
+  - C++
+  - Circuit Design
+  - PCB Design
+  - Oscilloscope
 date: "2025-03-15"
 image: "BoostPCB.png"
 order: 3
