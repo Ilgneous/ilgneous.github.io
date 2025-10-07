@@ -7,6 +7,7 @@ tech:
   - MCU
   - Power Electronics
 date: "2025-03-15"
+image: "BoostPCB.png"
 order: 3
 ---
 
@@ -18,6 +19,8 @@ Step up a battery pack to a regulated higher voltage with high efficiency and ro
 - LTspice sims: duty cycle, ripple, loop stability; compensation network design.
 - PCB layout for tight current loops, Kelvin sensing, and thermal spreading.
 - MCU PWM control (soft-start, OCP/OVP), test plan for line/load/thermal.
+
+![PCB for Boost Converter](/BoostPCB.png)
 
 ## Impact
 - Stable regulation across expected load range.

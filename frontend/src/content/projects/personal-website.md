@@ -9,6 +9,7 @@ tech:
   - GitHub Pages
   - TypeScript
 date: "2025-09-25"
+image: "WebsitePortfolio.png"
 order: 1
 ---
 
@@ -22,7 +23,7 @@ I wanted a central place to showcase my projects, technical skills, and interact
 - **Hosting:** GitHub Pages for the frontend, with deployment scripts.  
 - **Extras:** OpenGraph tags for nice link previews, and RSS feed for future blog posts.  
 
-![screenshot of personal website](/projects/personal-website/hero.webp)
+![screenshot of personal website](/ProjectPage.png)
 
 ## Impact
 - Professional-looking portfolio at a custom domain.  
