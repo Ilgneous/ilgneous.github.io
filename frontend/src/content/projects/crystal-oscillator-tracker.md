@@ -2,7 +2,7 @@
 title: "Crystal Oscillator Tracker"
 slug: "crystal-oscillator-tracker"
 summary: "MCU-based frequency tracker that measures crystal drift and stability using timer-capture and serial logging."
-tech: ["MCU", "C", "Timers/Interrupts", "UART", "Signal Processing"]
+tech: ["MCU", "C", "Circuit Design", "Signal Processing"]
 date: "2024-11-01"
 order: 7
 ---

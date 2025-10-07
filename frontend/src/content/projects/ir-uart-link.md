@@ -2,7 +2,7 @@
 title: "IR Optical UART Link"
 slug: "ir-uart-link"
 summary: "Half-duplex infrared data link implementing a lightweight UART-framed protocol over IR LED/photodiode."
-tech: ["C", "UART", "IR LED/Photodiode", "Protocols", "Oscilloscope"]
+tech: ["C++", "UART", "Protocols", "Oscilloscope", "PCB Design", "MCU"]
 date: "2024-10-01"
 image: "IRPCB.png"
 order: 8

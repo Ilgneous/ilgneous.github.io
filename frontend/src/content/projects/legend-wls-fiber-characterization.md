@@ -2,7 +2,7 @@
 title: "WLS Fiber Characterization (LEGEND)"
 slug: "legend-wls-fiber-characterization"
 summary: "Measured emission spectra and attenuation of wavelength-shifting fibers to optimize scintillation readout."
-tech: ["Optics", "SiPM", "Spectrometer", "Python", "DAQ", ""]
+tech: ["Optics", "SiPM", "Spectrometer", "Python", "Data Aquisition", "Data Analysis"]
 date: "2024-07-01"
 image: "UVvBlueLED.png"
 repo: "https://arxiv.org/abs/2509.20390"
