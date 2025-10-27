@@ -5,6 +5,7 @@ summary: "Compared PCA+Random Forest and RNN approaches to detect instability pe
 tech: ["Python", "XGBoost", "scikit-learn", "Kaggle", "Anomaly Detection", "Machine Learning", "PyTorch"]
 
 date: "2025-01-01"
+image: "AnomalyDetector.png"
 order: 22
 ---
 ## Problem

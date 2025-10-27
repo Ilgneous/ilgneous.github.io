@@ -5,6 +5,7 @@ summary: "Developed PSD for radioactive sources using a Transformer; achieved >9
 tech: ["Transformer", "Neural Network", "Signal Processing", "Python", "PyTorch", "Machine Learning"]
 
 date: "2025-01-01"
+image: "TransformerModel.png"
 order: 12
 ---
 ## Problem
