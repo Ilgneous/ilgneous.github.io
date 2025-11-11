@@ -186,15 +186,32 @@ if (projects.length === 0) {
               Outside of academics and engineering projects, I enjoy exploring a plethora of topics.
               I train in Taekwondo & Muay Thai, which I've loved since I was a kid, and I have a love-hate relationship with bouldering (I have commitment issues).
               Reading recommendations (favorite series: <em>Red Rising</em>) from Science Fiction to Neuroscience and History to Philosophy are always welcome.
+              I thrive in board games and strategy games, especially when they involve complex decision-making and teamwork (or deception).
               Most of all, I'm passionate about long walks that turn into long conversations.
             </p>
           </div>
           <div class="card">
             <div class="card-border"></div>
-            <div class="grid grid-cols-2 gap-3">
-              <img src={`/Redrising.webp`} alt="Red Rising" class="aspect-[4/3] w-full rounded-xl border border-zinc-800/70 object-cover" loading="lazy" />
-              <img src={`/NoLongerHuman.webp`} alt="No Longer Human" class="aspect-[3/4] w-full rounded-xl border border-zinc-800/70 object-cover" loading="lazy" />
-            </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Left column: stack Red Rising over Root -->
+                <div class="flex flex-col gap-3">
+                  <img src="/Redrising.webp"
+                      alt="Red Rising"
+                      class="aspect-[4/3] w-full rounded-xl border border-zinc-800/70 object-cover"
+                      loading="lazy" />
+
+                  <img src="/Root.webp"
+                      alt="Root"
+                      class="aspect-[5/3] w-full self-center rounded-xl border border-zinc-800/70 object-cover"
+                      loading="lazy" />
+                </div>
+
+                <!-- Right column -->
+                <img src="/NoLongerHuman.webp"
+                    alt="No Longer Human"
+                    class="aspect-[3/4] w-full rounded-xl border border-zinc-800/70 object-cover"
+                    loading="lazy" />
+              </div>
           </div>
         </div>
       </section>
