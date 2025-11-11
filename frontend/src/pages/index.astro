@@ -1,12 +1,10 @@
 ---
 import "../styles/global.css";
 import Counter from "../components/Counter.svelte";
-// import ContactForm from "../components/ContactForm.svelte";
 import { getCollection } from "astro:content";
 
 interface Project { title: string; href?: string; tech?: string[] }
 const B = import.meta.env.BASE_URL;
-
 
 // Choose API base: use env, else localhost in dev, else no API
 const API =
@@ -33,106 +31,184 @@ if (projects.length === 0) {
   }));
 }
 ---
-
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Sivan Syed - Portfolio</title>
-    <meta name="description" content="Physics & ECE @ UT Austin • Robotics, controls, and systems." />
-    <meta property="og:title" content="Sivan Syed - Portfolio" />
-    <meta property="og:descriptionS" content="Physics & ECE @ UT Austin • Robotics, controls, and systems." />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sivan Syed — Portfolio</title>
+    <meta name="description" content="Physics & ECE • Robotics, controls, and systems." />
+    <meta property="og:title" content="Sivan Syed — Portfolio" />
+    <meta property="og:description" content="Physics & ECE • Robotics, controls, and systems." />
     <meta property="og:image" content={`/og.png`} />
     <link rel="icon" href={`/favicon.svg`} />
   </head>
-  <body class="mx-auto max-w-3xl p-6">
-    <header class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <img src={`/favicon.svg`} alt="Logo" class="size-10" />
-        <div>
-          <h1 class="text-3xl font-bold">Sivan Syed</h1>
-          <p class="opacity-80">Robotics • Controls • Systems • Applied Physics</p>
-          <p class="text-sm opacity-70">Undergraduate • Physics & Electrical & Computer Engineering</p>
-          <p class="text-sm opacity-60">The University of Texas at Austin</p>
-        </div>
+  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20">
+    {/* Decorative background */}
+    <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
+      <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
+        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:40px_40px] [background-position:center]"></div>
+        <div class="absolute -top-24 left-1/2 h-[36rem] w-[72rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl"></div>
       </div>
-      <nav class="text-sm">
-        <a class="underline" href={`/projects`}>Projects</a>
-        <a class="underline ml-3" href={`/tutoring`}>Tutoring</a>
-        <a class="underline ml-3" href={`/now`}>Now</a>
-        <a class="underline ml-3" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
-        <!-- <a class="underline ml-3" href={`/contact`}>Contact</a> -->
-      </nav>
+    </div>
+
+    {/* Header (matches tutoring) */}
+    <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55 border-b border-zinc-800/60">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 md:px-12 lg:px-20 py-4">
+        <a href={`${B}`} class="group flex items-center gap-3">
+          <img src={`/favicon.svg`} alt="Logo" class="size-9 transition-transform duration-300 group-hover:rotate-6" />
+          <div>
+            <h1 class="text-2xl font-semibold tracking-tight">Sivan Syed</h1>
+            <p class="text-xs text-zinc-400">Physics & ECE • Robotics • Controls • Systems</p>
+          </div>
+        </a>
+        <nav class="flex items-center gap-2 text-sm">
+          <a class="navlink" href={`${B}`}>Home</a>
+          <a class="navlink" href={`${B}projects`}>Projects</a>
+          <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
+          <a class="navlink" href={`${B}now`}>Now</a>
+          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
+        </nav>
+      </div>
     </header>
 
-    <!-- <section class="mt-8">
+    {/* Main */}
+    <main class="mx-auto max-w-[90rem] px-6 md:px-12 lg:px-20 py-10 md:py-14 space-y-24">
+      {/* Hero */}
+      <section class="mx-auto max-w-6xl">
+        <div class="flex flex-col-reverse items-start justify-between gap-8 md:flex-row md:items-center">
+          <div class="max-w-3xl">
+            <p class="text-xs uppercase tracking-[0.2em] text-zinc-400/90">Portfolio • Robotics • Controls • Applied Physics</p>
+            <h2 class="mt-3 text-4xl font-bold leading-tight md:text-5xl">
+              <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)] animate-shimmer">Building systems that blend</span>
+              <span class="block text-zinc-300/90">theory → computation → hardware</span>
+            </h2>
+            <p class="mt-4 text-lg text-zinc-300/90">
+              I design and prototype across ECE, physics, and mechanics—turning equations into working hardware and clean software.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3 text-sm">
+              <a href={`${B}projects`} class="btn-primary">View projects</a>
+              <a href={`${B}tutoring`} class="btn-ghost">Tutoring</a>
+            </div>
+          </div>
+          <figure class="mx-auto max-w-md flex-1 text-center md:mx-0">
+            <img src={`/vortex_animation.gif`} alt="Vortex animation" class="mx-auto block aspect-video w-full rounded-2xl border border-zinc-800/70 bg-zinc-900/20 object-cover shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" loading="lazy" decoding="async" />
+            <figcaption class="mt-2 text-xs text-zinc-500">Vortex animation demonstrating fluid dynamics.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* What I do */}
+      <section class="section">
+        <h3 class="section-title">What I do</h3>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div class="card">
+            <div class="card-border"></div>
+            <h4 class="font-medium">Systems & Hardware</h4>
+            <p class="mt-2 text-sm text-zinc-300">Robotics, embedded, digital logic, device physics; I ship working prototypes.</p>
+          </div>
+          <div class="card">
+            <div class="card-border"></div>
+            <h4 class="font-medium">Theory → Practice</h4>
+            <p class="mt-2 text-sm text-zinc-300">From Lagrangians and Maxwell to Verilog and firmware—bridging derivations to code.</p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* Featured Projects */}
+      <section class="section">
+        <h3 class="section-title">Featured projects</h3>
+        <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {projects.slice(0, 6).map((p) => (
+            <a href={p.href ?? '#'} class="card group block">
+              <div class="card-border"></div>
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="font-medium group-hover:underline decoration-zinc-400/30 underline-offset-4">{p.title}</h4>
+                <span aria-hidden class="text-zinc-500 transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+              </div>
+              {p.tech?.length ? (
+                <ul class="mt-2 flex flex-wrap gap-2 text-xs text-zinc-400">
+                  {p.tech.map((t) => (
+                    <li class="rounded-md border border-zinc-800/70 bg-zinc-900/40 px-2 py-1">{t}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </a>
+          ))}
+        </div>
+        <div class="mt-6">
+          <a href={`${B}projects`} class="btn-ghost">See all projects</a>
+        </div>
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* Goals */}
+      <section class="section">
+        <h3 class="section-title">What’s my goal</h3>
+        <div class="grid grid-cols-1 gap-6">
+          <div class="card">
+            <div class="card-border"></div>
+            <p class="text-sm text-zinc-300">
+              Push the boundaries of science and engineering in physics‑driven fields—plasma, condensed matter, robotics—by
+              pairing rigorous theory with innovative hardware and robust software.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* Coursework */}
+      <section class="section">
+        <h3 class="section-title">Academic coursework</h3>
+        <ul class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-300 sm:grid-cols-2">
+          <li><span class="font-medium text-zinc-200">Physics:</span> Quantum I/II, Statistical Mechanics, Thermodynamics, Classical Dynamics, Relativity</li>
+          <li><span class="font-medium text-zinc-200">Electrical Engineering:</span> Electronic Circuits Lab, Digital Logic, Semiconductor Devices, Embedded, Signals</li>
+          <li><span class="font-medium text-zinc-200">Mathematics:</span> Real Analysis, Complex Analysis, Linear Algebra, Differential Equations</li>
+          <li><span class="font-medium text-zinc-200">Applied:</span> Computational Physics, EM, Fluid Dynamics, Mechanics of Solids</li>
+          <li><span class="font-medium text-zinc-200">Misc:</span> German Language, Materials Experiments, Software Design</li>
+        </ul>
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* Hobbies */}
+      <section class="section">
+        <h3 class="section-title">Outside the lab</h3>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div class="card">
+            <div class="card-border"></div>
+            <p class="text-sm text-zinc-300">
+              I train in Taekwondo & Muay Thai, climb/boulder, and read (favorite series: <em>Red Rising</em>). Most of all, I like long
+              walks that turn into long conversations.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-border"></div>
+            <div class="grid grid-cols-2 gap-3">
+              <img src={`/Redrising.webp`} alt="Red Rising" class="aspect-[4/3] w-full rounded-xl border border-zinc-800/70 object-cover" loading="lazy" />
+              <img src={`/NoLongerHuman.webp`} alt="No Longer Human" class="aspect-[3/4] w-full rounded-xl border border-zinc-800/70 object-cover" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mx-auto max-w-7xl px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
+      <div class="flex items-center justify-between border-t border-zinc-800/70 pt-4">
+        <p>© {new Date().getFullYear()} Sivan Syed</p>
+        <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={`${B}`}>Back to home</a>
+      </div>
+    </footer>
+
+    {/* Optional interactive demo */}
+    <!-- <section class="mx-auto max-w-6xl px-6 md:px-12 lg:px-20 py-10">
       <h2 class="text-xl font-semibold">Interactive demo</h2>
       <Counter client:load baseUrl={B} soundSrc="/leaf-crunch.mp3" />
     </section> -->
-
-    <section class="mt-12">
-      <h2 class="text-xl font-semibold">What I do</h2>
-      <p class="mt-2 opacity-90">
-        I thrive at the intersection of theory, computation, and hardware implementation, 
-        building prototypes that merge mechanics, electronics, and software. I am also 
-        proactive in career development, tailoring my skillset to roles in electronics 
-        hardware, computational engineering, robotics, and aerospace.
-      </p>
-    </section>
-
-    <section class="mt-12">
-      <h2 class="text-xl font-semibold">What's my goal</h2>
-      <p class="mt-2 opacity-90">
-        My goal is to push the boundaries of science and engineering by contributing to bleeding-edge
-        research and technology development in physics-driven engineering fields, particularly in areas 
-        that demand both rigorous theoretical insight and innovative hardware solutions. Whether in 
-        condensed matter physics, plasma physics, robotics, or otherwise bleeding-edge technology,
-        I aim to bridge theoretical knowledge with practical systems that make an impact.
-      </p>
-    </section>
-
-    <figure class="mx-auto my-6 max-w-2xl text-center"></figure>
-      <img
-        src={`/vortex_animation.gif`}
-        alt="Vortex animation"
-        class="mx-auto block max-w-full h-auto"
-        loading="lazy"
-        decoding="async"
-        aria-describedby="vortex-caption"
-      />
-      <figcaption id="vortex-caption" class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-        <span class="font-medium">Figure 1.</span>
-        Vortex animation demonstrating fluid dynamics.
-      </figcaption>
-    </figure>
-
-    <section class="mt-12">
-      <h2 class="text-xl font-semibold">Academic Coursework</h2>
-      <p class="mt-2 opacity-90">
-        Through my studies in Physics and Electrical & Computer Engineering at UT Austin, I have 
-        completed a range of rigorous coursework that builds both theoretical depth and practical 
-        engineering expertise. Highlights include:
-      </p>
-      <ul class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm opacity-80">
-        <li><span class="font-medium">Physics:</span> Quantum Mechanics I and II, Statistical Mechanics, Thermodynamics, Classical Dynamics, Relativity</li>
-        <li><span class="font-medium">Electrical Engineering:</span> Electronic Circuits Laboratory, Digital Logic Design, Semiconductor Devices, Embedded Systems, Linear Systems & Signals</li>
-        <li><span class="font-medium">Mathematics:</span> Real Analysis, Complex Analysis, Linear Algebra, Differential Equations</li>
-        <li><span class="font-medium">Applied:</span> Computational Physics, Electromagnetics, Fluid Dynamics, Mechanics of Solids</li>
-        <li><span class="font-medium">Miscellaneous:</span> German Language, Experiments in Materials Science and Engineering, Software Design</li>
-      </ul>
-    </section>  
-
-    <section class="mt-12">
-      <h2 class="text-xl font-semibold">Hobbies</h2>
-      <p class="mt-2 opacity-90">
-        Outside of academics and engineering projects, I enjoy exploring a plethora of topics. I have 
-        enjoyed martial arts since I was a kid, and I practice Taekwondo and Muay Thai whenever I have
-        the chance. My favorite book series is undoubtedly the Red Rising Saga by Pierce Brown. I have 
-        a love for bouldering which has grown since I've began college. However, my favorite hobby
-        is going on long walks that build relationships with my friends.
-      </p>
-      <img src={`/Redrising.webp`} alt="Red Rising Image" width="800" height="600" loading="lazy"/>
-
-      <img src={`/NoLongerHuman.webp`} alt="No Longer Human Image" class="mx-auto block h-auto"  width="400" height="600" loading="lazy"/>
-    </section>
   </body>
 </html>

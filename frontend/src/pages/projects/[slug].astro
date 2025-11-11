@@ -1,9 +1,8 @@
 ---
 import "../../styles/global.css";
-import { getEntry } from "astro:content";
+import { getEntry, getCollection } from "astro:content";
 
 export async function getStaticPaths() {
-  const { getCollection } = await import("astro:content");
   const items = await getCollection("projects");
   return items.map((e) => ({ params: { slug: e.slug } }));
 }
@@ -20,24 +19,119 @@ const B = import.meta.env.BASE_URL;
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>{data.title} · Sivan Syed</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{data.title} · Sivan Syed</title>
+    <meta name="description" content={data.summary ?? "Project details and write‑up."} />
     <link rel="icon" href={`${B}favicon.svg`} />
   </head>
 
-  <body class="min-h-screen bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 antialiased">
-    <main class="mx-auto max-w-3xl p-6">
-      <a href={`${B}projects`} class="underline">← All projects</a>
+  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20">
+    {/* Decorative background */}
+    <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
+      <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
+        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:40px_40px] [background-position:center]"></div>
+        <div class="absolute -top-24 left-1/2 h-[36rem] w-[72rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl"></div>
+      </div>
+    </div>
 
-      <header class="mt-3">
-        <h1 class="text-3xl font-bold">{data.title}</h1>
-        {data.summary && <p class="opacity-80 mt-1">{data.summary}</p>}
-      </header>
+    {/* Header (shared style) */}
+    <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55 border-b border-zinc-800/60">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 md:px-12 lg:px-20 py-4">
+        <a href={`${B}`} class="group flex items-center gap-3">
+          <img src={`${B}favicon.svg`} alt="Logo" class="size-9 transition-transform duration-300 group-hover:rotate-6" />
+          <div>
+            <h1 class="text-2xl font-semibold tracking-tight">Sivan Syed</h1>
+            <p class="text-xs text-zinc-400">Physics & ECE • Robotics • Controls • Systems</p>
+          </div>
+        </a>
+        <nav class="flex items-center gap-2 text-sm">
+          <a class="navlink" href={`${B}`}>Home</a>
+          <a class="navlink" href={`${B}projects`}>Projects</a>
+          <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
+          <a class="navlink" href={`${B}now`}>Now</a>
+          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
+        </nav>
+      </div>
+    </header>
 
-      <!-- Markdown content styled by Typography plugin -->
-      <article class="prose prose-zinc dark:prose-invert mt-8 max-w-none">
-        <Content />
-      </article>
+    <main class="mx-auto max-w-[90rem] px-6 md:px-12 lg:px-20 py-10 md:py-14 space-y-16">
+      {/* Breadcrumb */}
+      <nav class="mx-auto max-w-6xl text-xs text-zinc-400">
+        <a href={`${B}projects`} class="underline decoration-zinc-400/30 underline-offset-2 hover:text-zinc-200">← All projects</a>
+      </nav>
+
+      {/* Hero */}
+      <section class="mx-auto max-w-6xl">
+        <h1 class="text-4xl font-bold leading-tight md:text-5xl">
+          <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)]">{data.title}</span>
+        </h1>
+        {data.summary && <p class="mt-2 max-w-3xl text-zinc-300/95">{data.summary}</p>}
+        <div class="mt-3 flex flex-wrap gap-2 text-xs text-zinc-400">
+          {data.date && <span>Updated {new Date(data.date).toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'})}</span>}
+          {data.date && <span class="opacity-50">•</span>}
+          {Array.isArray(data.tech) && data.tech.length > 0 && (
+            <ul class="flex flex-wrap gap-2">
+              {data.tech.map((t: string) => (
+                <li class="rounded-md border border-zinc-800/70 bg-zinc-900/40 px-2 py-1 text-zinc-300">{t}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <!-- {data.image && (
+          <img
+            src={typeof data.image === 'string'
+              ? data.image
+              : (data.image as { src: string }).src}
+            alt={data.title}
+            class="block w-full object-cover opacity-95"
+            loading="lazy"
+            decoding="async"
+          />
+        )} -->
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* Markdown content */}
+      <section class="section">
+        <article class="prose prose-zinc prose-invert max-w-none">
+          <Content />
+        </article>
+      </section>
+
+      {/* Optional links section if present in frontmatter */}
+      {(data.links || data.repo) && (
+        <>
+          <hr class="section-divider-glow" />
+          <section class="section">
+            <div class="card">
+              <div class="card-border"></div>
+              <h3 class="text-lg font-semibold">Links</h3>
+              <ul class="mt-2 space-y-2 text-sm text-zinc-300">
+                {data.repo && (
+                  <li>
+                    <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={data.repo} target="_blank">Source code</a>
+                  </li>
+                )}
+                {Array.isArray(data.links) && data.links.map((l: { href: string; label?: string }) => (
+                  <li>
+                    <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={l.href} target="_blank">{l.label ?? l.href}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        </>
+      )}
     </main>
+
+    <footer class="mx-auto max-w-7xl px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
+      <div class="flex items-center justify-between border-t border-zinc-800/70 pt-4">
+        <p>© {new Date().getFullYear()} Sivan Syed</p>
+        <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={`${B}`}>Back to home</a>
+      </div>
+    </footer>
+
+
   </body>
 </html>

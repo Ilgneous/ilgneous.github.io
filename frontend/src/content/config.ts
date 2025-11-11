@@ -10,6 +10,7 @@ const projects = defineCollection({
     date: z.string().optional(),
     image: z.string().optional(),
     repo: z.string().optional(),
+    links: z.string().optional(),
     demo: z.string().optional(),
     order: z.number().optional(),
   }),

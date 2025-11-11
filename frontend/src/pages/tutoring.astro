@@ -1,12 +1,12 @@
 ---
-// src/pages/tutoring.astro — dark, minimal style matching your site
+// src/pages/tutoring.astro — unified page (margins + original card sizing + Calendly + Contact)
 import "../styles/global.css";
 
 const B = import.meta.env.BASE_URL;
 const page = {
   title: "Tutoring | Sivan Syed",
   description:
-    "1:1 tutoring in ECE, Physics, and Math. Concept-first coaching, problem-driven practice, and project guidance.",
+    "1:1 tutoring in ECE, Physics, Math, and MechE. Concept‑first coaching, problem‑driven practice, and project guidance.",
 };
 ---
 <html lang="en">
@@ -17,278 +17,276 @@ const page = {
     <meta name="description" content={page.description} />
     <link rel="icon" href={`${B}favicon.svg`} />
   </head>
-  <body class="mx-auto max-w-3xl p-6 text-zinc-100">
-    <!-- Header (match other pages) -->
-    <header class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <img src={`${B}favicon.svg`} alt="Logo" class="size-10" />
-        <div>
-          <h1 class="text-3xl font-bold">Sivan Syed</h1>
-          <p class="opacity-80">Physics & ECE • Robotics • Controls • Systems</p>
-        </div>
+  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20">
+    {/* Decorative background */}
+    <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
+      <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
+        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:40px_40px] [background-position:center]"></div>
+        <div class="absolute -top-24 left-1/2 h-[36rem] w-[72rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl"></div>
       </div>
-      <nav class="text-sm">
-        <a class="underline" href={`${B}`}>Home</a>
-        <a class="underline ml-3" href={`${B}projects`}>Projects</a>
-        <!-- <a class="underline ml-3" href={`${B}now`}>Now</a>
-        <a class="underline ml-3" href={`${B}tutoring`}>Tutoring</a> -->
-        <a class="underline ml-3" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
-      </nav>
+    </div>
+
+    {/* Header */}
+    <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55 border-b border-zinc-800/60">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 md:px-12 lg:px-20 py-4">
+        <a href={`${B}`} class="group flex items-center gap-3">
+          <img src={`${B}favicon.svg`} alt="Logo" class="size-9 transition-transform duration-300 group-hover:rotate-6" />
+          <div>
+            <h1 class="text-2xl font-semibold tracking-tight">Sivan Syed</h1>
+            <p class="text-xs text-zinc-400">Physics & ECE • Robotics • Controls • Systems</p>
+          </div>
+        </a>
+        <nav class="flex items-center gap-2 text-sm">
+          <a class="navlink" href={`${B}`}>Home</a>
+          <a class="navlink" href={`${B}projects`}>Projects</a>
+          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
+        </nav>
+      </div>
     </header>
 
-    <!-- Hero -->
-    <section class="mt-10">
-      <p class="text-xs uppercase tracking-wider text-zinc-400">1:1 Tutoring • ECE • Physics • Math</p>
-      <h2 class="mt-2 text-3xl font-semibold">Master tough concepts with personalized, student-driven tutoring</h2>
-      <p class="mt-3 text-zinc-300">
-        I help students build intuition, pass exams, and excel beyond the classroom. Sessions are customized to your goals,
-        paced to you, and focused on problem-solving.
-      </p>
-      <div class="mt-5 flex flex-wrap gap-3">
-        <a href="#book" class="inline-flex items-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-semibold shadow-sm transition hover:border-zinc-500 hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-400/30">
-          Book a free intro
-        </a>
-        <a href="#contact" class="inline-flex items-center rounded-lg border border-zinc-800 px-4 py-2 text-sm font-semibold text-zinc-200/90 hover:text-white transition hover:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/20">
-          Ask a question
-        </a>
-      </div>
-      <div class="mt-3 text-sm text-zinc-400">
-        <span>🕒 60-90 min</span>
-        <span class="mx-2">•</span>
-        <span>🌐 Remote (Zoom) + Austin</span>
-        <span class="mx-2">•</span>
-        <span>📚 Undergrad & advanced HS</span>
-      </div>
-    </section>
+    {/* Main container adds margins from screen edges */}
+    <main class="mx-auto max-w-[90rem] px-6 md:px-12 lg:px-20 py-10 md:py-14">
+      {/* Hero */}
+      <section class="mx-auto max-w-6xl">
+        <p class="text-xs uppercase tracking-[0.2em] text-zinc-400/90">1:1 Tutoring • ECE • Physics • Math • MechE</p>
+        <h2 class="mt-3 text-4xl font-bold leading-tight md:text-5xl">
+          <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)] animate-shimmer">Master tough concepts</span>
+          <span class="block text-zinc-300/90">with personalized, student‑driven tutoring</span>
+        </h2>
+        <p class="mt-4 max-w-3xl text-lg text-zinc-300/90">
+          I help students build intuition, pass exams, and excel beyond the classroom. Sessions are customized to your goals,
+          paced to you, and focused on problem‑solving.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#book" class="btn-primary">Book a free intro</a>
+          <a href="#contact" class="btn-ghost">Ask a question</a>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-3 text-sm text-zinc-400/90">
+          <span>🕒 60–90 min</span>
+          <span class="opacity-50">•</span>
+          <span>🌐 Remote (Zoom) + Austin</span>
+          <span class="opacity-50">•</span>
+          <span>📚 Undergrad & advanced HS</span>
+        </div>
+      </section>
+      
+      <hr class="section-divider-glow" />
 
-    <!-- What I tutor -->
-    <section class="mt-12">
-      <h3 class="text-xl font-semibold">What I tutor</h3>
-      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div class="rounded-xl border border-zinc-800 p-4">
-          <h4 class="font-medium">Electrical & Computer Engineering</h4>
-          <p class="mt-1 text-sm text-zinc-400">Circuits · Signals · Digital Design · Embedded</p>
-          <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-300">
-            <li>Circuits I/II, MOSFET/BJT modeling</li>
-            <li>Signals & Systems, DSP, controls basics</li>
-            <li>Verilog/VHDL, FPGAs, synthesis & timing</li>
-            <li>Embedded C/C++, Python, microcontrollers</li>
+      {/* What I tutor — restored card sizing */}
+      <section class="section">
+        <h3 class="section-title">What I tutor</h3>
+        <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {[
+            {
+              h: "Electrical & Computer Engineering",
+              p: "Circuits · Signals · Digital Design · Embedded",
+              items: [
+                "Circuits I/II, MOSFET/BJT modeling",
+                "Signals & Systems, DSP, controls basics",
+                "Verilog/VHDL, FPGAs, synthesis & timing",
+                "Embedded C/C++, Python, microcontrollers",
+              ],
+            },
+            {
+              h: "Physics",
+              p: "Mechanics · E&M · Quantum · Solid State · AMO",
+              items: [
+                "Classical mechanics, oscillations, Lagrangians",
+                "Electrostatics, Maxwell links to circuits",
+                "Quantum I/II, perturbation, spin",
+                "Semiconductors, band diagrams, devices",
+              ],
+            },
+            {
+              h: "Math Foundations",
+              p: "Calc · Linear Algebra · Probability · Diff Eq",
+              items: [
+                "Calculus, multivariable, vector calculus",
+                "Linear algebra and numerical methods",
+                "Probability, random variables, statistics",
+                "ODEs/PDEs for engineers & physicists",
+              ],
+            },
+            {
+              h: "Mechanical Engineering",
+              p: "Statics · Dynamics · Thermodynamics · Fluid Mechanics",
+              items: [
+                "Statics: forces, moments, equilibrium",
+                "Dynamics: kinematics, Newton's laws",
+                "Thermodynamics: laws, cycles, efficiency",
+                "Fluid Mechanics: properties, forces, flow",
+              ],
+            },
+          ].map((card) => (
+            <div class="card group hover:-translate-y-0.5">
+              <div class="card-border"></div>
+              <h4 class="font-medium text-lg">{card.h}</h4>
+              <p class="mt-1 text-sm text-zinc-400">{card.p}</p>
+              <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-300">
+                {card.items.map((li) => (<li>{li}</li>))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* Method & Outcomes */}
+      <section class="section grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="card">
+          <div class="card-border"></div>
+          <h3 class="text-xl font-semibold">How sessions work</h3>
+          <ul class="mt-3 space-y-2 text-sm text-zinc-300">
+            <li>Quick diagnostic → goals & plan</li>
+            <li>Concept first → problem‑driven practice</li>
+            <li>Visuals, derivations, real exam‑style questions</li>
+            <li>Actionable study plan + follow‑up notes</li>
           </ul>
         </div>
-        <div class="rounded-xl border border-zinc-800 p-4">
-          <h4 class="font-medium">Physics</h4>
-          <p class="mt-1 text-sm text-zinc-400">Mechanics · E&M · Quantum · Solid State · AMO</p>
-          <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-300">
-            <li>Classical mechanics, oscillations, Lagrangians</li>
-            <li>Electrostatics, Maxwell links to circuits</li>
-            <li>Quantum I/II, perturbation, spin</li>
-            <li>Semiconductors, band diagrams, devices</li>
+        <div class="card">
+          <div class="card-border"></div>
+          <h3 class="text-xl font-semibold">What you get</h3>
+          <ul class="mt-3 space-y-2 text-sm text-zinc-300">
+            <li>Improved exam performance and confidence</li>
+            <li>Clean write‑ups, diagrams, and code snippets</li>
+            <li>Project guidance for labs & portfolios</li>
           </ul>
         </div>
-        <div class="rounded-xl border border-zinc-800 p-4">
-          <h4 class="font-medium">Math Foundations</h4>
-          <p class="mt-1 text-sm text-zinc-400">Calc · Linear Algebra · Probability · Diff Eq</p>
-          <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-300">
-            <li class="list-disc pl-5">Calculus, multivariable, vector calculus</li>
-            <li class="list-disc pl-5">Linear algebra and numerical methods</li>
-            <li class="list-disc pl-5">Probability, random variables, statistics</li>
-            <li class="list-disc pl-5">ODEs/PDEs for engineers & physicists</li>
-          </ul>
-        </div>
-        <div class="rounded-xl border border-zinc-800 p-4">
-          <h4 class="font-medium">Mechanical Engineering</h4>
-          <p class="mt-1 text-sm text-zinc-400">Statics · Dynamics · Thermodynamics · Fluid Mechanics</p>
-          <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-300">
-            <li class="list-disc pl-5">Statics: forces, moments, equilibrium</li>
-            <li class="list-disc pl-5">Dynamics: kinematics, Newton's laws</li>
-            <li class="list-disc pl-5">Thermodynamics: laws, cycles, efficiency</li>
-            <li class="list-disc pl-5">Fluid Mechanics: properties, forces, flow</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Method & Outcomes -->
-    <section class="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <div class="rounded-xl border border-zinc-800 p-4">
-        <h3 class="text-xl font-semibold">How sessions work</h3>
-        <ul class="mt-3 space-y-2 text-sm text-zinc-300">
-          <li>Quick diagnostic → goals & plan</li>
-          <li>Concept first → problem-driven practice</li>
-          <li>Visuals, derivations, real exam-style questions</li>
-          <li>Actionable study plan + follow-up notes</li>
-        </ul>
-      </div>
-      <div class="rounded-xl border border-zinc-800 p-4">
-        <h3 class="text-xl font-semibold">What you get</h3>
-        <ul class="mt-3 space-y-2 text-sm text-zinc-300">
-          <li>Improved exam performance and confidence</li>
-          <li>Clean write-ups, diagrams, and code snippets</li>
-          <li>Project guidance for labs & portfolios</li>
-        </ul>
-      </div>
-    </section>
+      <hr class="section-divider-glow" />
 
-    <!-- KPIs (subtle highlights) -->
-    <section class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-      <div class="rounded-lg border border-zinc-800 p-3 text-center">
-        <div class="text-lg font-semibold">+200</div>
-        <div class="text-xs text-zinc-400">problems worked</div>
-      </div>
-      <!-- <div class="rounded-lg border border-zinc-800 p-3 text-center">
-        <div class="text-lg font-semibold">4.9/5</div>
-        <div class="text-xs text-zinc-400">student rating</div>
-      </div> -->
-      <div class="rounded-lg border border-zinc-800 p-3 text-center">
-        <div class="text-lg font-semibold">24-48h</div>
-        <div class="text-xs text-zinc-400">typical availability</div>
-      </div>
-      <div class="rounded-lg border border-zinc-800 p-3 text-center">
-        <div class="text-lg font-semibold">1:1</div>
-        <div class="text-xs text-zinc-400">personalized plan</div>
-      </div>
-    </section>
-
-    <!-- Pricing -->
-    <section class="mt-12" id="pricing">
-      <h3 class="text-xl font-semibold">Pricing</h3>
-      <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-1">
-        <div class="rounded-xl border border-zinc-800 p-4">
-          <div class="flex items-baseline justify-between">
-            <h4 class="font-medium">Single Session</h4>
-            <span class="text-xs text-indigo-300/80">$60/hr</span>
+      {/* KPIs */}
+      <section class="section grid grid-cols-2 gap-4 sm:grid-cols-3">
+        {[
+          { n: "+200", t: "problems worked" },
+          { n: "24–48h", t: "typical availability" },
+          { n: "1:1", t: "personalized plan" },
+        ].map((k) => (
+          <div class="kpi">
+            <div class="kpi-ring"></div>
+            <div class="text-lg font-semibold tracking-tight">{k.n}</div>
+            <div class="text-xs text-zinc-400">{k.t}</div>
           </div>
-          <ul class="mt-3 space-y-1 text-sm text-zinc-300">
-            <li>60 or 90 minutes</li>
-            <li>Shared notes & practice set</li>
-            <li>Email/DM follow‑ups</li>
-          </ul>
-        </div>
-        <!-- <div class="rounded-xl border border-zinc-700 p-4 ring-1 ring-indigo-400/10">
-          <div class="flex items-baseline justify-between">
-            <h4 class="font-medium">4‑Pack (save 10%)</h4>
-            <span class="text-xs text-indigo-300/80">$216</span>
+        ))}
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* Pricing */}
+      <section class="section" id="pricing">
+        <h3 class="section-title">Pricing</h3>
+        <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-1">
+          <div class="card">
+            <div class="card-border"></div>
+            <div class="flex items-baseline justify-between">
+              <h4 class="font-medium">Single Session</h4>
+              <span class="text-xs text-indigo-300/80">$60/hr</span>
+            </div>
+            <ul class="mt-3 space-y-1 text-sm text-zinc-300">
+              <li>60 or 90 minutes</li>
+              <li>Shared notes & practice set</li>
+              <li>Email/DM follow‑ups</li>
+            </ul>
           </div>
-          <ul class="mt-3 space-y-1 text-sm text-zinc-300">
-            <li>Plan for a course unit or exam</li>
-            <li>Progress tracking & check‑ins</li>
-            <li>Priority scheduling</li>
-          </ul>
-        </div> -->
-        <!-- <div class="rounded-xl border border-zinc-800 p-4">
-          <div class="flex items-baseline justify-between">
-            <h4 class="font-medium">Study Sprint</h4>
-            <span class="text-xs text-indigo-300/80">$320 flat</span>
-          </div>
-          <ul class="mt-3 space-y-1 text-sm text-zinc-300">
-            <li>Week‑long prep (5 × 60 min)</li>
-            <li>Daily problems & feedback</li>
-            <li>Exam‑style mock & review</li>
-          </ul>
-        </div> -->
-      </div>
-      <p class="mt-2 text-sm text-zinc-400">Group sessions and ongoing semester plans available on request.</p>
-    </section>
-
-    <!-- Booking -->
-    <section class="mt-12" id="book">
-      <h3 class="text-xl font-semibold">Book a free 15‑min intro</h3>
-      <p class="mt-2 text-sm text-zinc-400">Use the widget below to grab a time. Prefer email? See the contact form.</p>
-      <div class="mt-4 overflow-hidden rounded-xl border border-zinc-800">
-        <div class="relative pt-[56.25%]">
-          <iframe
-            title="Schedule a call"
-            src="https://calendly.com/sivan-syed/30min"
-            class="absolute inset-0 h-full w-full"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
-      </div>
-    </section>
+        <p class="mt-2 text-sm text-zinc-400">Group sessions and ongoing semester plans available on request.</p>
+      </section>
 
-    <!-- Testimonials -->
-    <!-- <section class="mt-12">
-      <h3 class="text-xl font-semibold">What students say</h3>
-      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <blockquote class="rounded-xl border border-zinc-800 p-4 text-sm text-zinc-300">
-          “I finally understood MOSFET regions and small‑signal models. Went from barely passing to an A‑.”
-          <footer class="mt-2 text-xs text-zinc-500">— ECE student</footer>
-        </blockquote>
-        <blockquote class="rounded-xl border border-zinc-800 p-4 text-sm text-zinc-300">
-          “First‑principles explanations made E&M click. Practice felt like the real exam.”
-          <footer class="mt-2 text-xs text-zinc-500">— Physics major</footer>
-        </blockquote>
-        <blockquote class="rounded-xl border border-zinc-800 p-4 text-sm text-zinc-300">
-          “Clear notes and a study plan after each session. Super responsive and patient.”
-          <footer class="mt-2 text-xs text-zinc-500">— Transfer student</footer>
-        </blockquote>
-      </div>
-    </section> -->
+      <hr class="section-divider-glow" />
 
-    <!-- FAQ -->
-    <section class="mt-12">
-      <h3 class="text-xl font-semibold">FAQ</h3>
-      <div class="mt-4 space-y-3">
-        <details class="rounded-lg border border-zinc-800 p-3 open:shadow-none">
-          <summary class="cursor-pointer font-medium">Do you meet in person?</summary>
-          <p class="mt-2 text-sm text-zinc-300">Yes, near UT campus in Austin. Otherwise, Zoom with a collaborative whiteboard.</p>
-        </details>
-        <details class="rounded-lg border border-zinc-800 p-3">
-          <summary class="cursor-pointer font-medium">What should I bring?</summary>
-          <p class="mt-2 text-sm text-zinc-300">Syllabus, past exams or homework, and your notes. Topics ahead of time (24hr) help me prepare targeted problems.</p>
-        </details>
-        <details class="rounded-lg border border-zinc-800 p-3">
-          <summary class="cursor-pointer font-medium">What's your cancellation policy?</summary>
-          <p class="mt-2 text-sm text-zinc-300">Free reschedule/cancel up to 12 hours before the session.</p>
-        </details>
-        <details class="rounded-lg border border-zinc-800 p-3">
-          <summary class="cursor-pointer font-medium">Do you tutor full project builds?</summary>
-          <p class="mt-2 text-sm text-zinc-300">Yes—scoping, design review, implementation tips, debugging, and write-ups. I guide; you own the work.</p>
-        </details>
-      </div>
-    </section>
-
-    <!-- Contact -->
-    <section class="mt-12" id="contact">
-      <h3 class="text-xl font-semibold">Contact</h3>
-      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <form class="rounded-xl border border-zinc-800 p-4" action="https://formspree.io/f/xeovqoop" method="POST">
-          <div class="grid gap-3">
-            <input class="rounded-lg border border-zinc-800 bg-black/40 px-3 py-2 text-sm focus:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/20" type="text" name="name" placeholder="Your name" required />
-            <input class="rounded-lg border border-zinc-800 bg-black/40 px-3 py-2 text-sm focus:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/20" type="email" name="email" placeholder="Email" required />
-            <select class="rounded-lg border border-zinc-800 bg-black/40 px-3 py-2 text-sm focus:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/20" name="topic" aria-label="Topic">
-              <option value="General">General</option>
-              <option value="ECE">ECE</option>
-              <option value="Physics">Physics</option>
-              <option value="Math">Math</option>
-              <option value="Mechanical Engineering">Mechanical Engineering</option>
-            </select>
-            <textarea class="min-h-28 rounded-lg border border-zinc-800 bg-black/40 px-3 py-2 text-sm focus:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/20" name="message" rows="5" placeholder="What would you like help with?" required></textarea>
-            <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
-            <button class="inline-flex items-center justify-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-semibold transition hover:border-zinc-500 hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-400/30" type="submit">Send message</button>
-            <p class="text-sm text-zinc-400">Or email: <a class="underline decoration-indigo-400/30 underline-offset-2 hover:decoration-indigo-400/60" href="mailto:sivan.syed@gmail.com">sivan.syed@gmail.com</a></p>
+      {/* Booking (Calendly) */}
+      <section class="section" id="book">
+        <h3 class="section-title">Book a free 15‑min intro</h3>
+        <p class="mt-2 text-sm text-zinc-400">Use the widget below to grab a time. Prefer email? See the contact form.</p>
+        <div class="mt-5 overflow-hidden rounded-2xl border border-zinc-800/70 bg-zinc-900/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+          <div class="relative pt-[56.25%]">
+            <iframe
+              title="Schedule a call"
+              src="https://calendly.com/sivan-syed/30min"
+              class="absolute inset-0 h-full w-full"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
           </div>
-        </form>
-        <div class="rounded-xl border border-zinc-800 p-4">
-          <h4 class="font-medium">Availability</h4>
-          <p class="mt-2 text-sm text-zinc-300">Most weekdays after 6pm CT, weekends 10am-10pm. Need something urgent? Often available within 24-48h.</p>
-          <h4 class="mt-4 font-medium">Policies</h4>
-          <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-300">
-            <li>Homework integrity: I'll guide you to solutions, not do the assignment for you.</li>
-            <li>Academic honesty: No live exam assistance.</li>
-            <li>Accessibility: Materials available in alternative formats upon request.</li>
-          </ul>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <footer class="mt-12 border-t border-zinc-800 pt-4 text-sm text-zinc-500">
-      <p>© {new Date().getFullYear()} Sivan Syed • <a class="underline" href={`${B}`}>Back to home</a></p>
+
+      <hr class="section-divider-glow" />
+
+
+      {/* FAQ */}
+      <section class="section">
+        <h3 class="section-title">FAQ</h3>
+        <div class="mt-5 space-y-3">
+          {[
+            ["Do you meet in person?", "Yes, near UT campus in Austin. Otherwise, Zoom with a collaborative whiteboard."],
+            ["What should I bring?", "Syllabus, past exams or homework, and your notes. Topics ahead of time (24hr) help me prepare targeted problems."],
+            ["What's your cancellation policy?", "Free reschedule/cancel up to 12 hours before the session."],
+            ["Do you tutor full project builds?", "Yes—scoping, design review, implementation tips, debugging, and write‑ups. I guide; you own the work."],
+          ].map(([q, a]) => (
+            <details class="faq">
+              <summary class="cursor-pointer select-none font-medium transition-colors duration-300 open:text-zinc-100">{q}</summary>
+              <p class="mt-2 text-sm text-zinc-300/95">{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+
+      <hr class="section-divider-glow" />
+
+
+      {/* Contact */}
+      <section class="section" id="contact">
+        <h3 class="section-title">Contact</h3>
+        <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <form class="card" action="https://formspree.io/f/xeovqoop" method="POST">
+            <div class="card-border"></div>
+            <div class="grid gap-3">
+              <input class="input" type="text" name="name" placeholder="Your name" required />
+              <input class="input" type="email" name="email" placeholder="Email" required />
+              <select class="input" name="topic" aria-label="Topic">
+                <option value="General">General</option>
+                <option value="ECE">ECE</option>
+                <option value="Physics">Physics</option>
+                <option value="Math">Math</option>
+                <option value="Mechanical Engineering">Mechanical Engineering</option>
+              </select>
+              <textarea class="input min-h-28" name="message" rows="5" placeholder="What would you like help with?" required></textarea>
+              <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
+              <button class="btn-primary" type="submit">Send message</button>
+              <p class="text-sm text-zinc-400">Or email: <a class="underline decoration-indigo-400/30 underline-offset-2 hover:decoration-indigo-400/60" href="mailto:sivan.syed@gmail.com">sivan.syed@gmail.com</a></p>
+            </div>
+          </form>
+          <div class="card">
+            <div class="card-border"></div>
+            <h4 class="font-medium">Availability</h4>
+            <p class="mt-2 text-sm text-zinc-300">Most weekdays after 6pm CT, weekends 10am–10pm. Need something urgent? Often available within 24–48h.</p>
+            <h4 class="mt-4 font-medium">Policies</h4>
+            <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-300">
+              <li>Homework integrity: I'll guide you to solutions, not do the assignment for you.</li>
+              <li>Academic honesty: No live exam assistance.</li>
+              <li>Accessibility: Materials available in alternative formats upon request.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mx-auto max-w-7xl px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
+      <div class="flex items-center justify-between border-t border-zinc-800/70 pt-4">
+        <p>© {new Date().getFullYear()} Sivan Syed</p>
+        <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={`${B}`}>Back to home</a>
+      </div>
     </footer>
 
-    
 
-    <!-- Type-safe smooth scroll (TS-safe) -->
+    <hr class="section-divider-glow" />
+
+
+    {/* Smooth in‑page scroll */}
     <script>
       document.addEventListener('click', (event) => {
         const target = event.target;
@@ -300,7 +298,8 @@ const page = {
         const el = document.querySelector(href);
         if (!el) return;
         event.preventDefault();
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        el.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
       });
     </script>
   </body>

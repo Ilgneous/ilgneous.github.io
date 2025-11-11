@@ -25,6 +25,9 @@
         "repo": {
           "type": "string"
         },
+        "links": {
+          "type": "string"
+        },
         "demo": {
           "type": "string"
         },
