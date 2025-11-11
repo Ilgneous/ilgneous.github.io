@@ -2,6 +2,8 @@
 import "../styles/global.css";
 import ContactForm from "../components/ContactForm.svelte";
 import { getCollection } from "astro:content";
+const B = import.meta.env.BASE_URL;
+
 
 interface Project { title: string; href?: string; tech?: string[] }
 
@@ -37,22 +39,31 @@ if (projects.length === 0) {
     <meta name="description" content="Get in touch with Sivan Syed." />
     <meta property="og:title" content="Contact - Sivan Syed" />
     <meta property="og:description" content="Get in touch with Sivan Syed." />
-    <meta property="og:image" content={`/og.png`} />
-    <link rel="icon" href={`/favicon.svg`} />
+    <meta property="og:image" content={`${B}og.png`} />
+    <link rel="icon" href={`${B}favicon.svg`} />
   </head>
+  
   <body class="mx-auto max-w-3xl p-6">
     <header class="flex items-center justify-between gap-4">
       <div class="flex items-center gap-4">
         <header class="flex items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             <a href="/" class="shrink-0">
-            <img src={`/favicon.svg`} alt="Logo" class="size-10" />
+            <img src={`${B}favicon.svg`} alt="Logo" class="size-10" />
             </a>
             <div>
             <h1 class="text-3xl font-bold">Contact</h1>
             <p class="opacity-80">Get in touch with me!</p>
             </div>
         </div>
+        <nav class="text-sm">
+          <a class="underline" href={`${B}`}>Home</a>
+          <a class="underline ml-3" href={`${B}projects`}>Projects</a>
+          <a class="underline ml-3" href={`${B}tutoring`}>Tutoring</a>
+          <!-- <a class="underline ml-3" href={`${B}now`}>Now</a> -->
+          <a class="underline ml-3" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
+          <!-- <a class="underline ml-3" href={`${B}contact`}>Contact</a> -->
+        </nav>
         </header>
       </div>
     </header>

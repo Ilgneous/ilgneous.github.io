@@ -15,7 +15,7 @@ if (!entry) throw new Error(`Project not found: ${slug}`);
 const { data } = entry;
 const { Content } = await entry.render();
 
-const B = import.meta.env.BASE_URL;              // respects GH Pages base path
+const B = import.meta.env.BASE_URL;
 ---
 <html lang="en">
   <head>

@@ -4,9 +4,10 @@
   async function submit(e: Event) {
     e.preventDefault();
     if (message.trim().length < 5) { status="err"; return; }
-    const res = await fetch(`${API}/api/contact`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message })
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, top, message })
     });
     status = res.ok ? "ok" : "err";
   }
