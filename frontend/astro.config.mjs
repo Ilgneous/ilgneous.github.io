@@ -8,6 +8,6 @@ export default defineConfig({
   base: "/",
   integrations: [svelte()],
   vite: { plugins: [tailwind()] },
-  output: 'server',
-  adapter: vercel(),
+  // output: 'server',
+  // adapter: vercel(),
 });
