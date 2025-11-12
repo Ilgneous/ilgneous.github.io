@@ -34,64 +34,93 @@ if (projects.length === 0) {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Sivan Syed — Portfolio</title>
     <meta name="description" content="Physics & ECE • Robotics, controls, and systems." />
     <meta property="og:title" content="Sivan Syed — Portfolio" />
     <meta property="og:description" content="Physics & ECE • Robotics, controls, and systems." />
     <meta property="og:image" content={`/og.png`} />
     <link rel="icon" href={`/favicon.svg`} />
+    <style>
+      /* Respect users who prefer reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .animate-shimmer { animation: none !important; }
+      }
+    </style>
   </head>
-  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20">
+  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20 [padding-top:env(safe-area-inset-top)]">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-zinc-900 focus:px-3 focus:py-2 focus:outline-none">Skip to content</a>
+
     {/* Decorative background */}
     <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
       <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
-        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:40px_40px] [background-position:center]"></div>
-        <div class="absolute -top-24 left-1/2 h-[36rem] w-[72rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl"></div>
+        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:32px_32px] sm:[background-size:40px_40px] [background-position:center]"></div>
+        <div class="absolute -top-24 left-1/2 h-[26rem] w-[48rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl md:h-[36rem] md:w-[72rem]"></div>
       </div>
     </div>
 
-    {/* Header (matches tutoring) */}
-    <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55 border-b border-zinc-800/60">
-      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 md:px-12 lg:px-20 py-4">
-        <a href={`${B}`} class="group flex items-center gap-3">
-          <img src={`/favicon.svg`} alt="Logo" class="size-9 transition-transform duration-300 group-hover:rotate-6" />
-          <div>
-            <h1 class="text-2xl font-semibold tracking-tight">Sivan Syed</h1>
-            <p class="text-xs text-zinc-400">Physics & ECE • Robotics • Controls • Systems</p>
+    {/* Header (responsive with mobile menu) */}
+    <header class="sticky top-0 z-50 border-b border-zinc-800/60 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-12 lg:px-20 py-3 sm:py-4">
+        <a href={`${B}`} class="group flex min-w-0 items-center gap-3">
+          <img src={`/favicon.svg`} alt="Logo" class="size-9 flex-shrink-0 transition-transform duration-300 group-hover:rotate-6" />
+          <div class="min-w-0">
+            <h1 class="truncate text-xl font-semibold tracking-tight sm:text-2xl">Sivan Syed</h1>
+            <p class="truncate text-[11px] text-zinc-400 sm:text-xs">Physics & ECE • Robotics • Controls • Systems</p>
           </div>
         </a>
-        <nav class="flex items-center gap-2 text-sm">
+
+        {/* Desktop nav */}
+        <nav class="hidden items-center gap-2 text-sm md:flex">
           <a class="navlink" href={`${B}`}>Home</a>
           <a class="navlink" href={`${B}projects`}>Projects</a>
           <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
           <a class="navlink" href={`${B}now`}>Now</a>
-          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
+          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
         </nav>
+
+        {/* Mobile menu toggle */}
+        <button id="mobile-nav-toggle" aria-controls="mobile-menu" aria-expanded="false" class="inline-flex items-center justify-center rounded-lg border border-zinc-800/60 bg-zinc-900/40 p-2 md:hidden" title="Open menu">
+          <span class="sr-only">Open navigation</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+        </button>
+      </div>
+
+      {/* Mobile sheet */}
+      <div id="mobile-menu" hidden class="md:hidden">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-3">
+          <nav class="grid gap-1 text-sm">
+            <a class="navlink w-full" href={`${B}`}>Home</a>
+            <a class="navlink w-full" href={`${B}projects`}>Projects</a>
+            <a class="navlink w-full" href={`${B}tutoring`}>Tutoring</a>
+            <a class="navlink w-full" href={`${B}now`}>Now</a>
+            <a class="navlink w-full" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
+          </nav>
+        </div>
       </div>
     </header>
 
     {/* Main */}
-    <main class="mx-auto max-w-[90rem] px-6 md:px-12 lg:px-20 py-10 md:py-14 space-y-24">
+    <main id="main" class="mx-auto max-w-[90rem] px-4 sm:px-6 md:px-12 lg:px-20 py-8 sm:py-10 md:py-14 space-y-16 sm:space-y-20 md:space-y-24 scroll-mt-20">
       {/* Hero */}
       <section class="mx-auto max-w-6xl">
-        <div class="flex flex-col-reverse items-start justify-between gap-8 md:flex-row md:items-center">
+        <div class="flex flex-col-reverse items-start justify-between gap-6 sm:gap-8 md:flex-row md:items-center">
           <div class="max-w-3xl">
-            <p class="text-xs uppercase tracking-[0.2em] text-zinc-400/90">Portfolio • Robotics • Controls • Applied Physics</p>
-            <h2 class="mt-3 text-4xl font-bold leading-tight md:text-5xl">
+            <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-400/90 sm:text-xs">Portfolio • Robotics • Controls • Applied Physics</p>
+            <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
               <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)] animate-shimmer">Building systems that blend</span>
               <span class="block text-zinc-300/90">theory → computation → hardware</span>
             </h2>
-            <p class="mt-4 text-lg text-zinc-300/90">
+            <p class="mt-3 text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
               I design and prototype across ECE, physics, and mechanics—turning equations into working hardware and clean software.
             </p>
-            <div class="mt-6 flex flex-wrap gap-3 text-sm">
+            <div class="mt-5 flex flex-wrap gap-3 text-sm sm:mt-6">
               <a href={`${B}projects`} class="btn-primary">View projects</a>
               <a href={`${B}tutoring`} class="btn-ghost">Tutoring</a>
             </div>
           </div>
           <figure class="mx-auto max-w-md flex-1 text-center md:mx-0">
-            <img src={`/vortex_animation.gif`} alt="Vortex animation" class="mx-auto block aspect-video w-full rounded-2xl border border-zinc-800/70 bg-zinc-900/20 object-cover shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" loading="lazy" decoding="async" />
+            <img src={`/vortex_animation.gif`} alt="Vortex animation" class="mx-auto block aspect-video w-full rounded-2xl border border-zinc-800/70 bg-zinc-900/20 object-cover shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 480px" />
             <figcaption class="mt-2 text-xs text-zinc-500">Vortex animation demonstrating fluid dynamics.</figcaption>
           </figure>
         </div>
@@ -102,7 +131,7 @@ if (projects.length === 0) {
       {/* What I do */}
       <section class="section">
         <h3 class="section-title">What I do</h3>
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2">
           <div class="card">
             <div class="card-border"></div>
             <h4 class="font-medium">Systems & Hardware</h4>
@@ -143,7 +172,7 @@ if (projects.length === 0) {
       {/* Featured Projects */}
       <section class="section">
         <h3 class="section-title">Featured projects</h3>
-        <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 sm:grid-cols-2">
           {projects.slice(0, 6).map((p) => (
             <a href={p.href ?? '#'} class="card group block">
               <div class="card-border"></div>
@@ -161,7 +190,7 @@ if (projects.length === 0) {
             </a>
           ))}
         </div>
-        <div class="mt-6">
+        <div class="mt-5 sm:mt-6">
           <a href={`${B}projects`} class="btn-ghost">See all projects</a>
         </div>
       </section>
@@ -171,19 +200,19 @@ if (projects.length === 0) {
       {/* Goals */}
       <section class="section">
         <h3 class="section-title">What's my goal</h3>
-        <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 gap-4 sm:gap-6">
           <div class="card">
             <div class="card-border"></div>
-            <p class="text-m text-zinc-300">
+            <p class="text-[15px] leading-7 text-zinc-300 sm:text-base">
               I aim to push the boundaries of science and engineering in physics-driven fields—plasma, condensed matter, and robotics—by 
               pairing rigorous theoretical foundations with innovative hardware and scalable computational tools.
             </p>
-            <p class="mt-3 text-m text-zinc-300">
+            <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
               My long-term goal is to design systems that reveal new physical phenomena and enable technologies that make them practical. From 
               high-energy plasma diagnostics and precision instrumentation to intelligent, adaptive robotic platforms. I want to be at the 
               intersection where <span class="text-zinc-100 font-medium">scientific insight becomes engineered reality</span>.
             </p>
-            <p class="mt-3 text-m text-zinc-300">
+            <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
               Every project I build, whether it's a balancing robot, a semiconductor simulation, or an embedded control loop, is a step toward 
               mastering that full stack: <span class="text-zinc-100 font-medium">theory → computation → implementation → impact</span>. 
               I'm motivated by curiosity, precision, and the pursuit of elegance in both equations and hardware.
@@ -198,7 +227,7 @@ if (projects.length === 0) {
       {/* Coursework */}
       <section class="section">
         <h3 class="section-title">Academic coursework</h3>
-        <ul class="mt-4 grid grid-cols-1 gap-3 text-sm text-zinc-300 sm:grid-cols-2">
+        <ul class="mt-3 grid grid-cols-1 gap-2 text-[15px] leading-7 text-zinc-300 sm:mt-4 sm:gap-3 sm:text-sm sm:leading-6 sm:grid-cols-2">
           <li><span class="font-medium text-zinc-200">Physics:</span> Quantum I/II, Statistical Mechanics, Thermodynamics, Classical Dynamics, Relativity</li>
           <li><span class="font-medium text-zinc-200">Electrical Engineering:</span> Electronic Circuits Lab, Digital Logic, Semiconductor Devices, Embedded, Signals</li>
           <li><span class="font-medium text-zinc-200">Mathematics:</span> Real Analysis, Complex Analysis, Linear Algebra, Differential Equations</li>
@@ -213,10 +242,10 @@ if (projects.length === 0) {
       {/* Hobbies */}
       <section class="section">
         <h3 class="section-title">Outside the lab</h3>
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
           <div class="card">
             <div class="card-border"></div>
-            <p class="text-l text-zinc-300">
+            <p class="text-base text-zinc-300">
               Outside of academics and engineering projects, I enjoy exploring a plethora of topics.
               I train in Taekwondo & Muay Thai, which I've loved since I was a kid, and I have a love-hate relationship with bouldering (I have commitment issues).
               Reading recommendations (favorite series: <em>Red Rising</em>) from Science Fiction to Neuroscience and History to Philosophy are always welcome.
@@ -227,32 +256,32 @@ if (projects.length === 0) {
           <div class="card">
             <div class="card-border"></div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <!-- Left column: stack Red Rising over Root -->
+                {/* Left column: stack Red Rising over Root */}
                 <div class="flex flex-col gap-3">
                   <img src="/Redrising.webp"
                       alt="Red Rising"
                       class="aspect-[4/3] w-full rounded-xl border border-zinc-800/70 object-cover"
-                      loading="lazy" />
+                      loading="lazy" sizes="(max-width: 640px) 100vw, 50vw" />
 
                   <img src="/Root.webp"
                       alt="Root"
-                      class="aspect-[5/3] w-full self-center rounded-xl border border-zinc-800/70 object-cover"
-                      loading="lazy" />
+                      class="aspect-[5/3] w-full rounded-xl border border-zinc-800/70 object-cover"
+                      loading="lazy" sizes="(max-width: 640px) 100vw, 50vw" />
                 </div>
 
-                <!-- Right column -->
+                {/* Right column */}
                 <img src="/NoLongerHuman.webp"
                     alt="No Longer Human"
                     class="aspect-[3/4] w-full rounded-xl border border-zinc-800/70 object-cover"
-                    loading="lazy" />
+                    loading="lazy" sizes="(max-width: 640px) 100vw, 50vw" />
               </div>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="mx-auto max-w-7xl px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
-      <div class="flex items-center justify-between border-t border-zinc-800/70 pt-4">
+    <footer class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-800/70 pt-4">
         <p>© {new Date().getFullYear()} Sivan Syed</p>
         <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={`${B}`}>Back to home</a>
       </div>
@@ -263,5 +292,22 @@ if (projects.length === 0) {
       <h2 class="text-xl font-semibold">Interactive demo</h2>
       <Counter client:load baseUrl={B} soundSrc="/leaf-crunch.mp3" />
     </section> -->
+
+    {/* Tiny client script for mobile nav */}
+    <script is:inline>
+      const btn = document.getElementById('mobile-nav-toggle');
+      const menu = document.getElementById('mobile-menu');
+      if (btn && menu) {
+        btn.addEventListener('click', () => {
+          const open = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!open));
+          menu.hidden = open;
+          // Swap icon for close when open (optional)
+          btn.innerHTML = !open
+            ? `<span class="sr-only">Close navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M6.75 6.75l10.5 10.5M17.25 6.75L6.75 17.25'/></svg>`
+            : `<span class="sr-only">Open navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5'/></svg>`;
+        });
+      }
+    </script>
   </body>
 </html>
