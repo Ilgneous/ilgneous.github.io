@@ -1,26 +1,51 @@
 ---
-// src/pages/tutoring.astro — mobile‑first, accessible, and responsive
 import "../styles/global.css";
+import Counter from "../components/Counter.svelte";
+import { getCollection } from "astro:content";
 
+interface Project { title: string; href?: string; tech?: string[] }
 const B = import.meta.env.BASE_URL;
-const page = {
-  title: "Tutoring | Sivan Syed",
-  description:
-    "1:1 tutoring in ECE, Physics, Math, and MechE. Concept‑first coaching, problem‑driven practice, and project guidance.",
-};
+
+// Choose API base: use env, else localhost in dev, else no API
+const API =
+  import.meta.env.PUBLIC_API_URL ??
+  (import.meta.env.DEV ? "http://localhost:8000" : undefined);
+
+let projects: Project[] = [];
+
+if (API) {
+  try {
+    const r = await fetch(`${API}/api/projects`);
+    if (r.ok) projects = await r.json();
+  } catch {
+    projects = [];
+  }
+}
+
+if (projects.length === 0) {
+  const entries = await getCollection("projects");
+  projects = entries.map((e) => ({
+    title: e.data.title,
+    href: `/projects/${e.slug}`,
+    tech: e.data.tech,
+  }));
+}
 ---
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>{page.title}</title>
-    <meta name="description" content={page.description} />
-    <link rel="icon" href={`${B}favicon.svg`} />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Sivan Syed — Portfolio</title>
+    <meta name="description" content="Physics & ECE • Robotics, controls, and systems." />
+    <meta property="og:title" content="Sivan Syed — Portfolio" />
+    <meta property="og:description" content="Physics & ECE • Robotics, controls, and systems." />
+    <meta property="og:image" content={`/og.png`} />
+    <link rel="icon" href={`/favicon.svg`} />
     <style>
-      @media (prefers-reduced-motion: reduce) { .animate-shimmer { animation: none !important; } }
+      /* Respect users who prefer reduced motion */
+      @media (prefers-reduced-motion: reduce) {
+        .animate-shimmer { animation: none !important; }
+      }
     </style>
   </head>
   <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20 [padding-top:env(safe-area-inset-top)]">
@@ -34,11 +59,11 @@ const page = {
       </div>
     </div>
 
-    {/* Header with mobile menu */}
+    {/* Header (responsive with mobile menu) */}
     <header class="sticky top-0 z-50 border-b border-zinc-800/60 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55">
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-12 lg:px-20 py-3 sm:py-4">
         <a href={`${B}`} class="group flex min-w-0 items-center gap-3">
-          <img src={`${B}favicon.svg`} alt="Logo" class="size-9 flex-shrink-0 transition-transform duration-300 group-hover:rotate-6" />
+          <img src={`/favicon.svg`} alt="Logo" class="size-9 flex-shrink-0 transition-transform duration-300 group-hover:rotate-6" />
           <div class="min-w-0">
             <h1 class="truncate text-xl font-semibold tracking-tight sm:text-2xl">Sivan Syed</h1>
             <p class="truncate text-[11px] text-zinc-400 sm:text-xs">Physics & ECE • Robotics • Controls • Systems</p>
@@ -50,6 +75,7 @@ const page = {
           <a class="navlink" href={`${B}`}>Home</a>
           <a class="navlink" href={`${B}projects`}>Projects</a>
           <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
+          <a class="navlink" href={`${B}now`}>Now</a>
           <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
         </nav>
 
@@ -67,235 +93,188 @@ const page = {
             <a class="navlink w-full" href={`${B}`}>Home</a>
             <a class="navlink w-full" href={`${B}projects`}>Projects</a>
             <a class="navlink w-full" href={`${B}tutoring`}>Tutoring</a>
+            <a class="navlink w-full" href={`${B}now`}>Now</a>
             <a class="navlink w-full" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
           </nav>
         </div>
       </div>
     </header>
 
-    {/* Main container */}
+    {/* Main */}
     <main id="main" class="mx-auto max-w-[90rem] px-4 sm:px-6 md:px-12 lg:px-20 py-8 sm:py-10 md:py-14 space-y-16 sm:space-y-20 md:space-y-24 scroll-mt-20">
       {/* Hero */}
       <section class="mx-auto max-w-6xl">
-        <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-400/90 sm:text-xs">1:1 Tutoring • ECE • Physics • Math • MechE</p>
-        <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-          <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)] animate-shimmer">Master tough concepts</span>
-          <span class="block text-zinc-300/90">with personalized, student‑driven tutoring</span>
-        </h2>
-        <p class="mt-3 max-w-3xl text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
-          I help students build intuition, pass exams, and excel beyond the classroom. Sessions are customized to your goals,
-          paced to you, and focused on problem‑solving.
-        </p>
-        <div class="mt-5 flex flex-wrap gap-3 text-sm sm:mt-6">
-          <a href="#book" class="btn-primary">Book a free intro</a>
-          <a href="#contact" class="btn-ghost">Ask a question</a>
-        </div>
-        <div class="mt-4 flex flex-wrap items-center gap-3 text-sm text-zinc-400/90">
-          <span>🕒 60–90 min</span>
-          <span class="opacity-50">•</span>
-          <span>🌐 Remote (Zoom) + Austin</span>
-          <span class="opacity-50">•</span>
-          <span>📚 Undergrad & advanced HS</span>
+        <div class="flex flex-col-reverse items-start justify-between gap-6 sm:gap-8 md:flex-row md:items-center">
+          <div class="max-w-3xl">
+            <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-400/90 sm:text-xs">Portfolio • Robotics • Controls • Applied Physics</p>
+            <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
+              <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)] animate-shimmer">Building systems that blend</span>
+              <span class="block text-zinc-300/90">theory → computation → hardware</span>
+            </h2>
+            <p class="mt-3 text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
+              I design and prototype across ECE, physics, and mechanics—turning equations into working hardware and clean software.
+            </p>
+            <div class="mt-5 flex flex-wrap gap-3 text-sm sm:mt-6">
+              <a href={`${B}projects`} class="btn-primary">View projects</a>
+              <a href={`${B}tutoring`} class="btn-ghost">Tutoring</a>
+            </div>
+          </div>
+          <figure class="mx-auto max-w-md flex-1 text-center md:mx-0">
+            <img src={`/vortex_animation.gif`} alt="Vortex animation" class="mx-auto block aspect-video w-full rounded-2xl border border-zinc-800/70 bg-zinc-900/20 object-cover shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 480px" />
+            <figcaption class="mt-2 text-xs text-zinc-500">Vortex animation demonstrating fluid dynamics.</figcaption>
+          </figure>
         </div>
       </section>
 
       <hr class="section-divider-glow" />
 
-      {/* What I tutor */}
+      {/* What I do */}
       <section class="section">
-        <h3 class="section-title">What I tutor</h3>
+        <h3 class="section-title">What I do</h3>
+        <div class="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2">
+          <div class="card">
+            <div class="card-border"></div>
+            <h4 class="font-medium">Systems & Hardware</h4>
+            <p class="mt-2 text-sm text-zinc-300">
+              Robotics, embedded, digital logic, and device physics—designing reliable systems that work end to end.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-border"></div>
+            <h4 class="font-medium">Theory → Practice</h4>
+            <p class="mt-2 text-sm text-zinc-300">
+              From Lagrangians and Maxwell to Verilog and firmware—bridging mathematical models with real hardware.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-border"></div>
+            <h4 class="font-medium">Computational Modeling</h4>
+            <p class="mt-2 text-sm text-zinc-300">
+              Building simulations for circuits, materials, and dynamics using Python, MATLAB, and C++ to validate design choices before fabrication.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-border"></div>
+            <h4 class="font-medium">Design & Communication</h4>
+            <p class="mt-2 text-sm text-zinc-300">
+              Creating clear documentation, visuals, and portfolio-ready deliverables that communicate engineering intent to both technical and non-technical audiences.
+            </p>
+          </div>
+        </div>
+      </section>
+
+
+      <hr class="section-divider-glow" />
+
+      {/* Featured Projects */}
+      <section class="section">
+        <h3 class="section-title">Featured projects</h3>
         <div class="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 sm:grid-cols-2">
-          {[
-            {
-              h: "Electrical & Computer Engineering",
-              p: "Circuits · Signals · Digital Design · Embedded",
-              items: [
-                "Circuits I/II, MOSFET/BJT modeling",
-                "Signals & Systems, DSP, controls basics",
-                "Verilog/VHDL, FPGAs, synthesis & timing",
-                "Embedded C/C++, Python, microcontrollers",
-              ],
-            },
-            {
-              h: "Physics",
-              p: "Mechanics · E&M · Quantum · Solid State · AMO",
-              items: [
-                "Classical mechanics, oscillations, Lagrangians",
-                "Electrostatics, Maxwell links to circuits",
-                "Quantum I/II, perturbation, spin",
-                "Semiconductors, band diagrams, devices",
-              ],
-            },
-            {
-              h: "Math Foundations",
-              p: "Calc · Linear Algebra · Probability · Diff Eq",
-              items: [
-                "Calculus, multivariable, vector calculus",
-                "Linear algebra and numerical methods",
-                "Probability, random variables, statistics",
-                "ODEs/PDEs for engineers & physicists",
-              ],
-            },
-            {
-              h: "Mechanical Engineering",
-              p: "Statics · Dynamics · Thermodynamics · Fluid Mechanics",
-              items: [
-                "Statics: forces, moments, equilibrium",
-                "Dynamics: kinematics, Newton's laws",
-                "Thermodynamics: laws, cycles, efficiency",
-                "Fluid Mechanics: properties, forces, flow",
-              ],
-            },
-          ].map((card) => (
-            <div class="card group hover:-translate-y-0.5">
+          {projects.slice(0, 6).map((p) => (
+            <a href={p.href ?? '#'} class="card group block">
               <div class="card-border"></div>
-              <h4 class="font-medium text-lg">{card.h}</h4>
-              <p class="mt-1 text-sm text-zinc-400">{card.p}</p>
-              <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-300">
-                {card.items.map((li) => (<li>{li}</li>))}
-              </ul>
-            </div>
+              <div class="flex items-start justify-between gap-3">
+                <h4 class="font-medium group-hover:underline decoration-zinc-400/30 underline-offset-4">{p.title}</h4>
+                <span aria-hidden class="text-zinc-500 transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+              </div>
+              {p.tech?.length ? (
+                <ul class="mt-2 flex flex-wrap gap-2 text-xs text-zinc-400">
+                  {p.tech.map((t) => (
+                    <li class="rounded-md border border-zinc-800/70 bg-zinc-900/40 px-2 py-1">{t}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </a>
           ))}
         </div>
-      </section>
-
-      <hr class="section-divider-glow" />
-
-      {/* Method & Outcomes */}
-      <section class="section grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2">
-        <div class="card">
-          <div class="card-border"></div>
-          <h3 class="text-xl font-semibold">How sessions work</h3>
-          <ul class="mt-3 space-y-2 text-sm text-zinc-300">
-            <li>Quick diagnostic → goals & plan</li>
-            <li>Concept first → problem‑driven practice</li>
-            <li>Visuals, derivations, real exam‑style questions</li>
-            <li>Actionable study plan + follow‑up notes</li>
-          </ul>
-        </div>
-        <div class="card">
-          <div class="card-border"></div>
-          <h3 class="text-xl font-semibold">What you get</h3>
-          <ul class="mt-3 space-y-2 text-sm text-zinc-300">
-            <li>Improved exam performance and confidence</li>
-            <li>Clean write‑ups, diagrams, and code snippets</li>
-            <li>Project guidance for labs & portfolios</li>
-          </ul>
+        <div class="mt-5 sm:mt-6">
+          <a href={`${B}projects`} class="btn-ghost">See all projects</a>
         </div>
       </section>
 
       <hr class="section-divider-glow" />
 
-      {/* KPIs */}
-      <section class="section grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
-        {[
-          { n: "+200", t: "problems worked" },
-          { n: "24–48h", t: "typical availability" },
-          { n: "1:1", t: "personalized plan" },
-        ].map((k) => (
-          <div class="kpi">
-            <div class="kpi-ring"></div>
-            <div class="text-lg font-semibold tracking-tight">{k.n}</div>
-            <div class="text-xs text-zinc-400">{k.t}</div>
-          </div>
-        ))}
-      </section>
-
-      <hr class="section-divider-glow" />
-
-      {/* Pricing */}
-      <section class="section" id="pricing">
-        <h3 class="section-title">Pricing</h3>
-        <div class="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6">
-          <div class="card">
-            <div class="card-border"></div>
-            <div class="flex flex-wrap items-baseline justify-between gap-2">
-              <h4 class="font-medium">Single Session</h4>
-              <span class="text-xs text-indigo-300/80">$60/hr</span>
-            </div>
-            <ul class="mt-3 space-y-1 text-sm text-zinc-300">
-              <li>60 or 90 minutes</li>
-              <li>Shared notes & practice set</li>
-              <li>Email/DM follow‑ups</li>
-            </ul>
-          </div>
-        </div>
-        <p class="mt-2 text-sm text-zinc-400">Group sessions and ongoing semester plans available on request.</p>
-      </section>
-
-      <hr class="section-divider-glow" />
-
-      {/* Booking (Calendly) */}
-      <section class="section" id="book">
-        <h3 class="section-title">Book a free 15‑min intro</h3>
-        <p class="mt-2 text-sm text-zinc-400">Use the widget below to grab a time. Prefer email? See the contact form.</p>
-        <div class="mt-5 overflow-hidden rounded-2xl border border-zinc-800/70 bg-zinc-900/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-          <div class="relative pt-[140%] sm:pt-[90%] md:pt-[56.25%]">
-            <iframe
-              title="Schedule a call"
-              src="https://calendly.com/sivan-syed/30min"
-              class="absolute inset-0 h-full w-full"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </div>
-        </div>
-      </section>
-
-      <hr class="section-divider-glow" />
-
-      {/* FAQ */}
+      {/* Goals */}
       <section class="section">
-        <h3 class="section-title">FAQ</h3>
-        <div class="mt-5 space-y-3">
-          {[
-            ["Do you meet in person?", "Yes, near UT campus in Austin. Otherwise, Zoom with a collaborative whiteboard."],
-            ["What should I bring?", "Syllabus, past exams or homework, and your notes. Topics ahead of time (24hr) help me prepare targeted problems."],
-            ["What's your cancellation policy?", "Free reschedule/cancel up to 12 hours before the session."],
-            ["Do you tutor full project builds?", "Yes—scoping, design review, implementation tips, debugging, and write‑ups. I guide; you own the work."],
-          ].map(([q, a]) => (
-            <details class="faq">
-              <summary class="cursor-pointer select-none font-medium transition-colors duration-300 open:text-zinc-100">{q}</summary>
-              <p class="mt-2 text-sm text-zinc-300/95">{a}</p>
-            </details>
-          ))}
+        <h3 class="section-title">What's my goal</h3>
+        <div class="grid grid-cols-1 gap-4 sm:gap-6">
+          <div class="card">
+            <div class="card-border"></div>
+            <p class="text-[15px] leading-7 text-zinc-300 sm:text-base">
+              I aim to push the boundaries of science and engineering in physics-driven fields—plasma, condensed matter, and robotics—by 
+              pairing rigorous theoretical foundations with innovative hardware and scalable computational tools.
+            </p>
+            <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
+              My long-term goal is to design systems that reveal new physical phenomena and enable technologies that make them practical. From 
+              high-energy plasma diagnostics and precision instrumentation to intelligent, adaptive robotic platforms. I want to be at the 
+              intersection where <span class="text-zinc-100 font-medium">scientific insight becomes engineered reality</span>.
+            </p>
+            <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
+              Every project I build, whether it's a balancing robot, a semiconductor simulation, or an embedded control loop, is a step toward 
+              mastering that full stack: <span class="text-zinc-100 font-medium">theory → computation → implementation → impact</span>. 
+              I'm motivated by curiosity, precision, and the pursuit of elegance in both equations and hardware.
+            </p>
+          </div>
         </div>
+      </section>
+
+
+      <hr class="section-divider-glow" />
+
+      {/* Coursework */}
+      <section class="section">
+        <h3 class="section-title">Academic coursework</h3>
+        <ul class="mt-3 grid grid-cols-1 gap-2 text-[15px] leading-7 text-zinc-300 sm:mt-4 sm:gap-3 sm:text-sm sm:leading-6 sm:grid-cols-2">
+          <li><span class="font-medium text-zinc-200">Physics:</span> Quantum I/II, Statistical Mechanics, Thermodynamics, Classical Dynamics, Relativity</li>
+          <li><span class="font-medium text-zinc-200">Electrical Engineering:</span> Electronic Circuits Lab, Digital Logic, Semiconductor Devices, Embedded, Signals</li>
+          <li><span class="font-medium text-zinc-200">Mathematics:</span> Real Analysis, Complex Analysis, Linear Algebra, Differential Equations</li>
+          <li><span class="font-medium text-zinc-200">Mechanical Engineering:</span> Fluid Dynamics, Mechanics of Solids, Thermodynamics</li>
+          <li><span class="font-medium text-zinc-200">Applied:</span> Computational Physics, EM, Fluid Dynamics, Mechanics of Solids</li>
+          <li><span class="font-medium text-zinc-200">Misc:</span> German Language, Materials Experiments, Software Design</li>
+        </ul>
       </section>
 
       <hr class="section-divider-glow" />
 
-      {/* Contact */}
-      <section class="section" id="contact">
-        <h3 class="section-title">Contact</h3>
-        <div class="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 sm:grid-cols-2">
-          <form class="card" action="https://formspree.io/f/xeovqoop" method="POST">
-            <div class="card-border"></div>
-            <div class="grid gap-3">
-              <input class="input" type="text" name="name" placeholder="Your name" required />
-              <input class="input" type="email" name="email" placeholder="Email" required />
-              <select class="input" name="topic" aria-label="Topic">
-                <option value="General">General</option>
-                <option value="ECE">ECE</option>
-                <option value="Physics">Physics</option>
-                <option value="Math">Math</option>
-                <option value="Mechanical Engineering">Mechanical Engineering</option>
-              </select>
-              <textarea class="input min-h-28" name="message" rows="5" placeholder="What would you like help with?" required></textarea>
-              <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
-              <button class="btn-primary" type="submit">Send message</button>
-              <p class="text-sm text-zinc-400">Or email: <a class="underline decoration-indigo-400/30 underline-offset-2 hover:decoration-indigo-400/60" href="mailto:sivan.syed@gmail.com">sivan.syed@gmail.com</a></p>
-            </div>
-          </form>
+      {/* Hobbies */}
+      <section class="section">
+        <h3 class="section-title">Outside the lab</h3>
+        <div class="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
           <div class="card">
             <div class="card-border"></div>
-            <h4 class="font-medium">Availability</h4>
-            <p class="mt-2 text-sm text-zinc-300">Most weekdays after 6pm CT, weekends 10am–10pm. Need something urgent? Often available within 24–48h.</p>
-            <h4 class="mt-4 font-medium">Policies</h4>
-            <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-zinc-300">
-              <li>Homework integrity: I'll guide you to solutions, not do the assignment for you.</li>
-              <li>Academic honesty: No live exam assistance.</li>
-              <li>Accessibility: Materials available in alternative formats upon request.</li>
-            </ul>
+            <p class="text-base text-zinc-300">
+              Outside of academics and engineering projects, I enjoy exploring a plethora of topics.
+              I train in Taekwondo & Muay Thai, which I've loved since I was a kid, and I have a love-hate relationship with bouldering (I have commitment issues).
+              Reading recommendations (favorite series: <em>Red Rising</em>) from Science Fiction to Neuroscience and History to Philosophy are always welcome.
+              I thrive in board games and strategy games, especially when they involve complex decision-making and teamwork (or deception).
+              Most of all, I'm passionate about long walks that turn into longer conversations.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-border"></div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Left column: stack Red Rising over Root */}
+                <div class="flex flex-col gap-3">
+                  <img src="/Redrising.webp"
+                      alt="Red Rising"
+                      class="aspect-[4/3] w-full rounded-xl border border-zinc-800/70 object-cover"
+                      loading="lazy" sizes="(max-width: 640px) 100vw, 50vw" />
+
+                  <img src="/Root.webp"
+                      alt="Root"
+                      class="aspect-[5/3] w-full rounded-xl border border-zinc-800/70 object-cover"
+                      loading="lazy" sizes="(max-width: 640px) 100vw, 50vw" />
+                </div>
+
+                {/* Right column */}
+                <img src="/NoLongerHuman.webp"
+                    alt="No Longer Human"
+                    class="aspect-[3/4] w-full rounded-xl border border-zinc-800/70 object-cover"
+                    loading="lazy" sizes="(max-width: 640px) 100vw, 50vw" />
+              </div>
           </div>
         </div>
       </section>
@@ -308,6 +287,12 @@ const page = {
       </div>
     </footer>
 
+    {/* Optional interactive demo */}
+    <!-- <section class="mx-auto max-w-6xl px-6 md:px-12 lg:px-20 py-10">
+      <h2 class="text-xl font-semibold">Interactive demo</h2>
+      <Counter client:load baseUrl={B} soundSrc="/leaf-crunch.mp3" />
+    </section> -->
+
     {/* Tiny client script for mobile nav */}
     <script is:inline>
       const btn = document.getElementById('mobile-nav-toggle');
@@ -317,26 +302,12 @@ const page = {
           const open = btn.getAttribute('aria-expanded') === 'true';
           btn.setAttribute('aria-expanded', String(!open));
           menu.hidden = open;
+          // Swap icon for close when open (optional)
           btn.innerHTML = !open
             ? `<span class="sr-only">Close navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M6.75 6.75l10.5 10.5M17.25 6.75L6.75 17.25'/></svg>`
             : `<span class="sr-only">Open navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5'/></svg>`;
         });
       }
-
-      // Smooth in‑page scroll (respects reduced motion)
-      document.addEventListener('click', (event) => {
-        const target = event.target;
-        if (!(target instanceof Element)) return;
-        const a = target.closest('a[href^="#"]');
-        if (!a) return;
-        const href = a.getAttribute('href');
-        if (!href) return;
-        const el = document.querySelector(href);
-        if (!el) return;
-        event.preventDefault();
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        el.scrollIntoView({ behavior: prefersReduced ? 'auto' : 'smooth', block: 'start' });
-      });
     </script>
   </body>
 </html>
