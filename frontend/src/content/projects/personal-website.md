@@ -21,7 +21,6 @@ I wanted a central place to showcase my projects, technical skills, and interact
 - **Backend:** FastAPI (Python) for API endpoints like `/api/projects`.  
 - **Content:** Astro Content Collections for structured Markdown-based project pages.  
 - **Hosting:** GitHub Pages for the frontend, with deployment scripts.  
-- **Extras:** OpenGraph tags for nice link previews, and RSS feed for future blog posts.  
 
 ![screenshot of personal website](/ProjectPage.png)
 
