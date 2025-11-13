@@ -1,5 +1,5 @@
 ---
-// src/pages/tutoring.astro — unified page (margins + original card sizing + Calendly + Contact)
+// src/pages/tutoring.astro — mobile‑first, accessible, and responsive
 import "../styles/global.css";
 
 const B = import.meta.env.BASE_URL;
@@ -12,52 +12,81 @@ const page = {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>{page.title}</title>
     <meta name="description" content={page.description} />
     <link rel="icon" href={`${B}favicon.svg`} />
+    <style>
+      @media (prefers-reduced-motion: reduce) { .animate-shimmer { animation: none !important; } }
+    </style>
   </head>
-  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20">
+  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20 [padding-top:env(safe-area-inset-top)]">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-zinc-900 focus:px-3 focus:py-2 focus:outline-none">Skip to content</a>
+
     {/* Decorative background */}
     <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
       <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
-        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:40px_40px] [background-position:center]"></div>
-        <div class="absolute -top-24 left-1/2 h-[36rem] w-[72rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl"></div>
+        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:32px_32px] sm:[background-size:40px_40px] [background-position:center]"></div>
+        <div class="absolute -top-24 left-1/2 h-[26rem] w-[48rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl md:h-[36rem] md:w-[72rem]"></div>
       </div>
     </div>
 
-    {/* Header */}
-    <header class="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55 border-b border-zinc-800/60">
-      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 md:px-12 lg:px-20 py-4">
-        <a href={`${B}`} class="group flex items-center gap-3">
-          <img src={`${B}favicon.svg`} alt="Logo" class="size-9 transition-transform duration-300 group-hover:rotate-6" />
-          <div>
-            <h1 class="text-2xl font-semibold tracking-tight">Sivan Syed</h1>
-            <p class="text-xs text-zinc-400">Physics & ECE • Robotics • Controls • Systems</p>
+    {/* Header with mobile menu */}
+    <header class="sticky top-0 z-50 border-b border-zinc-800/60 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-12 lg:px-20 py-3 sm:py-4">
+        <a href={`${B}`} class="group flex min-w-0 items-center gap-3">
+          <img src={`${B}favicon.svg`} alt="Logo" class="size-9 flex-shrink-0 transition-transform duration-300 group-hover:rotate-6" />
+          <div class="min-w-0">
+            <h1 class="truncate text-xl font-semibold tracking-tight sm:text-2xl">Sivan Syed</h1>
+            <p class="truncate text-[11px] text-zinc-400 sm:text-xs">Physics & ECE • Robotics • Controls • Systems</p>
           </div>
         </a>
-        <nav class="flex items-center gap-2 text-sm">
+
+        {/* Desktop nav */}
+        <nav class="hidden items-center gap-2 text-sm md:flex">
           <a class="navlink" href={`${B}`}>Home</a>
           <a class="navlink" href={`${B}projects`}>Projects</a>
-          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
+          <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
+          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
         </nav>
+
+        {/* Mobile menu toggle */}
+        <button id="mobile-nav-toggle" aria-controls="mobile-menu" aria-expanded="false" class="inline-flex items-center justify-center rounded-lg border border-zinc-800/60 bg-zinc-900/40 p-2 md:hidden" title="Open menu">
+          <span class="sr-only">Open navigation</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+        </button>
+      </div>
+
+      {/* Mobile sheet */}
+      <div id="mobile-menu" hidden class="md:hidden">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-3">
+          <nav class="grid gap-1 text-sm">
+            <a class="navlink w-full" href={`${B}`}>Home</a>
+            <a class="navlink w-full" href={`${B}projects`}>Projects</a>
+            <a class="navlink w-full" href={`${B}tutoring`}>Tutoring</a>
+            <a class="navlink w-full" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
+          </nav>
+        </div>
       </div>
     </header>
 
-    {/* Main container adds margins from screen edges */}
-    <main class="mx-auto max-w-[90rem] px-6 md:px-12 lg:px-20 py-10 md:py-14">
+    {/* Main container */}
+    <main id="main" class="mx-auto max-w-[90rem] px-4 sm:px-6 md:px-12 lg:px-20 py-8 sm:py-10 md:py-14 space-y-16 sm:space-y-20 md:space-y-24 scroll-mt-20">
       {/* Hero */}
       <section class="mx-auto max-w-6xl">
-        <p class="text-xs uppercase tracking-[0.2em] text-zinc-400/90">1:1 Tutoring • ECE • Physics • Math • MechE</p>
-        <h2 class="mt-3 text-4xl font-bold leading-tight md:text-5xl">
+        <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-400/90 sm:text-xs">1:1 Tutoring • ECE • Physics • Math • MechE</p>
+        <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
           <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)] animate-shimmer">Master tough concepts</span>
           <span class="block text-zinc-300/90">with personalized, student‑driven tutoring</span>
         </h2>
-        <p class="mt-4 max-w-3xl text-lg text-zinc-300/90">
+        <p class="mt-3 max-w-3xl text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
           I help students build intuition, pass exams, and excel beyond the classroom. Sessions are customized to your goals,
           paced to you, and focused on problem‑solving.
         </p>
-        <div class="mt-8 flex flex-wrap gap-3">
+        <div class="mt-5 flex flex-wrap gap-3 text-sm sm:mt-6">
           <a href="#book" class="btn-primary">Book a free intro</a>
           <a href="#contact" class="btn-ghost">Ask a question</a>
         </div>
@@ -69,13 +98,13 @@ const page = {
           <span>📚 Undergrad & advanced HS</span>
         </div>
       </section>
-      
+
       <hr class="section-divider-glow" />
 
-      {/* What I tutor — restored card sizing */}
+      {/* What I tutor */}
       <section class="section">
         <h3 class="section-title">What I tutor</h3>
-        <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 sm:grid-cols-2">
           {[
             {
               h: "Electrical & Computer Engineering",
@@ -133,7 +162,7 @@ const page = {
       <hr class="section-divider-glow" />
 
       {/* Method & Outcomes */}
-      <section class="section grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <section class="section grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2">
         <div class="card">
           <div class="card-border"></div>
           <h3 class="text-xl font-semibold">How sessions work</h3>
@@ -158,7 +187,7 @@ const page = {
       <hr class="section-divider-glow" />
 
       {/* KPIs */}
-      <section class="section grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <section class="section grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
         {[
           { n: "+200", t: "problems worked" },
           { n: "24–48h", t: "typical availability" },
@@ -177,10 +206,10 @@ const page = {
       {/* Pricing */}
       <section class="section" id="pricing">
         <h3 class="section-title">Pricing</h3>
-        <div class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-1">
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6">
           <div class="card">
             <div class="card-border"></div>
-            <div class="flex items-baseline justify-between">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
               <h4 class="font-medium">Single Session</h4>
               <span class="text-xs text-indigo-300/80">$60/hr</span>
             </div>
@@ -201,20 +230,19 @@ const page = {
         <h3 class="section-title">Book a free 15‑min intro</h3>
         <p class="mt-2 text-sm text-zinc-400">Use the widget below to grab a time. Prefer email? See the contact form.</p>
         <div class="mt-5 overflow-hidden rounded-2xl border border-zinc-800/70 bg-zinc-900/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-          <div class="relative pt-[56.25%]">
+          <div class="relative pt-[140%] sm:pt-[90%] md:pt-[56.25%]">
             <iframe
               title="Schedule a call"
               src="https://calendly.com/sivan-syed/30min"
               class="absolute inset-0 h-full w-full"
               loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"></iframe>
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
           </div>
         </div>
       </section>
 
-
       <hr class="section-divider-glow" />
-
 
       {/* FAQ */}
       <section class="section">
@@ -234,14 +262,12 @@ const page = {
         </div>
       </section>
 
-
       <hr class="section-divider-glow" />
-
 
       {/* Contact */}
       <section class="section" id="contact">
         <h3 class="section-title">Contact</h3>
-        <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:gap-6 sm:grid-cols-2">
           <form class="card" action="https://formspree.io/f/xeovqoop" method="POST">
             <div class="card-border"></div>
             <div class="grid gap-3">
@@ -275,19 +301,29 @@ const page = {
       </section>
     </main>
 
-    <footer class="mx-auto max-w-7xl px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
-      <div class="flex items-center justify-between border-t border-zinc-800/70 pt-4">
+    <footer class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-800/70 pt-4">
         <p>© {new Date().getFullYear()} Sivan Syed</p>
         <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={`${B}`}>Back to home</a>
       </div>
     </footer>
 
+    {/* Tiny client script for mobile nav */}
+    <script is:inline>
+      const btn = document.getElementById('mobile-nav-toggle');
+      const menu = document.getElementById('mobile-menu');
+      if (btn && menu) {
+        btn.addEventListener('click', () => {
+          const open = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!open));
+          menu.hidden = open;
+          btn.innerHTML = !open
+            ? `<span class="sr-only">Close navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M6.75 6.75l10.5 10.5M17.25 6.75L6.75 17.25'/></svg>`
+            : `<span class="sr-only">Open navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5'/></svg>`;
+        });
+      }
 
-    <hr class="section-divider-glow" />
-
-
-    {/* Smooth in‑page scroll */}
-    <script>
+      // Smooth in‑page scroll (respects reduced motion)
       document.addEventListener('click', (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
