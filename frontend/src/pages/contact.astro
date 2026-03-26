@@ -4,7 +4,6 @@ import ContactForm from "../components/ContactForm.svelte";
 import { getCollection } from "astro:content";
 const B = import.meta.env.BASE_URL;
 
-
 interface Project { title: string; href?: string; tech?: string[] }
 
 const API =
@@ -31,78 +30,131 @@ if (projects.length === 0) {
   }));
 }
 ---
-
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Contact - Sivan Syed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Contact — Sivan Syed</title>
     <meta name="description" content="Get in touch with Sivan Syed." />
-    <meta property="og:title" content="Contact - Sivan Syed" />
+    <meta property="og:title" content="Contact — Sivan Syed" />
     <meta property="og:description" content="Get in touch with Sivan Syed." />
     <meta property="og:image" content={`${B}og.png`} />
     <link rel="icon" href={`${B}favicon.svg`} />
   </head>
-  
-  <body class="mx-auto max-w-3xl p-6">
-    <header class="flex items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <header class="flex items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <a href="/" class="shrink-0">
-            <img src={`${B}favicon.svg`} alt="Logo" class="size-10" />
-            </a>
-            <div>
-            <h1 class="text-3xl font-bold">Contact</h1>
-            <p class="opacity-80">Get in touch with me!</p>
-            </div>
-        </div>
-        <nav class="text-sm">
-          <a class="underline" href={`${B}`}>Home</a>
-          <a class="underline ml-3" href={`${B}projects`}>Projects</a>
-          <a class="underline ml-3" href={`${B}tutoring`}>Tutoring</a>
-          <!-- <a class="underline ml-3" href={`${B}now`}>Now</a> -->
-          <a class="underline ml-3" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank">Resume</a>
-          <!-- <a class="underline ml-3" href={`${B}contact`}>Contact</a> -->
+
+  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20 [padding-top:env(safe-area-inset-top)]">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-zinc-900 focus:px-3 focus:py-2 focus:outline-none">Skip to content</a>
+
+    {/* Decorative background */}
+    <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
+      <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
+        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:32px_32px] sm:[background-size:40px_40px] [background-position:center]"></div>
+        <div class="absolute -top-24 left-1/2 h-[26rem] w-[48rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-500/8 via-violet-400/12 to-blue-500/8 blur-3xl md:h-[36rem] md:w-[72rem]"></div>
+      </div>
+    </div>
+
+    {/* Header */}
+    <header class="sticky top-0 z-50 border-b border-zinc-800/60 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-12 lg:px-20 py-3 sm:py-4">
+        <a href={`${B}`} class="group flex min-w-0 items-center gap-3">
+          <img src={`${B}favicon.svg`} alt="Logo" class="size-9 flex-shrink-0 transition-transform duration-300 group-hover:rotate-6" />
+          <div class="min-w-0">
+            <h1 class="truncate text-xl font-semibold tracking-tight sm:text-2xl">Sivan Syed</h1>
+            <p class="truncate text-[11px] text-zinc-400 sm:text-xs">Physics & ECE · Robotics · Controls · Systems</p>
+          </div>
+        </a>
+
+        <nav class="hidden items-center gap-1 text-sm md:flex">
+          <a class="navlink" href={`${B}`}>Home</a>
+          <a class="navlink" href={`${B}projects`}>Projects</a>
+          <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
+          <a class="navlink" href={`${B}now`}>Now</a>
+          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
         </nav>
-        </header>
+
+        <button id="mobile-nav-toggle" aria-controls="mobile-menu" aria-expanded="false" class="inline-flex items-center justify-center rounded-lg border border-zinc-800/60 bg-zinc-900/40 p-2 md:hidden" title="Open menu">
+          <span class="sr-only">Open navigation</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
+        </button>
+      </div>
+
+      <div id="mobile-menu" hidden class="md:hidden">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-3">
+          <nav class="grid gap-1 text-sm">
+            <a class="navlink w-full" href={`${B}`}>Home</a>
+            <a class="navlink w-full" href={`${B}projects`}>Projects</a>
+            <a class="navlink w-full" href={`${B}tutoring`}>Tutoring</a>
+            <a class="navlink w-full" href={`${B}now`}>Now</a>
+            <a class="navlink w-full" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
+          </nav>
+        </div>
       </div>
     </header>
 
-    <section class="mt-6 border rounded-2xl p-4">
-      <ContactForm client:load apiBase={API} />
-    </section>
+    {/* Main */}
+    <main id="main" class="mx-auto max-w-[90rem] px-4 sm:px-6 md:px-12 lg:px-20 py-8 sm:py-10 md:py-14 space-y-16 sm:space-y-20 scroll-mt-20">
+      <section class="mx-auto max-w-6xl">
+        <p class="text-[11px] uppercase tracking-[0.2em] text-indigo-300/50 sm:text-xs">Contact · Get in touch</p>
+        <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
+          <span class="bg-gradient-to-r from-zinc-100 via-indigo-200 to-zinc-100 bg-clip-text text-transparent animate-shimmer">Let's connect</span>
+        </h2>
+        <p class="mt-3 max-w-3xl text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
+          Have a question about a project, want to collaborate, or interested in tutoring? I'd love to hear from you.
+        </p>
+      </section>
 
-    <!-- LinkedIn Section -->
-    <section class="mt-6 text-center">
-      <p class="text-lg">Or connect with me on:</p>
-      <a 
-        href="https://www.linkedin.com/in/sivan-syed/" 
-        target="_blank" 
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-2 mt-2 text-blue-600 hover:underline"
-      >
-        <!-- LinkedIn Icon (SVG) -->
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          width="24" 
-          height="24" 
-          fill="currentColor" 
-          viewBox="0 0 24 24"
-        >
-          <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 
-                   2.24 5 5 5h14c2.76 0 5-2.24 
-                   5-5v-14c0-2.76-2.24-5-5-5zm-11 
-                   19h-3v-10h3v10zm-1.5-11.27c-.97 
-                   0-1.75-.79-1.75-1.76s.78-1.75 
-                   1.75-1.75 1.75.78 
-                   1.75 1.75-.78 1.76-1.75 
-                   1.76zm13.5 11.27h-3v-5.6c0-1.34-.03-3.06-1.87-3.06-1.87 
-                   0-2.16 1.46-2.16 2.96v5.7h-3v-10h2.88v1.36h.04c.4-.76 
-                   1.38-1.56 2.84-1.56 3.04 0 3.6 
-                   2 3.6 4.6v5.6z"/>
-        </svg>
-        LinkedIn
-      </a>
-    </section>
+      <hr class="section-divider-glow" />
+
+      <section class="section">
+        <div class="mx-auto max-w-xl">
+          <div class="card">
+            <div class="card-border"></div>
+            <ContactForm client:load apiBase={API} />
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider-glow" />
+
+      {/* LinkedIn / Socials */}
+      <section class="section">
+        <div class="mx-auto max-w-xl text-center">
+          <p class="text-sm text-zinc-400">Or connect with me on</p>
+          <a
+            href="https://www.linkedin.com/in/sivan-syed/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="mt-3 inline-flex items-center gap-2 text-sm text-indigo-300/80 underline decoration-indigo-400/30 underline-offset-2 hover:decoration-indigo-400/60 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.27c-.97 0-1.75-.79-1.75-1.76s.78-1.75 1.75-1.75 1.75.78 1.75 1.75-.78 1.76-1.75 1.76zm13.5 11.27h-3v-5.6c0-1.34-.03-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96v5.7h-3v-10h2.88v1.36h.04c.4-.76 1.38-1.56 2.84-1.56 3.04 0 3.6 2 3.6 4.6v5.6z"/>
+            </svg>
+            LinkedIn
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-800/70 pt-4">
+        <p>© {new Date().getFullYear()} Sivan Syed</p>
+        <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-indigo-300/50 transition-colors" href={`${B}`}>Back to home</a>
+      </div>
+    </footer>
+
+    <script is:inline>
+      const btn = document.getElementById('mobile-nav-toggle');
+      const menu = document.getElementById('mobile-menu');
+      if (btn && menu) {
+        btn.addEventListener('click', () => {
+          const open = btn.getAttribute('aria-expanded') === 'true';
+          btn.setAttribute('aria-expanded', String(!open));
+          menu.hidden = open;
+          btn.innerHTML = !open
+            ? `<span class="sr-only">Close navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M6.75 6.75l10.5 10.5M17.25 6.75L6.75 17.25'/></svg>`
+            : `<span class="sr-only">Open navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5'/></svg>`;
+        });
+      }
+    </script>
   </body>
 </html>

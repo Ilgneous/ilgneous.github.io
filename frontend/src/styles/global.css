@@ -3,51 +3,104 @@
 @source "../**/*";
 :root { color-scheme: light dark }
 .prose { max-width: 70ch }
+
 @layer components {
+      /* ── Shimmer animation ── */
       .animate-shimmer { background-size: 200% 100%; animation: shimmer 3s linear infinite; }
 
+      /* ── Layout ── */
       .section { @apply mx-auto max-w-6xl py-10; }
       .section-title { @apply text-xl font-semibold tracking-tight mb-4; }
 
+      /* ── Section divider — violet/blue glow ── */
       .section-divider-glow {
         @apply border-0 h-px mx-auto my-8 w-full max-w-6xl rounded-full;
         background: linear-gradient(
           90deg,
           transparent,
-          rgba(147, 197, 253, 0.25), /* soft bluish-silver */
-          rgba(168, 162, 158, 0.4),
-          rgba(147, 197, 253, 0.25),
+          rgba(124, 102, 220, 0.2),
+          rgba(99, 102, 241, 0.35),
+          rgba(139, 162, 255, 0.3),
+          rgba(99, 102, 241, 0.35),
+          rgba(124, 102, 220, 0.2),
           transparent
         );
-        box-shadow: 0 0 8px rgba(147, 197, 253, 0.15);
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.12);
       }
 
+      /* ── Cards — tighter, subtle purple edge glow on hover ── */
       .card {
-        /* Restored compact proportions similar to original */
-        @apply relative overflow-hidden rounded-2xl border border-zinc-800/70 bg-zinc-900/40 p-5 backdrop-blur transition-all duration-300 ease-out hover:border-zinc-600 hover:bg-zinc-900/60;
+        @apply relative overflow-hidden rounded-2xl border border-zinc-800/70 bg-zinc-900/40 p-5 backdrop-blur transition-all duration-300 ease-out;
         box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
       }
+      .card:hover {
+        @apply border-zinc-600/80 bg-zinc-900/60;
+        box-shadow:
+          inset 0 1px 0 0 rgba(255,255,255,0.05),
+          0 0 20px -4px rgba(99, 102, 241, 0.08);
+      }
+
       .card-border {
         @apply pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300;
-        background: linear-gradient(120deg, rgba(229,231,235,0.18), rgba(99,102,241,0.18), rgba(229,231,235,0.18));
+        background: linear-gradient(135deg, rgba(139, 142, 255, 0.15), rgba(99, 102, 241, 0.22), rgba(168, 140, 255, 0.12));
         -webkit-mask: linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
         -webkit-mask-composite: xor; mask-composite: exclude; padding: 1px;
       }
       .card:hover .card-border { @apply opacity-100; }
 
+      /* ── KPI pill ── */
       .kpi { @apply relative rounded-xl border border-zinc-800/70 bg-zinc-900/30 p-4 text-center backdrop-blur transition-colors duration-300 hover:border-zinc-600/70; }
-      .kpi-ring { @apply pointer-events-none absolute inset-0 rounded-xl; background: radial-gradient(60% 50% at 50% 20%, rgba(99,102,241,0.15), transparent 60%); }
+      .kpi-ring { @apply pointer-events-none absolute inset-0 rounded-xl; background: radial-gradient(60% 50% at 50% 20%, rgba(99,102,241,0.18), transparent 60%); }
 
+      /* ── Primary action — blue-to-purple gradient ── */
       .btn-primary {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-700 px-4 py-2 text-sm font-semibold shadow-sm outline-none transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-zinc-500 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-indigo-400/40;
-        background-image: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-500/30 px-4 py-2 text-sm font-semibold text-zinc-100 shadow-sm outline-none transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-indigo-400/40;
+        background-image: linear-gradient(135deg, rgba(79, 82, 220, 0.35), rgba(99, 102, 241, 0.25), rgba(129, 100, 210, 0.2));
       }
+      .btn-primary:hover {
+        border-color: rgba(99, 102, 241, 0.45);
+        background-image: linear-gradient(135deg, rgba(79, 82, 220, 0.5), rgba(99, 102, 241, 0.4), rgba(129, 100, 210, 0.3));
+        box-shadow: 0 4px 20px -4px rgba(99, 102, 241, 0.25);
+      }
+
+      /* ── Ghost/secondary action ── */
       .btn-ghost {
         @apply inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-800 px-4 py-2 text-sm font-semibold text-zinc-200/90 transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-600 hover:text-white focus-visible:ring-2 focus-visible:ring-indigo-400/30;
         background-image: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
       }
 
-      .input { @apply rounded-xl border border-zinc-800 bg-black/40 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-400/25 transition-colors; }
-      .faq { @apply rounded-xl border border-zinc-800/70 bg-zinc-900/30 p-4 backdrop-blur transition-colors duration-300 open:border-zinc-600/70; }
-      .navlink { @apply rounded-lg px-3 py-1 text-zinc-300/90 transition-all duration-300 hover:-translate-y-0.5 hover:text-white hover:underline hover:decoration-zinc-400/30; }
+      /* ── Inputs ── */
+      .input { @apply rounded-xl border border-zinc-800 bg-black/40 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-400/25 transition-colors; }
+
+      /* ── FAQ accordion ── */
+      .faq { @apply rounded-xl border border-zinc-800/70 bg-zinc-900/30 p-4 backdrop-blur transition-colors duration-300 open:border-indigo-500/25; }
+
+      /* ── Nav links ── */
+      .navlink { @apply rounded-lg px-3 py-1 text-zinc-300/90 transition-all duration-200 hover:text-white; }
+      .navlink:hover { text-shadow: 0 0 10px rgba(139, 142, 255, 0.2); }
+
+      /* ── Tech tag chips ── */
+      .tech-tag {
+        @apply rounded-md border border-zinc-800/70 bg-zinc-900/50 px-2 py-1 text-xs text-zinc-400;
+        transition: border-color 0.2s, color 0.2s;
+      }
+      .tech-tag:hover { @apply border-indigo-500/25 text-zinc-300; }
+
+      /* ── Timeline dot — the small purple dots on "Now" page ── */
+      .timeline-dot {
+        @apply absolute left-0 top-2 size-2 rounded-full;
+        background: rgba(129, 120, 241, 0.7);
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.35), 0 0 3px rgba(99, 102, 241, 0.5);
+      }
+
+      /* ── Accent text utility ── */
+      .text-accent { color: rgba(165, 160, 255, 0.9); }
+
+      /* ── Subtle left accent bar for cards ── */
+      .card-accent-left {
+        border-left: 2px solid rgba(99, 102, 241, 0.25);
+      }
+      .card-accent-left:hover {
+        border-left-color: rgba(99, 102, 241, 0.5);
+      }
 }

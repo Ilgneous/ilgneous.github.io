@@ -42,7 +42,6 @@ if (projects.length === 0) {
     <meta property="og:image" content={`/og.png`} />
     <link rel="icon" href={`/favicon.svg`} />
     <style>
-      /* Respect users who prefer reduced motion */
       @media (prefers-reduced-motion: reduce) {
         .animate-shimmer { animation: none !important; }
       }
@@ -51,27 +50,26 @@ if (projects.length === 0) {
   <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20 [padding-top:env(safe-area-inset-top)]">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-zinc-900 focus:px-3 focus:py-2 focus:outline-none">Skip to content</a>
 
-    {/* Decorative background */}
+    {/* Decorative background — shifted to blue/violet */}
     <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
       <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
         <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:32px_32px] sm:[background-size:40px_40px] [background-position:center]"></div>
-        <div class="absolute -top-24 left-1/2 h-[26rem] w-[48rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-zinc-200/10 via-indigo-400/15 to-zinc-200/10 blur-3xl md:h-[36rem] md:w-[72rem]"></div>
+        <div class="absolute -top-24 left-1/2 h-[26rem] w-[48rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-500/8 via-violet-400/12 to-blue-500/8 blur-3xl md:h-[36rem] md:w-[72rem]"></div>
       </div>
     </div>
 
-    {/* Header (responsive with mobile menu) */}
+    {/* Header */}
     <header class="sticky top-0 z-50 border-b border-zinc-800/60 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55">
       <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-12 lg:px-20 py-3 sm:py-4">
         <a href={`${B}`} class="group flex min-w-0 items-center gap-3">
           <img src={`/favicon.svg`} alt="Logo" class="size-9 flex-shrink-0 transition-transform duration-300 group-hover:rotate-6" />
           <div class="min-w-0">
             <h1 class="truncate text-xl font-semibold tracking-tight sm:text-2xl">Sivan Syed</h1>
-            <p class="truncate text-[11px] text-zinc-400 sm:text-xs">Physics & ECE • Robotics • Controls • Systems</p>
+            <p class="truncate text-[11px] text-zinc-400 sm:text-xs">Physics & ECE · Robotics · Controls · Systems</p>
           </div>
         </a>
 
-        {/* Desktop nav */}
-        <nav class="hidden items-center gap-2 text-sm md:flex">
+        <nav class="hidden items-center gap-1 text-sm md:flex">
           <a class="navlink" href={`${B}`}>Home</a>
           <a class="navlink" href={`${B}projects`}>Projects</a>
           <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
@@ -86,7 +84,6 @@ if (projects.length === 0) {
         </button>
       </div>
 
-      {/* Mobile sheet */}
       <div id="mobile-menu" hidden class="md:hidden">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-3">
           <nav class="grid gap-1 text-sm">
@@ -106,9 +103,9 @@ if (projects.length === 0) {
       <section class="mx-auto max-w-6xl">
         <div class="flex flex-col-reverse items-start justify-between gap-6 sm:gap-8 md:flex-row md:items-center">
           <div class="max-w-3xl">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-400/90 sm:text-xs">Portfolio • Robotics • Controls • Applied Physics</p>
+            <p class="text-[11px] uppercase tracking-[0.2em] text-indigo-300/50 sm:text-xs">Portfolio · Robotics · Controls · Applied Physics</p>
             <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-              <span class="bg-gradient-to-r from-zinc-100 via-zinc-400 to-zinc-100 bg-clip-text text-transparent [text-shadow:0_0_0.5px_rgba(255,255,255,0.35)] animate-shimmer">Building systems that blend</span>
+              <span class="bg-gradient-to-r from-zinc-100 via-indigo-200 to-zinc-100 bg-clip-text text-transparent animate-shimmer">Building systems that blend</span>
               <span class="block text-zinc-300/90">theory → computation → hardware</span>
             </h2>
             <p class="mt-3 text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
@@ -120,7 +117,7 @@ if (projects.length === 0) {
             </div>
           </div>
           <figure class="mx-auto max-w-md flex-1 text-center md:mx-0">
-            <img src={`/vortex_animation.gif`} alt="Vortex animation" class="mx-auto block aspect-video w-full rounded-2xl border border-zinc-800/70 bg-zinc-900/20 object-cover shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]" loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 480px" />
+            <img src={`/vortex_animation.gif`} alt="Vortex animation" class="mx-auto block aspect-video w-full rounded-2xl border border-zinc-800/70 bg-zinc-900/20 object-cover shadow-[0_0_30px_-8px_rgba(99,102,241,0.12)]" loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 480px" />
             <figcaption class="mt-2 text-xs text-zinc-500">Vortex animation demonstrating fluid dynamics.</figcaption>
           </figure>
         </div>
@@ -132,40 +129,39 @@ if (projects.length === 0) {
       <section class="section">
         <h3 class="section-title">What I do</h3>
         <div class="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2">
-          <div class="card">
+          <div class="card card-accent-left">
             <div class="card-border"></div>
-            <h4 class="font-medium">Systems & Hardware</h4>
-            <p class="mt-2 text-sm text-zinc-300">
+            <h4 class="font-medium text-zinc-100">Systems & Hardware</h4>
+            <p class="mt-2 text-sm text-zinc-300/90">
               Robotics, embedded, digital logic, and device physics—designing reliable systems that work end to end.
             </p>
           </div>
 
-          <div class="card">
+          <div class="card card-accent-left">
             <div class="card-border"></div>
-            <h4 class="font-medium">Theory → Practice</h4>
-            <p class="mt-2 text-sm text-zinc-300">
+            <h4 class="font-medium text-zinc-100">Theory → Practice</h4>
+            <p class="mt-2 text-sm text-zinc-300/90">
               From Lagrangians and Maxwell to Verilog and firmware—bridging mathematical models with real hardware.
             </p>
           </div>
 
-          <div class="card">
+          <div class="card card-accent-left">
             <div class="card-border"></div>
-            <h4 class="font-medium">Computational Modeling</h4>
-            <p class="mt-2 text-sm text-zinc-300">
+            <h4 class="font-medium text-zinc-100">Computational Modeling</h4>
+            <p class="mt-2 text-sm text-zinc-300/90">
               Building simulations for circuits, materials, and dynamics using Python, MATLAB, and C++ to validate design choices before fabrication.
             </p>
           </div>
 
-          <div class="card">
+          <div class="card card-accent-left">
             <div class="card-border"></div>
-            <h4 class="font-medium">Design & Communication</h4>
-            <p class="mt-2 text-sm text-zinc-300">
+            <h4 class="font-medium text-zinc-100">Design & Communication</h4>
+            <p class="mt-2 text-sm text-zinc-300/90">
               Creating clear documentation, visuals, and portfolio-ready deliverables that communicate engineering intent to both technical and non-technical audiences.
             </p>
           </div>
         </div>
       </section>
-
 
       <hr class="section-divider-glow" />
 
@@ -177,13 +173,13 @@ if (projects.length === 0) {
             <a href={p.href ?? '#'} class="card group block">
               <div class="card-border"></div>
               <div class="flex items-start justify-between gap-3">
-                <h4 class="font-medium group-hover:underline decoration-zinc-400/30 underline-offset-4">{p.title}</h4>
-                <span aria-hidden class="text-zinc-500 transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+                <h4 class="font-medium group-hover:text-indigo-200/90 transition-colors duration-200">{p.title}</h4>
+                <span aria-hidden class="text-indigo-400/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-indigo-300/70">→</span>
               </div>
               {p.tech?.length ? (
                 <ul class="mt-2 flex flex-wrap gap-2 text-xs text-zinc-400">
                   {p.tech.map((t) => (
-                    <li class="rounded-md border border-zinc-800/70 bg-zinc-900/40 px-2 py-1">{t}</li>
+                    <li class="tech-tag">{t}</li>
                   ))}
                 </ul>
               ) : null}
@@ -201,26 +197,25 @@ if (projects.length === 0) {
       <section class="section">
         <h3 class="section-title">What's my goal</h3>
         <div class="grid grid-cols-1 gap-4 sm:gap-6">
-          <div class="card">
+          <div class="card card-accent-left">
             <div class="card-border"></div>
             <p class="text-[15px] leading-7 text-zinc-300 sm:text-base">
-              I aim to push the boundaries of science and engineering in physics-driven fields—plasma, condensed matter, and robotics—by 
+              I aim to push the boundaries of science and engineering in physics-driven fields—plasma, condensed matter, and robotics—by
               pairing rigorous theoretical foundations with innovative hardware and scalable computational tools.
             </p>
             <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
-              My long-term goal is to design systems that reveal new physical phenomena and enable technologies that make them practical. From 
-              high-energy plasma diagnostics and precision instrumentation to intelligent, adaptive robotic platforms. I want to be at the 
-              intersection where <span class="text-zinc-100 font-medium">scientific insight becomes engineered reality</span>.
+              My long-term goal is to design systems that reveal new physical phenomena and enable technologies that make them practical. From
+              high-energy plasma diagnostics and precision instrumentation to intelligent, adaptive robotic platforms. I want to be at the
+              intersection where <span class="text-accent font-medium">scientific insight becomes engineered reality</span>.
             </p>
             <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
-              Every project I build, whether it's a balancing robot, a semiconductor simulation, or an embedded control loop, is a step toward 
-              mastering that full stack: <span class="text-zinc-100 font-medium">theory → computation → implementation → impact</span>. 
+              Every project I build, whether it's a balancing robot, a semiconductor simulation, or an embedded control loop, is a step toward
+              mastering that full stack: <span class="text-accent font-medium">theory → computation → implementation → impact</span>.
               I'm motivated by curiosity, precision, and the pursuit of elegance in both equations and hardware.
             </p>
           </div>
         </div>
       </section>
-
 
       <hr class="section-divider-glow" />
 
@@ -228,12 +223,12 @@ if (projects.length === 0) {
       <section class="section">
         <h3 class="section-title">Academic coursework</h3>
         <ul class="mt-3 grid grid-cols-1 gap-2 text-[15px] leading-7 text-zinc-300 sm:mt-4 sm:gap-3 sm:text-sm sm:leading-6 sm:grid-cols-2">
-          <li><span class="font-medium text-zinc-200">Physics:</span> Quantum I/II, Statistical Mechanics, Thermodynamics, Classical Dynamics, Relativity</li>
-          <li><span class="font-medium text-zinc-200">Electrical Engineering:</span> Electronic Circuits Lab, Digital Logic, Semiconductor Devices, Embedded, Signals</li>
-          <li><span class="font-medium text-zinc-200">Mathematics:</span> Real Analysis, Complex Analysis, Linear Algebra, Differential Equations</li>
-          <li><span class="font-medium text-zinc-200">Mechanical Engineering:</span> Fluid Dynamics, Mechanics of Solids, Thermodynamics</li>
-          <li><span class="font-medium text-zinc-200">Applied:</span> Computational Physics, EM, Fluid Dynamics, Mechanics of Solids</li>
-          <li><span class="font-medium text-zinc-200">Misc:</span> German Language, Materials Experiments, Software Design</li>
+          <li><span class="font-medium text-indigo-200/80">Physics:</span> Quantum I/II, Statistical Mechanics, Thermodynamics, Classical Dynamics, Relativity</li>
+          <li><span class="font-medium text-indigo-200/80">Electrical Engineering:</span> Electronic Circuits Lab, Digital Logic, Semiconductor Devices, Embedded, Signals</li>
+          <li><span class="font-medium text-indigo-200/80">Mathematics:</span> Real Analysis, Complex Analysis, Linear Algebra, Differential Equations</li>
+          <li><span class="font-medium text-indigo-200/80">Mechanical Engineering:</span> Fluid Dynamics, Mechanics of Solids, Thermodynamics</li>
+          <li><span class="font-medium text-indigo-200/80">Applied:</span> Computational Physics, EM, Fluid Dynamics, Mechanics of Solids</li>
+          <li><span class="font-medium text-indigo-200/80">Misc:</span> German Language, Materials Experiments, Software Design</li>
         </ul>
       </section>
 
@@ -248,7 +243,7 @@ if (projects.length === 0) {
             <p class="text-base text-zinc-300">
               Outside of academics and engineering projects, I enjoy exploring a plethora of topics.
               I train in Taekwondo & Muay Thai, which I've loved since I was a kid, and I have a love-hate relationship with bouldering (I have commitment issues).
-              Reading recommendations (favorite series: <em>Red Rising</em>) from Science Fiction to Neuroscience and History to Philosophy are always welcome.
+              Reading recommendations (favorite series: <em class="text-indigo-200/70">Red Rising</em>) from Science Fiction to Neuroscience and History to Philosophy are always welcome.
               I thrive in board games and strategy games, especially when they involve complex decision-making and teamwork (or deception).
               Most of all, I'm passionate about long walks that turn into longer conversations.
             </p>
@@ -256,7 +251,6 @@ if (projects.length === 0) {
           <div class="card">
             <div class="card-border"></div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* Left column: stack Red Rising over Root */}
                 <div class="flex flex-col gap-3">
                   <img src="/Redrising.webp"
                       alt="Red Rising"
@@ -269,7 +263,6 @@ if (projects.length === 0) {
                       loading="lazy" sizes="(max-width: 640px) 100vw, 50vw" />
                 </div>
 
-                {/* Right column */}
                 <img src="/NoLongerHuman.webp"
                     alt="No Longer Human"
                     class="aspect-[3/4] w-full rounded-xl border border-zinc-800/70 object-cover"
@@ -283,15 +276,9 @@ if (projects.length === 0) {
     <footer class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-800/70 pt-4">
         <p>© {new Date().getFullYear()} Sivan Syed</p>
-        <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-zinc-200/60" href={`${B}`}>Back to home</a>
+        <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-indigo-300/50 transition-colors" href={`${B}`}>Back to home</a>
       </div>
     </footer>
-
-    {/* Optional interactive demo */}
-    <!-- <section class="mx-auto max-w-6xl px-6 md:px-12 lg:px-20 py-10">
-      <h2 class="text-xl font-semibold">Interactive demo</h2>
-      <Counter client:load baseUrl={B} soundSrc="/leaf-crunch.mp3" />
-    </section> -->
 
     {/* Tiny client script for mobile nav */}
     <script is:inline>
@@ -302,7 +289,6 @@ if (projects.length === 0) {
           const open = btn.getAttribute('aria-expanded') === 'true';
           btn.setAttribute('aria-expanded', String(!open));
           menu.hidden = open;
-          // Swap icon for close when open (optional)
           btn.innerHTML = !open
             ? `<span class="sr-only">Close navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M6.75 6.75l10.5 10.5M17.25 6.75L6.75 17.25'/></svg>`
             : `<span class="sr-only">Open navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5'/></svg>`;
