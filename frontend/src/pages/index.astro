@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import Counter from "../components/Counter.svelte";
 import { getCollection } from "astro:content";
+import ChargedField from "../components/ChargedField.svelte";
 
 interface Project { title: string; href?: string; tech?: string[] }
 const B = import.meta.env.BASE_URL;
@@ -100,28 +101,82 @@ if (projects.length === 0) {
     {/* Main */}
     <main id="main" class="mx-auto max-w-[90rem] px-4 sm:px-6 md:px-12 lg:px-20 py-8 sm:py-10 md:py-14 space-y-16 sm:space-y-20 md:space-y-24 scroll-mt-20">
       {/* Hero */}
-      <section class="mx-auto max-w-6xl">
-        <div class="flex flex-col-reverse items-start justify-between gap-6 sm:gap-8 md:flex-row md:items-center">
-          <div class="max-w-3xl">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-indigo-300/50 sm:text-xs">Portfolio · Robotics · Controls · Applied Physics</p>
-            <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-              <span class="bg-gradient-to-r from-zinc-100 via-indigo-200 to-zinc-100 bg-clip-text text-transparent animate-shimmer">Building systems that blend</span>
-              <span class="block text-zinc-300/90">theory → computation → hardware</span>
-            </h2>
-            <p class="mt-3 text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
-              I design and prototype across ECE, physics, and mechanics—turning equations into working hardware and clean software.
+      
+    <section class="relative isolate w-screen left-1/2 -translate-x-1/2 -mt-6 sm:-mt-8 md:-mt-10">
+      {/* The field is absolutely positioned so the layout flows around the section's
+          natural height; -z-10 keeps it behind the text. */}
+      <ChargedField
+        client:load class="absolute inset-0 -z-10" 
+        density="med"
+      />
+    
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 md:px-12 lg:px-20">
+        <div class="min-h-[min(88vh,860px)] flex items-center">
+          <div class="max-w-3xl py-20 md:py-28">
+            <p class="eyebrow">Sivan Syed · Austin, TX</p>
+    
+            <h1 class="display mt-5 font-bold text-5xl sm:text-6xl md:text-7xl">
+              <span class="block text-zinc-100">Theory.</span>
+              <span class="block text-zinc-300/85">Computation.</span>
+              <span class="block bg-gradient-to-r from-indigo-300 via-violet-200 to-indigo-300 bg-clip-text text-transparent">
+                Working hardware.
+              </span>
+            </h1>
+    
+            <p class="mt-7 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-300/85">
+              ECE &amp; Physics at UT Austin. I build robotics, controls, and instrumentation
+              projects that turn equations into things that move, measure, and respond &mdash;
+              and I tutor the same material on the side.
             </p>
-            <div class="mt-5 flex flex-wrap gap-3 text-sm sm:mt-6">
-              <a href={`${B}projects`} class="btn-primary">View projects</a>
-              <a href={`${B}tutoring`} class="btn-ghost">Tutoring</a>
+    
+            <div class="mt-9 flex flex-wrap items-center gap-3">
+              <a href={`${B}projects`} class="btn-primary"><span>Browse projects</span></a>
+              <a href={`${B}now`}      class="btn-ghost"><span>What I'm doing now</span></a>
+              <a href={`${B}tutoring`} class="btn-ghost"><span>Tutoring</span></a>
+            </div>
+    
+            {/* Live status — tells visitors what you're actively shipping. Edit
+                this string when your priorities change (or pull it from /now). */}
+            <p class="mt-12 font-mono text-[12px] sm:text-[13px] text-zinc-400/85">
+              <span class="status-dot"></span>
+              <span class="text-indigo-300/70">currently</span>
+              <span class="opacity-50 mx-2">/</span>
+              ping&#8209;pong balancer (phase 2)
+              <span class="opacity-30 mx-2">·</span>
+              MaGe simulations · WLS fibers
+              <span class="opacity-30 mx-2">·</span>
+              MOCVD wafer growth
+            </p>
+    
+            {/* Scroll cue — small, never-too-loud */}
+            <div class="mt-14 hidden sm:flex items-center gap-3 text-[11px] uppercase tracking-[0.25em] text-zinc-500">
+              <span class="h-px w-8 bg-zinc-600/60"></span>
+              scroll
             </div>
           </div>
-          <figure class="mx-auto max-w-md flex-1 text-center md:mx-0">
-            <img src={`/vortex_animation.gif`} alt="Vortex animation" class="mx-auto block aspect-video w-full rounded-2xl border border-zinc-800/70 bg-zinc-900/20 object-cover shadow-[0_0_30px_-8px_rgba(99,102,241,0.12)]" loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 480px" />
-            <figcaption class="mt-2 text-xs text-zinc-500">Vortex animation demonstrating fluid dynamics.</figcaption>
-          </figure>
         </div>
-      </section>
+      </div>
+    </section>
+    
+    {/*
+      Add this to the existing inline <script is:inline> at the bottom of body.
+      It just records the entry point of pointerenter so the liquid fill can
+      expand from where the cursor actually crossed the button edge.
+    */}
+    <script is:inline>
+      (function () {
+        const els = document.querySelectorAll('.btn-primary, .btn-ghost');
+        els.forEach((el) => {
+          el.addEventListener('pointerenter', (e) => {
+            const r = el.getBoundingClientRect();
+            const x = ((e.clientX - r.left) / r.width) * 100;
+            const y = ((e.clientY - r.top) / r.height) * 100;
+            el.style.setProperty('--bx', x + '%');
+            el.style.setProperty('--by', y + '%');
+          });
+        });
+      })();
+    </script>
 
       <hr class="section-divider-glow" />
 

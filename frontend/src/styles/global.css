@@ -103,4 +103,98 @@
       .card-accent-left:hover {
         border-left-color: rgba(99, 102, 241, 0.5);
       }
+
+      /* ──────────────────────────────────────────────────────────────────────────
+    ADDITIONS to frontend/src/styles/global.css
+    Append everything below INSIDE your existing `@layer components { ... }`
+    block, after your current button rules. Nothing here removes existing
+    styles — it upgrades .btn-primary and .btn-ghost with a liquid-fill hover
+    originated from the cursor, and adds two helper utilities used by the
+    refactored hero (mono-eyebrow + status pulse).
+    ────────────────────────────────────────────────────────────────────────── */
+
+  /* ── Liquid hover for buttons — a colored fill expands radially from the
+        point where the cursor entered. Uses CSS custom properties --bx/--by
+        set by a tiny pointerenter listener (see hero snippet's <script>).   */
+  .btn-primary, .btn-ghost {
+    /* needed so the ::before sits behind the text, but inside the rounded box */
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    --bx: 50%;
+    --by: 50%;
+  }
+  .btn-primary > *, .btn-ghost > * { position: relative; z-index: 1; }
+
+  .btn-primary::before,
+  .btn-ghost::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 0;
+    /* circle starts as a 0-radius dot at the entry point and expands on hover */
+    clip-path: circle(0% at var(--bx) var(--by));
+    transition: clip-path 600ms cubic-bezier(0.65, 0, 0.18, 1);
+    pointer-events: none;
+  }
+  .btn-primary::before {
+    background: linear-gradient(135deg, #4f52dc 0%, #6366f1 45%, #8b6fd9 100%);
+  }
+  .btn-ghost::before {
+    background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,111,217,0.18));
+  }
+  .btn-primary:hover::before,
+  .btn-ghost:hover::before {
+    clip-path: circle(140% at var(--bx) var(--by));
+  }
+  /* Once the fill is in place, push the text contrast a bit harder */
+  .btn-primary:hover { color: #fff; border-color: rgba(99,102,241,0.55); }
+  .btn-ghost:hover  { color: #fff; border-color: rgba(99,102,241,0.45); }
+
+  /* Respect reduced-motion users — snap rather than animate */
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary::before, .btn-ghost::before { transition: none; }
+  }
+
+  /* ── Refined eyebrow text used in the new hero ─────────────────────────── */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] text-indigo-300/70;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(165,180,252,0.7));
+  }
+
+  /* ── Status pulse used in the "currently working on" line ──────────────── */
+  .status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: rgb(129 140 248 / 0.9);
+    box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.6);
+    animation: status-pulse 2.4s ease-out infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes status-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.55); }
+    70%  { box-shadow: 0 0 0 10px rgba(129, 140, 248, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(129, 140, 248, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot { animation: none; }
+  }
+
+  /* ── A new accent: kerned, slightly condensed display style for headlines.
+        Drop the .display class onto the <h1> in the hero for hierarchy.    */
+  .display {
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.025em;
+    line-height: 0.95;
+    text-wrap: balance;
+  }
 }
