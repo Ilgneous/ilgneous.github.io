@@ -23,6 +23,8 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@fontsource-variable/geist-mono": "^5.2.7",
+    "@fontsource-variable/space-grotesk": "^5.2.10",
     "resend": "^6.4.2"
   }
 }

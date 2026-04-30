@@ -1,16 +1,17 @@
 <!--
-  ChargedField.svelte — v2
-  Fixes from v1:
-    1. Pointer listener moved to `window` so the hero's content overlay
-       no longer creates a dead-zone in the middle of the canvas.
-    2. Field lines brightened (alpha 0.18 → 0.45) and rendered with
-       additive blending so dense regions glow.
-    3. Particles now drawn as pre-rendered radial-glow sprites with
-       bright cores on top, in additive-blend mode. No more flat dots.
-    4. Atmospheric background: ~220 twinkling stars + 3 slowly drifting
-       nebula clouds (indigo/violet/blue), all sprite-cached.
+  ChargedField.svelte — v3
+  Changes from v2:
+    1. stars and nebula now default to FALSE. The new SpaceBackground.svelte
+       component owns the persistent ambient layer site-wide. Avoids
+       double-rendering stars/nebula in the hero.
+    2. Bottom of the canvas fades out via mask-image so the field
+       transitions smoothly into the rest of the page instead of cutting
+       off sharply.
+    3. Vignette repositioned upward so it doesn't darken the bottom edge
+       (the mask handles that now).
 
   Place at: frontend/src/components/ChargedField.svelte
+  (Replaces the v2 file.)
 -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
@@ -18,12 +19,11 @@
   // Public props
   export let density: 'low' | 'med' | 'high' = 'med';
   export let reactive: boolean = true;
-  export let stars: boolean = true;
-  export let nebula: boolean = true;
+  export let stars: boolean = false;   // ← default changed: SpaceBackground handles these
+  export let nebula: boolean = false;  // ← default changed
   let className: string = '';
   export { className as class };
 
-  // Refs
   let wrap: HTMLDivElement;
   let canvas: HTMLCanvasElement;
   let cleanup: (() => void) | null = null;
@@ -32,18 +32,16 @@
   type Star = { x: number; y: number; a: number; phase: number; speed: number };
   type Blob = { x: number; y: number; vx: number; vy: number; r: number; sprite: HTMLCanvasElement };
 
-  // Palette ties to your existing zinc/indigo/violet system
-  const C_POS: [number, number, number] = [129, 140, 248]; // indigo-400
-  const C_NEG: [number, number, number] = [196, 181, 253]; // violet-300
+  const C_POS: [number, number, number] = [129, 140, 248];
+  const C_NEG: [number, number, number] = [196, 181, 253];
   const NEBULA_TINTS: [number, number, number][] = [
-    [99, 102, 241],   // indigo-500
-    [139, 92, 246],   // violet-500
-    [59, 130, 246],   // blue-500
+    [99, 102, 241],
+    [139, 92, 246],
+    [59, 130, 246],
   ];
   const LINK_DIST = 130;
   const PROBE_DIST = 180;
 
-  /** Pre-render a soft radial sprite for additive blitting. */
   function makeRadialSprite(
     rgb: [number, number, number],
     size: number,
@@ -76,7 +74,6 @@
     let raf = 0, running = true;
     const t0 = performance.now();
 
-    // Sprites — created once, reused every frame
     const SPRITE_SIZE = 64;
     const spritePos = makeRadialSprite(C_POS, SPRITE_SIZE, [
       [0, 1], [0.25, 0.55], [0.6, 0.15], [1, 0],
@@ -103,8 +100,6 @@
 
     function spawn() {
       const scale = Math.min(1.2, Math.max(0.4, (w * h) / (1280 * 720)));
-
-      // Charged particles
       const n = Math.round(baseCount * scale);
       particles = [];
       for (let i = 0; i < n; i++) {
@@ -117,8 +112,6 @@
           r: 1.4 + Math.random() * 1.6,
         });
       }
-
-      // Starfield
       starList = [];
       if (stars) {
         const sn = Math.round(220 * scale);
@@ -132,8 +125,6 @@
           });
         }
       }
-
-      // Nebula blobs — soft drifting clouds
       blobs = [];
       if (nebula) {
         for (let i = 0; i < 3; i++) {
@@ -155,12 +146,10 @@
 
       ctx!.clearRect(0, 0, w, h);
 
-      // ── Layer 1: Nebula clouds (additive, drifting) ─────────────────
       if (blobs.length) {
         ctx!.globalCompositeOperation = 'lighter';
         for (const b of blobs) {
-          b.x += b.vx;
-          b.y += b.vy;
+          b.x += b.vx; b.y += b.vy;
           if (b.x < -b.r) b.x = w + b.r;
           else if (b.x > w + b.r) b.x = -b.r;
           if (b.y < -b.r) b.y = h + b.r;
@@ -170,7 +159,6 @@
         ctx!.globalCompositeOperation = 'source-over';
       }
 
-      // ── Layer 2: Stars (twinkle by phase-shifted sine) ──────────────
       if (starList.length) {
         for (const s of starList) {
           const tw = 0.7 + 0.3 * Math.sin(t * s.speed + s.phase);
@@ -179,7 +167,6 @@
         }
       }
 
-      // ── Layer 3: Update particles + cursor repulsion ────────────────
       const probeD2 = PROBE_DIST * PROBE_DIST;
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
@@ -203,7 +190,6 @@
         else if (p.y > h + 10) p.y = -10;
       }
 
-      // ── Layer 4: Field lines (additive — overlapping lines glow) ────
       ctx!.globalCompositeOperation = 'lighter';
       ctx!.lineWidth = 0.75;
       const linkD2 = LINK_DIST * LINK_DIST;
@@ -227,10 +213,8 @@
       }
       ctx!.globalCompositeOperation = 'source-over';
 
-      // ── Layer 5: Cursor halo (only when over the canvas) ────────────
       if (
-        reactive &&
-        pointer.active &&
+        reactive && pointer.active &&
         pointer.x > -200 && pointer.x < w + 200 &&
         pointer.y > -200 && pointer.y < h + 200
       ) {
@@ -243,7 +227,6 @@
         ctx!.globalCompositeOperation = 'source-over';
       }
 
-      // ── Layer 6: Particle glows (additive sprites) ──────────────────
       ctx!.globalCompositeOperation = 'lighter';
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
@@ -251,7 +234,6 @@
         const size = p.r * 12;
         ctx!.drawImage(sprite, p.x - size / 2, p.y - size / 2, size, size);
       }
-      // Bright cores on top
       ctx!.fillStyle = 'rgba(245, 245, 255, 0.95)';
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
@@ -264,7 +246,6 @@
       raf = requestAnimationFrame(step);
     }
 
-    // KEY FIX: window-level listener so the content overlay can't block events.
     function onMove(e: PointerEvent) {
       const rect = canvas.getBoundingClientRect();
       pointer.x = e.clientX - rect.left;
@@ -330,26 +311,48 @@
 </div>
 
 <style>
-  /* No position/width/height here — consumer's class prop controls those */
+  /*
+    The bottom 30% of the canvas fades to transparent via mask-image.
+    Combined with the persistent SpaceBackground that sits behind, this
+    gives a smooth handoff into the rest of the page instead of a hard cut.
+  */
   .cf-wrap {
     overflow: hidden;
     contain: paint;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      black 0%,
+      black 65%,
+      rgba(0,0,0,0.6) 85%,
+      transparent 100%
+    );
+            mask-image: linear-gradient(
+      to bottom,
+      black 0%,
+      black 65%,
+      rgba(0,0,0,0.6) 85%,
+      transparent 100%
+    );
   }
   .cf-canvas {
     display: block;
     width: 100%;
     height: 100%;
   }
-  /* Softer vignette than v1 — we want the nebula visible at edges */
+  /*
+    Vignette is shifted upward so it darkens edges of the upper portion
+    only. The mask handles the bottom; we don't want both effects piling
+    on each other at the bottom edge.
+  */
   .cf-vignette {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: radial-gradient(
-      ellipse 100% 80% at 50% 50%,
+      ellipse 110% 75% at 50% 30%,
       transparent 0%,
-      rgba(9, 9, 11, 0.30) 75%,
-      rgba(9, 9, 11, 0.80) 100%
+      rgba(9, 9, 11, 0.20) 70%,
+      rgba(9, 9, 11, 0.55) 100%
     );
   }
 </style>

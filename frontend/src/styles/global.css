@@ -1,4 +1,11 @@
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/geist-mono";
 @import "tailwindcss";
+@theme {
+  --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Monaco, monospace;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
 @plugin "@tailwindcss/typography";
 @source "../**/*";
 :root { color-scheme: light dark }
@@ -192,9 +199,109 @@
   /* ── A new accent: kerned, slightly condensed display style for headlines.
         Drop the .display class onto the <h1> in the hero for hierarchy.    */
   .display {
+    font-family: var(--font-display);
     font-feature-settings: "ss01", "cv11";
     letter-spacing: -0.025em;
     line-height: 0.95;
     text-wrap: balance;
   }
+
+  .eyebrow-mono {
+  @apply inline-flex items-center gap-2 font-mono text-[11px] uppercase
+         tracking-[0.18em] text-indigo-300/60;
+  }
+
+  .panel {
+    @apply relative overflow-hidden rounded-2xl border border-zinc-800/70
+          bg-zinc-900/40 p-6 backdrop-blur transition-all duration-300 ease-out;
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
+  }
+  .panel:hover {
+    @apply border-indigo-500/30;
+    background-color: rgba(24, 24, 27, 0.55);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,0.05),
+      0 0 30px -6px rgba(99, 102, 241, 0.20);
+  }
+  
+  .panel-meta {
+    @apply absolute top-4 right-5 font-mono text-[10px] tracking-[0.18em]
+          text-indigo-300/40 transition-colors duration-300;
+  }
+  .panel:hover .panel-meta { @apply text-indigo-300/70; }
+  
+  .panel-glyph {
+    @apply text-indigo-300/45 transition-colors duration-300;
+  }
+  .panel:hover .panel-glyph { @apply text-indigo-300/80; }
+  
+  /* Corner brackets — fade in on hover, mission-control "targeting reticle" */
+  .panel-bracket {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: rgba(165, 180, 252, 0);
+    transition: border-color 350ms ease-out;
+    pointer-events: none;
+  }
+  .panel:hover .panel-bracket { border-color: rgba(165, 180, 252, 0.65); }
+  .panel-bracket-tl { top: 8px; left: 8px;     border-top: 1px solid; border-left: 1px solid; }
+  .panel-bracket-tr { top: 8px; right: 8px;    border-top: 1px solid; border-right: 1px solid; }
+  .panel-bracket-bl { bottom: 8px; left: 8px;  border-bottom: 1px solid; border-left: 1px solid; }
+  .panel-bracket-br { bottom: 8px; right: 8px; border-bottom: 1px solid; border-right: 1px solid; }
+  
+
+  /* ── Hero scroll cue ────────────────────────────────────────────────────
+  Animated downward chevron at the bottom of the hero. Sits inside
+  the hero <section> so it floats over the faded edge of the field. */
+  .scroll-cue {
+    @apply absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col
+          items-center gap-2 font-mono text-[10px] uppercase
+          tracking-[0.25em] text-zinc-500;
+    pointer-events: none;
+  }
+  .scroll-cue-chevron {
+    width: 14px;
+    height: 14px;
+    color: rgba(165, 180, 252, 0.55);
+    animation: scroll-cue-bounce 2s ease-in-out infinite;
+  }
+  @keyframes scroll-cue-bounce {
+    0%, 100% { transform: translateY(0);    opacity: 0.45; }
+    50%      { transform: translateY(7px);  opacity: 1;    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue-chevron { animation: none; }
+  }
+  
+  
+  /* ── Optional: transmission-line divider (alternative to .section-divider-glow)
+        Drop in via: <hr class="section-divider-tx" />                       */
+  .section-divider-tx {
+    @apply relative border-0 my-12 w-full max-w-6xl mx-auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(99, 102, 241, 0.3) 12%,
+      rgba(165, 180, 252, 0.6) 50%,
+      rgba(99, 102, 241, 0.3) 88%,
+      transparent 100%
+    );
+  }
+  .section-divider-tx::before,
+  .section-divider-tx::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    background: rgba(165, 180, 252, 0.7);
+    border-radius: 9999px;
+    transform: translateY(-50%);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+  }
+  .section-divider-tx::before { left: calc(50% - 80px); }
+  .section-divider-tx::after  { left: calc(50% + 80px); }
+
 }
