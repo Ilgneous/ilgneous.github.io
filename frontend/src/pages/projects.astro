@@ -3,14 +3,17 @@
 import "../styles/global.css";
 import { getCollection } from "astro:content";
 import ProjectFilter from "../components/ProjectFilter.svelte";
+import ProjectsGraph from "../components/ProjectsGraph.svelte";
+
 
 const items = await getCollection("projects");
 const B = import.meta.env.BASE_URL;
 
 const projects = items.map((e) => ({
+  slug: e.slug,
   title: e.data.title,
   href: `${B}projects/${e.slug}`,
-  tech: e.data.tech,
+  tech: e.data.tech ?? [],
   summary: e.data.summary ?? "",
   image: e.data.image ? `${B}${e.data.image}` : `${B}images/projects/${e.slug}.jpg`,
 }));
@@ -87,6 +90,32 @@ const page = {
     {/* Main */}
     <main id="main" class="mx-auto max-w-[90rem] px-4 sm:px-6 md:px-12 lg:px-20 py-8 sm:py-10 md:py-14 space-y-16 sm:space-y-20 md:space-y-24 scroll-mt-20">
       {/* Hero */}
+      <section class="section">
+        <header class="mb-6 sm:mb-8">
+          <p class="eyebrow-mono">// 02 &mdash; CONSTELLATION VIEW</p>
+          <div class="flex items-end justify-between flex-wrap gap-3 mt-3">
+            <h2 class="display text-3xl sm:text-4xl font-bold text-zinc-100">
+              Project graph
+            </h2>
+            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+              {projects.length} nodes &middot; drag to explore
+            </p>
+          </div>
+          <p class="mt-3 max-w-2xl text-[15px] sm:text-base leading-relaxed text-zinc-300/80">
+            Each star is a project. Lines connect projects that share tooling or
+            techniques &mdash; thicker lines mean more shared tags. Hover a tag below
+            to highlight everything that touched it.
+          </p>
+        </header>
+      
+        <ProjectsGraph
+          client:load
+          projects={projects}
+          height={680}
+        />
+      </section>
+
+
       <section class="mx-auto max-w-6xl">
         <p class="text-[11px] uppercase tracking-[0.2em] text-indigo-300/50 sm:text-xs">Projects · Hardware · Software · Theory→Practice</p>
         <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
@@ -98,6 +127,14 @@ const page = {
       </section>
 
       <hr class="section-divider-glow" />
+
+      <section class="section">
+  <header class="mb-6 sm:mb-8">
+    <p class="eyebrow-mono">// 03 &mdash; ALL PROJECTS</p>
+    <h2 class="display mt-3 text-3xl sm:text-4xl font-bold text-zinc-100">
+      Browse by topic
+    </h2>
+  </header>
 
       {/* Filter */}
       <section class="section">
