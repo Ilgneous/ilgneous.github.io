@@ -33,6 +33,93 @@ if (projects.length === 0) {
     tech: e.data.tech,
   }));
 }
+
+      // Allowed dept values — add more in the .dept-* CSS block if needed
+type Dept = "ECE" | "PHY" | "MATH" | "CS" | "ME" | "OTHER";
+ 
+interface Course {
+  code: string;       // e.g. "ECE 411"
+  title: string;      // e.g. "Circuit Theory"
+  dept: Dept;
+  depth?: 1 | 2 | 3;  // optional emphasis (1=intro, 2=core, 3=advanced/grad)
+  current?: boolean;  // currently enrolled
+  honors?: boolean;
+}
+ 
+interface Term {
+  label: string;      // e.g. "Fall 2025"
+  status: "completed" | "current" | "upcoming";
+  courses: Course[];
+}
+ 
+// ── EDIT THIS ARRAY TO MATCH YOUR ACTUAL COURSEWORK ────────────────
+// I've populated example values. Replace with real courses + grades
+// (or remove the depth/honors fields if you don't want them).
+const terms: Term[] = [
+  {
+    label: "Spring 2026",
+    status: "current",
+    courses: [
+      { code: "M 372K",  title: "Partial Differential Equations and Applications",dept: "MATH",   depth: 2, current: true },
+      { code: "ECE 445L", title: "Embedded Systems Design Lab",  dept: "ECE",  depth: 3, current: true },
+      { code: "ECE 396K",  title: "Magnetic Materials and Devices", dept: "ECE", depth: 3, current: true },
+      { code: "PHY 389K",  title: "Quantum Mechanics I",dept: "PHY",   depth: 3, current: true },
+    ],
+  },
+  {
+    label: "Fall 2025",
+    status: "completed",
+    courses: [
+      { code: "ECE 339",  title: "Solid-State Electronic Devices",          dept: "ECE",   depth: 2},
+      { code: "ECE 438",  title: "Fundamentals of Electronic Circuits Lab",  dept: "ECE",  depth: 2 },
+      { code: "PHY 381C", title: "Computational Physics",   dept: "PHY", depth: 3 },
+      { code: "ECE 316",  title: "Digital Logic Design",    dept: "ECE",   depth: 1},
+    ],
+  },
+  {
+    label: "Spring 2025",
+    status: "completed",
+    courses: [
+      { code: "ECE 319H", title: "Intro Embedded Systems: Honors",    dept: "ECE",  depth: 1, honors: true },
+      { code: "ECE 411",  title: "Circuit Theory",  dept: "ECE", depth: 1 },
+      { code: "M 365C",  title: "Real Analysis",dept: "MATH",   depth: 3 },
+      { code: "PHY 369",  title: "Thermodynamics and Statistical Mechanics",dept: "PHY",   depth: 2 },
+      { code: "ECE 312H",  title: "Software Design and Implementation I: Honors",dept: "ECE",   depth: 1, honors: true },
+    ],
+  },
+  {
+    label: "Fall 2024",
+    status: "completed",
+    courses: [
+      { code: "ECE 302",title: "Intro to Electrical Engineering",   dept: "ECE",  depth: 1},
+      { code: "PHY 336K",  title: "Classical Dynamics",      dept: "PHY", depth: 2 },
+      { code: "PHY 336L",  title: "Fluid Dynamics",    dept: "PHY",   depth: 3 },
+      { code: "ECE 306",title: "Introduction to Computing",   dept: "ECE",  depth: 1},
+      { code: "M 361",  title: "Theory of Functions of Complex Variables",      dept: "MATH", depth: 2 },
+      { code: "GER 322E",  title: "Conversation and Composition: Contemporary Controversies",    dept: "OTHER",   depth: 3 },
+      { code: "MSE 360M",  title: "Experiments in Materials Science and Engineering",    dept: "OTHER",   depth: 2 },
+    ],
+  },
+];
+ 
+// Department palette mapping, used by the legend below
+const deptInfo: Record<Dept, { label: string; classes: string }> = {
+  ECE:    { label: "Electrical Eng.",  classes: "dept-ece" },
+  PHY:   { label: "Physics",          classes: "dept-phy" },
+  MATH:  { label: "Mathematics",      classes: "dept-math" },
+  CS:    { label: "Computer Science", classes: "dept-cs" },
+  ME:    { label: "Mechanical Eng.",  classes: "dept-me" },
+  OTHER: { label: "Other",            classes: "dept-other" },
+};
+ 
+// Compute summary stats
+const totalCourses = terms.reduce((n, t) => n + t.courses.length, 0);
+const deptCounts = terms.flatMap(t => t.courses).reduce((acc, c) => {
+  acc[c.dept] = (acc[c.dept] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+const deptsRepresented = Object.keys(deptCounts).length;
+
 ---
 <html lang="en">
   <head>
@@ -120,7 +207,7 @@ if (projects.length === 0) {
         </h1>
  
         <p class="mt-7 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-300/85">
-          ECE &amp; physics at UT Austin. I build robotics, controls, and instrumentation
+          ECE &amp; Physics at UT Austin. I build robotics, controls, and instrumentation
           projects that turn equations into things that move, measure, and respond &mdash;
           and I tutor the same material on the side.
         </p>
@@ -135,11 +222,11 @@ if (projects.length === 0) {
           <span class="status-dot"></span>
           <span class="text-indigo-300/70">currently</span>
           <span class="opacity-50 mx-2">/</span>
-          Racing Simulator
+          Intern at Emerson
           <span class="opacity-30 mx-2">·</span>
-          Skyrmion Racetrack Simulations
+          Studying VLSI
           <span class="opacity-30 mx-2">·</span>
-          Location Tracking Wands
+          Grad school applicant
         </p>
       </div>
     </div>
@@ -357,46 +444,250 @@ if (projects.length === 0) {
 
       {/* Goals */}
       <section class="section">
-<header class="mb-6 sm:mb-8">
-  <p class="eyebrow-mono">// 03 &mdash; GOALS</p>
-  <h3 class="display mt-3 text-2xl sm:text-3xl font-bold text-zinc-100">What I'm building toward</h3>
-</header>        <div class="grid grid-cols-1 gap-4 sm:gap-6">
-          <div class="card card-accent-left">
-            <div class="card-border"></div>
-            <p class="text-[15px] leading-7 text-zinc-300 sm:text-base">
-              I aim to push the boundaries of science and engineering in physics-driven fields—plasma, condensed matter, and robotics—by
-              pairing rigorous theoretical foundations with innovative hardware and scalable computational tools.
-            </p>
-            <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
-              My long-term goal is to design systems that reveal new physical phenomena and enable technologies that make them practical. From
-              high-energy plasma diagnostics and precision instrumentation to intelligent, adaptive robotic platforms. I want to be at the
-              intersection where <span class="text-accent font-medium">scientific insight becomes engineered reality</span>.
-            </p>
-            <p class="mt-3 text-[15px] leading-7 text-zinc-300 sm:text-base">
-              Every project I build, whether it's a balancing robot, a semiconductor simulation, or an embedded control loop, is a step toward
-              mastering that full stack: <span class="text-accent font-medium">theory → computation → implementation → impact</span>.
-              I'm motivated by curiosity, precision, and the pursuit of elegance in both equations and hardware.
-            </p>
+  <header class="mb-8 sm:mb-10">
+    <p class="eyebrow-mono">// 03 &mdash; MISSION PROFILE</p>
+    <h2 class="display mt-3 text-3xl sm:text-4xl font-bold text-zinc-100">
+      What I'm building toward
+    </h2>
+    <p class="mt-3 max-w-2xl text-[15px] sm:text-base leading-relaxed text-zinc-300/80">
+      Not a fixed schedule &mdash; a direction. Where I am, where I'm heading,
+      and the kind of work I want to be doing once I get there.
+    </p>
+  </header>
+ 
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+ 
+    {/* ── Trajectory — three vertical phases on the left, spans 2 cols on lg+ ── */}
+    <div class="lg:col-span-2 panel">
+      <span class="panel-bracket panel-bracket-tl"></span>
+      <span class="panel-bracket panel-bracket-tr"></span>
+      <span class="panel-bracket panel-bracket-bl"></span>
+      <span class="panel-bracket panel-bracket-br"></span>
+ 
+      <div class="flex items-center justify-between mb-7">
+        <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">TRAJECTORY</p>
+        <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-300/60">
+          <span class="status-dot"></span>NOMINAL
+        </p>
+      </div>
+ 
+      <ol class="trajectory">
+ 
+        {/* ── Phase 1: Current ─────────────────────────────────────── */}
+        <li class="phase phase-current">
+          <div class="phase-rail">
+            <span class="phase-marker"></span>
           </div>
-        </div>
-      </section>
+          <div class="phase-body">
+            <div class="flex items-baseline justify-between flex-wrap gap-2">
+              <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-indigo-300/80">
+                PHASE 01 &middot; CURRENT ORBIT
+              </p>
+              <p class="font-mono text-[10px] text-zinc-500">[ACTIVE]</p>
+            </div>
+            <h3 class="display text-xl sm:text-2xl font-semibold mt-1.5 text-zinc-100">
+              Building the foundation
+            </h3>
+            <p class="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-zinc-300/85">
+              Undergrad ECE &amp; physics at UT Austin. Splitting time between coursework,
+              research projects, and tutoring. The goal isn't a polished resume yet &mdash;
+              it's getting wide exposure to the tools and learning what kinds of problems
+              feel worth chasing.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              <span class="phase-chip">UT Austin</span>
+              <span class="phase-chip">undergrad research</span>
+              <span class="phase-chip">tutoring</span>
+            </div>
+          </div>
+        </li>
+ 
+        {/* ── Phase 2: Transition ──────────────────────────────────── */}
+        <li class="phase">
+          <div class="phase-rail">
+            <span class="phase-marker"></span>
+          </div>
+          <div class="phase-body">
+            <div class="flex items-baseline justify-between flex-wrap gap-2">
+              <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-400/70">
+                PHASE 02 &middot; TRAJECTORY
+              </p>
+              <p class="font-mono text-[10px] text-zinc-600">[QUEUED]</p>
+            </div>
+            <h3 class="display text-xl sm:text-2xl font-semibold mt-1.5 text-zinc-100/90">
+              Going deeper
+            </h3>
+            <p class="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-zinc-300/80">
+              Graduate work in something at the boundary of physics and engineering &mdash;
+              controls, instrumentation, applied physics, or experimental hardware design.
+              I'm specifically interested in the parts of those fields where theory and
+              experiment have to argue with each other.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              <span class="phase-chip">graduate study</span>
+              <span class="phase-chip">research labs</span>
+              <span class="phase-chip">applied physics</span>
+            </div>
+          </div>
+        </li>
+ 
+        {/* ── Phase 3: Target ──────────────────────────────────────── */}
+        <li class="phase phase-target">
+          <div class="phase-rail">
+            <span class="phase-marker"></span>
+          </div>
+          <div class="phase-body">
+            <div class="flex items-baseline justify-between flex-wrap gap-2">
+              <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-violet-300/70">
+                PHASE 03 &middot; TARGET PROFILE
+              </p>
+              <p class="font-mono text-[10px] text-zinc-600">[PROJECTED]</p>
+            </div>
+            <h3 class="display text-xl sm:text-2xl font-semibold mt-1.5 text-zinc-100/90">
+              The kind of work I want to be doing
+            </h3>
+            <p class="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-zinc-300/80">
+              Designing experimental systems for problems that nobody's solved yet &mdash;
+              detector physics, aerospace instrumentation, novel sensors, semiconductor
+              devices. The specific institution matters less than the work: I want to be
+              somewhere I can build hardware that goes on to do real measurements.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              <span class="phase-chip">instrumentation</span>
+              <span class="phase-chip">experimental hardware</span>
+              <span class="phase-chip">research</span>
+            </div>
+          </div>
+        </li>
+ 
+      </ol>
+    </div>
+ 
+    {/* ── Design principles — the WHY ──────────────────────────────── */}
+    <aside class="panel">
+      <span class="panel-bracket panel-bracket-tl"></span>
+      <span class="panel-bracket panel-bracket-tr"></span>
+      <span class="panel-bracket panel-bracket-bl"></span>
+      <span class="panel-bracket panel-bracket-br"></span>
+ 
+      <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500 mb-1">
+        DESIGN PRINCIPLES
+      </p>
+      <h3 class="display text-lg font-semibold text-zinc-100 mb-4">
+        Things that won't change
+      </h3>
+ 
+      <ul class="principles">
+        <li>
+          <span class="p-num">/01</span>
+          <p>
+            <strong class="text-zinc-100">Build, don't just analyze.</strong>
+            Theory is how I think about a problem; hardware is how I know I understood it.
+          </p>
+        </li>
+        <li>
+          <span class="p-num">/02</span>
+          <p>
+            <strong class="text-zinc-100">Stay close to the physics.</strong>
+            I'd rather be the person who knows why a circuit works than the one who knows
+            twenty frameworks for connecting circuits.
+          </p>
+        </li>
+        <li>
+          <span class="p-num">/03</span>
+          <p>
+            <strong class="text-zinc-100">Document everything.</strong>
+            Work that isn't written down didn't happen. The writeup is half the project.
+          </p>
+        </li>
+        <li>
+          <span class="p-num">/04</span>
+          <p>
+            <strong class="text-zinc-100">Teach what I'm learning.</strong>
+            Tutoring isn't separate from research &mdash; it's the test of whether I
+            actually understand the material.
+          </p>
+        </li>
+      </ul>
+    </aside>
+ 
+  </div>
+</section>
+
 
       <hr class="section-divider-glow" />
 
       {/* Coursework */}
-      <section class="section">
-<header class="mb-6 sm:mb-8">
-  <p class="eyebrow-mono">// 04 &mdash; ACADEMIC COURSEWORK</p>
-  <h3 class="display mt-3 text-2xl sm:text-3xl font-bold text-zinc-100">What I've Learned</h3>
-</header>        <ul class="mt-3 grid grid-cols-1 gap-2 text-[15px] leading-7 text-zinc-300 sm:mt-4 sm:gap-3 sm:text-sm sm:leading-6 sm:grid-cols-2">
-          <li><span class="font-medium text-indigo-200/80">Physics:</span> Quantum I/II, Statistical Mechanics, Thermodynamics, Classical Dynamics, Relativity</li>
-          <li><span class="font-medium text-indigo-200/80">Electrical Engineering:</span> Electronic Circuits Lab, Digital Logic, Semiconductor Devices, Embedded, Signals</li>
-          <li><span class="font-medium text-indigo-200/80">Mathematics:</span> Real Analysis, Complex Analysis, Linear Algebra, Differential Equations</li>
-          <li><span class="font-medium text-indigo-200/80">Mechanical Engineering:</span> Fluid Dynamics, Mechanics of Solids, Thermodynamics</li>
-          <li><span class="font-medium text-indigo-200/80">Applied:</span> Computational Physics, EM, Fluid Dynamics, Mechanics of Solids</li>
-          <li><span class="font-medium text-indigo-200/80">Misc:</span> German Language, Materials Experiments, Software Design</li>
+ 
+<section class="section">
+  <header class="mb-8 sm:mb-10">
+    <p class="eyebrow-mono">// 04 &mdash; ACADEMIC RECORD</p>
+    <div class="flex items-end justify-between flex-wrap gap-3 mt-3">
+      <h2 class="display text-3xl sm:text-4xl font-bold text-zinc-100">
+        Coursework
+      </h2>
+      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
+        {totalCourses} courses &middot; {deptsRepresented} departments
+      </p>
+    </div>
+    <p class="mt-3 max-w-2xl text-[15px] sm:text-base leading-relaxed text-zinc-300/80">
+      The coursework that grounds the projects. Departments are color-coded;
+      depth markers indicate intro, core, or advanced/graduate-level material.
+    </p>
+  </header>
+ 
+  {/* Department legend */}
+  <div class="dept-legend mb-6">
+    {Object.entries(deptInfo).map(([key, info]) => (
+      deptCounts[key] ? (
+        <span class={`dept-tag ${info.classes}`}>
+          <span class="dept-dot"></span>
+          {info.label}
+          <span class="dept-count">{deptCounts[key]}</span>
+        </span>
+      ) : null
+    ))}
+  </div>
+ 
+  {/* Transcript */}
+  <div class="transcript">
+    {terms.map((term) => (
+      <div class={`term term-${term.status}`}>
+        <header class="term-head">
+          <p class="font-mono text-[11px] uppercase tracking-[0.18em]">
+            <span class="term-label">{term.label}</span>
+            <span class="term-status">[{term.status.toUpperCase()}]</span>
+          </p>
+          <p class="font-mono text-[10px] text-zinc-600">
+            {term.courses.length} courses
+          </p>
+        </header>
+ 
+        <ul class="course-list">
+          {term.courses.map((c) => (
+            <li class={`course ${deptInfo[c.dept].classes}`}>
+              <span class="course-code">{c.code}</span>
+              <div class="course-main">
+                <span class="course-title">{c.title}</span>
+                <div class="course-meta">
+                  {c.honors && <span class="course-flag">HON</span>}
+                  {c.depth && (
+                    <span class="course-depth" title={`Depth: ${c.depth}/3`}>
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <span class={`depth-bar ${i < c.depth! ? "on" : ""}`}></span>
+                      ))}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
         </ul>
-      </section>
+      </div>
+    ))}
+  </div>
+</section>
+
 
       <hr class="section-divider-glow" />
 
