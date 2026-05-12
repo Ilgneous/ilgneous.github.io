@@ -34,7 +34,7 @@ if (projects.length === 0) {
   }));
 }
 
-      // Allowed dept values — add more in the .dept-* CSS block if needed
+// Allowed dept values — add more in the .dept-* CSS block if needed
 type Dept = "ECE" | "PHY" | "MATH" | "CS" | "ME" | "OTHER";
  
 interface Course {
@@ -52,9 +52,7 @@ interface Term {
   courses: Course[];
 }
  
-// ── EDIT THIS ARRAY TO MATCH YOUR ACTUAL COURSEWORK ────────────────
-// I've populated example values. Replace with real courses + grades
-// (or remove the depth/honors fields if you don't want them).
+// Coursework Data — structured for easy rendering and stats, but could be manually edited or pulled from an API in the future
 const terms: Term[] = [
   {
     label: "Spring 2026",
@@ -158,7 +156,6 @@ const deptsRepresented = Object.keys(deptCounts).length;
           <a class="navlink" href={`${B}`}>Home</a>
           <a class="navlink" href={`${B}projects`}>Projects</a>
           <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
-          <a class="navlink" href={`${B}now`}>Now</a>
           <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
         </nav>
 
@@ -175,7 +172,6 @@ const deptsRepresented = Object.keys(deptCounts).length;
             <a class="navlink w-full" href={`${B}`}>Home</a>
             <a class="navlink w-full" href={`${B}projects`}>Projects</a>
             <a class="navlink w-full" href={`${B}tutoring`}>Tutoring</a>
-            <a class="navlink w-full" href={`${B}now`}>Now</a>
             <a class="navlink w-full" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
           </nav>
         </div>
@@ -207,15 +203,17 @@ const deptsRepresented = Object.keys(deptCounts).length;
         </h1>
  
         <p class="mt-7 max-w-xl text-base sm:text-lg leading-relaxed text-zinc-300/85">
-          ECE &amp; Physics at UT Austin. I build robotics, controls, and instrumentation
-          projects that turn equations into things that move, measure, and respond &mdash;
-          and I tutor the same material on the side.
+          Hi! I'm Sivan, an undergrad studying ECE, Physics, and Math at UT Austin. I created this site to share the 
+          projects I'm working on, the things I'm learning, and the goals I'm building toward. I have a particular interest 
+          in controls, robotics, aerospace, instrumentation, and experimental hardware design, but I'm always open to new problems that make me think.
+          
+          Feel free to explore, and if you want to chat about anything you see here, you can reach me at \*insert contact page\*!
         </p>
  
         <div class="mt-9 flex flex-wrap items-center gap-3">
           <a href={`${B}projects`} class="btn-primary"><span>Browse projects</span></a>
-          <a href={`${B}now`}      class="btn-ghost"><span>What I'm doing now</span></a>
           <a href={`${B}tutoring`} class="btn-ghost"><span>Tutoring</span></a>
+          <a href={`/SyedS_ResumeELC_Print.pdf`} class="btn-ghost"><span>Resume</span></a>
         </div>
  
         <p class="mt-12 font-mono text-[12px] sm:text-[13px] text-zinc-400/85">
@@ -263,8 +261,21 @@ const deptsRepresented = Object.keys(deptCounts).length;
     </script>
 
       <hr class="section-divider-glow" />
+---
+// ════════════════════════════════════════════════════════════════════════
+// REPLACEMENT for the "How I work" section in index.astro
+// (the [EDIT 4] block from the v3 integration)
+//
+// Reordering:
+//   01 — Theory → code      (now the tall feature card on the left)
+//   02 — Simulate first     (top-right small)
+//   03 — Systems & hardware (bottom-right small)
+//   04 — Documenting        (wide bottom card, unchanged position)
+//
+// Reading flow: theory → simulate → build → document.
+// ════════════════════════════════════════════════════════════════════════
+---
 
-      {/* What I do */}
 <section class="section">
   <header class="mb-8 sm:mb-10">
     <p class="eyebrow-mono">// 01 — OPERATING PRINCIPLES</p>
@@ -276,85 +287,51 @@ const deptsRepresented = Object.keys(deptCounts).length;
       detector simulations to balancing robots.
     </p>
   </header>
- 
+
   <div class="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-4 lg:gap-5">
- 
-    {/* ── Featured: 01 — spans 1 col, 2 rows on md+ ─────────────────── */}
+
+    {/* ── 01 — Featured: Theory → code (tall, left, spans 2 rows on md+) ── */}
     <article class="panel md:row-span-2 flex flex-col">
       <span class="panel-bracket panel-bracket-tl"></span>
       <span class="panel-bracket panel-bracket-tr"></span>
       <span class="panel-bracket panel-bracket-bl"></span>
       <span class="panel-bracket panel-bracket-br"></span>
       <p class="panel-meta">[01 / 04]</p>
- 
+
       <div class="panel-glyph mt-2 mb-6 w-16 h-16 sm:w-20 sm:h-20">
-        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.25" class="w-full h-full">
-          <circle cx="12" cy="12" r="2" fill="currentColor"/>
-          <circle cx="52" cy="12" r="2" fill="currentColor"/>
-          <circle cx="12" cy="52" r="2" fill="currentColor"/>
-          <circle cx="52" cy="52" r="2" fill="currentColor"/>
-          <circle cx="32" cy="32" r="3"/>
-          <line x1="14" y1="12" x2="50" y2="12"/>
-          <line x1="14" y1="52" x2="50" y2="52"/>
-          <line x1="12" y1="14" x2="12" y2="50"/>
-          <line x1="52" y1="14" x2="52" y2="50"/>
-          <line x1="29" y1="32" x2="14" y2="32"/>
-          <line x1="35" y1="32" x2="50" y2="32"/>
-          <line x1="32" y1="29" x2="32" y2="14"/>
-          <line x1="32" y1="35" x2="32" y2="50"/>
-        </svg>
-      </div>
- 
-      <h3 class="display text-2xl sm:text-3xl font-semibold mb-3 text-zinc-100">
-        Systems &amp; <span class="text-accent">hardware</span>
-      </h3>
-      <p class="text-zinc-300/85 leading-relaxed text-[15px] flex-1">
-        The fun part. Where firmware meets a real motor and the math has to hold under load.
-        Closed-loop balancers, instrumentation, and embedded controllers &mdash; designing
-        things that have to keep working when nobody's watching them.
-      </p>
- 
-      <div class="mt-6 pt-4 border-t border-zinc-800/60">
-        <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">RECENT</p>
-        <p class="font-mono text-[12px] text-indigo-300/70 mt-1.5">
-          ping-pong balancer · h-bridge driver · digital filter board
-        </p>
-      </div>
-    </article>
- 
-    {/* ── 02 ──────────────────────────────────────────────────────── */}
-    <article class="panel flex flex-col">
-      <span class="panel-bracket panel-bracket-tl"></span>
-      <span class="panel-bracket panel-bracket-tr"></span>
-      <span class="panel-bracket panel-bracket-bl"></span>
-      <span class="panel-bracket panel-bracket-br"></span>
-      <p class="panel-meta">[02 / 04]</p>
- 
-      <div class="panel-glyph mt-1 mb-3 w-12 h-12">
         <svg viewBox="0 0 64 64" class="w-full h-full">
           <text x="32" y="48" text-anchor="middle" font-size="48"
                 fill="currentColor" font-family="ui-serif, Georgia, serif"
                 font-style="italic" font-weight="400">∂</text>
         </svg>
       </div>
- 
-      <h3 class="display text-lg sm:text-xl font-semibold mb-2 text-zinc-100">
-        Theory &rarr; code
+
+      <h3 class="display text-2xl sm:text-3xl font-semibold mb-3 text-zinc-100">
+        Theory <span class="text-accent">&rarr;</span> code
       </h3>
-      <p class="text-zinc-300/85 leading-relaxed text-[14px]">
+      <p class="text-zinc-300/85 leading-relaxed text-[15px] flex-1">
         Every project starts as an equation. Lagrangians become state-space controllers,
         Maxwell becomes Verilog, transfer functions become PID gains you can actually tune.
+        Most of the engineering work happens here &mdash; before any silicon is involved &mdash;
+        translating math into something a computer can run.
       </p>
+
+      <div class="mt-6 pt-4 border-t border-zinc-800/60">
+        <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">RECENT</p>
+        <p class="font-mono text-[12px] text-indigo-300/70 mt-1.5">
+          state-space ball balancer · digital filter design · MaGe geometries
+        </p>
+      </div>
     </article>
- 
-    {/* ── 03 ──────────────────────────────────────────────────────── */}
+
+    {/* ── 02 — Simulate first ──────────────────────────────────────── */}
     <article class="panel flex flex-col">
       <span class="panel-bracket panel-bracket-tl"></span>
       <span class="panel-bracket panel-bracket-tr"></span>
       <span class="panel-bracket panel-bracket-bl"></span>
       <span class="panel-bracket panel-bracket-br"></span>
-      <p class="panel-meta">[03 / 04]</p>
- 
+      <p class="panel-meta">[02 / 04]</p>
+
       <div class="panel-glyph mt-1 mb-3 w-12 h-12">
         <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"
              stroke-linecap="round" class="w-full h-full">
@@ -363,7 +340,7 @@ const deptsRepresented = Object.keys(deptCounts).length;
           <path d="M 4 32 Q 12 14, 20 32 T 36 32 T 52 32 T 60 32"/>
         </svg>
       </div>
- 
+
       <h3 class="display text-lg sm:text-xl font-semibold mb-2 text-zinc-100">
         Simulate first
       </h3>
@@ -372,15 +349,51 @@ const deptsRepresented = Object.keys(deptCounts).length;
         MaGe geometries &mdash; laptops are where the iteration loop is fast.
       </p>
     </article>
- 
-    {/* ── 04 — spans 2 cols on md+ ───────────────────────────────── */}
+
+    {/* ── 03 — Systems & hardware ──────────────────────────────────── */}
+    <article class="panel flex flex-col">
+      <span class="panel-bracket panel-bracket-tl"></span>
+      <span class="panel-bracket panel-bracket-tr"></span>
+      <span class="panel-bracket panel-bracket-bl"></span>
+      <span class="panel-bracket panel-bracket-br"></span>
+      <p class="panel-meta">[03 / 04]</p>
+
+      <div class="panel-glyph mt-1 mb-3 w-12 h-12">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.25" class="w-full h-full">
+          <circle cx="12" cy="12" r="2" fill="currentColor"/>
+          <circle cx="52" cy="12" r="2" fill="currentColor"/>
+          <circle cx="12" cy="52" r="2" fill="currentColor"/>
+          <circle cx="52" cy="52" r="2" fill="currentColor"/>
+          <circle cx="32" cy="32" r="2.5"/>
+          <line x1="14" y1="12" x2="50" y2="12"/>
+          <line x1="14" y1="52" x2="50" y2="52"/>
+          <line x1="12" y1="14" x2="12" y2="50"/>
+          <line x1="52" y1="14" x2="52" y2="50"/>
+          <line x1="29.5" y1="32" x2="14" y2="32"/>
+          <line x1="34.5" y1="32" x2="50" y2="32"/>
+          <line x1="32" y1="29.5" x2="32" y2="14"/>
+          <line x1="32" y1="34.5" x2="32" y2="50"/>
+        </svg>
+      </div>
+
+      <h3 class="display text-lg sm:text-xl font-semibold mb-2 text-zinc-100">
+        Systems &amp; <span class="text-accent">hardware</span>
+      </h3>
+      <p class="text-zinc-300/85 leading-relaxed text-[14px]">
+        Where firmware meets a real motor and the math has to hold under load. Closed-loop
+        controllers, instrumentation, embedded designs &mdash; things that have to keep
+        working when nobody's watching.
+      </p>
+    </article>
+
+    {/* ── 04 — Documenting the work (wide, spans 2 cols on md+) ────── */}
     <article class="panel md:col-span-2 flex flex-row gap-6 items-start">
       <span class="panel-bracket panel-bracket-tl"></span>
       <span class="panel-bracket panel-bracket-tr"></span>
       <span class="panel-bracket panel-bracket-bl"></span>
       <span class="panel-bracket panel-bracket-br"></span>
       <p class="panel-meta">[04 / 04]</p>
- 
+
       <div class="panel-glyph flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16">
         <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="0.9" class="w-full h-full">
           <rect x="8" y="8" width="48" height="48"/>
@@ -393,7 +406,7 @@ const deptsRepresented = Object.keys(deptCounts).length;
           <circle cx="32" cy="32" r="4" stroke-width="1.4"/>
         </svg>
       </div>
- 
+
       <div class="flex-1 min-w-0">
         <h3 class="display text-lg sm:text-xl font-semibold mb-2 text-zinc-100">
           Documenting the work
@@ -406,7 +419,7 @@ const deptsRepresented = Object.keys(deptCounts).length;
         </p>
       </div>
     </article>
- 
+
   </div>
 </section>
 
@@ -450,8 +463,8 @@ const deptsRepresented = Object.keys(deptCounts).length;
       What I'm building toward
     </h2>
     <p class="mt-3 max-w-2xl text-[15px] sm:text-base leading-relaxed text-zinc-300/80">
-      Not a fixed schedule &mdash; a direction. Where I am, where I'm heading,
-      and the kind of work I want to be doing once I get there.
+      Here's the rough trajectory I'm aiming for over the next few years. The details will probably change, 
+      but the general direction is what I'm trying to keep steady.
     </p>
   </header>
  
@@ -489,15 +502,15 @@ const deptsRepresented = Object.keys(deptCounts).length;
               Building the foundation
             </h3>
             <p class="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-zinc-300/85">
-              Undergrad ECE &amp; physics at UT Austin. Splitting time between coursework,
-              research projects, and tutoring. The goal isn't a polished resume yet &mdash;
-              it's getting wide exposure to the tools and learning what kinds of problems
-              feel worth chasing.
+              Undergrad ECE &amp; Physics at UT Austin. Splitting time between coursework,
+              research projects, and passion projects. I hope to keep a broad focus to build
+              a strong foundation in fundamentals so I can specialize later on the things I find most exciting.
             </p>
             <div class="mt-3 flex flex-wrap gap-1.5">
               <span class="phase-chip">UT Austin</span>
-              <span class="phase-chip">undergrad research</span>
-              <span class="phase-chip">tutoring</span>
+              <span class="phase-chip">Undergrad Research</span>
+              <span class="phase-chip">Tutoring</span>
+              <span class="phase-chip">Internships</span>
             </div>
           </div>
         </li>
@@ -518,15 +531,14 @@ const deptsRepresented = Object.keys(deptCounts).length;
               Going deeper
             </h3>
             <p class="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-zinc-300/80">
-              Graduate work in something at the boundary of physics and engineering &mdash;
-              controls, instrumentation, applied physics, or experimental hardware design.
-              I'm specifically interested in the parts of those fields where theory and
-              experiment have to argue with each other.
+              Graduate studies and industry experience to deepen my expertise and get closer to the kind of work I want to be doing long-term. 
+              I'm particularly interested in somewhere I can keep designing and building experimental systems while learning 
+              from people who have been doing it for a while.
             </p>
             <div class="mt-3 flex flex-wrap gap-1.5">
-              <span class="phase-chip">graduate study</span>
-              <span class="phase-chip">research labs</span>
-              <span class="phase-chip">applied physics</span>
+              <span class="phase-chip">Graduate studies</span>
+              <span class="phase-chip">Research Labs / R&D Work</span>
+              <span class="phase-chip">Applied Physics</span>
             </div>
           </div>
         </li>
@@ -547,15 +559,15 @@ const deptsRepresented = Object.keys(deptCounts).length;
               The kind of work I want to be doing
             </h3>
             <p class="mt-2 text-[14px] sm:text-[15px] leading-relaxed text-zinc-300/80">
-              Designing experimental systems for problems that nobody's solved yet &mdash;
-              detector physics, aerospace instrumentation, novel sensors, semiconductor
-              devices. The specific institution matters less than the work: I want to be
-              somewhere I can build hardware that goes on to do real measurements.
+              Designing systems for problems that nobody's solved yet.
+              Detector physics, aerospace instrumentation, novel sensors, controls work.\
+              The specific institution matters less than the work: I want to be
+              somewhere on the bleeding edge of technology.
             </p>
             <div class="mt-3 flex flex-wrap gap-1.5">
-              <span class="phase-chip">instrumentation</span>
-              <span class="phase-chip">experimental hardware</span>
-              <span class="phase-chip">research</span>
+              <span class="phase-chip">Instrumentation</span>
+              <span class="phase-chip">Experimental hardware</span>
+              <span class="phase-chip">Research & Development</span>
             </div>
           </div>
         </li>
@@ -581,15 +593,15 @@ const deptsRepresented = Object.keys(deptCounts).length;
         <li>
           <span class="p-num">/01</span>
           <p>
-            <strong class="text-zinc-100">Build, don't just analyze.</strong>
-            Theory is how I think about a problem; hardware is how I know I understood it.
+            <strong class="text-zinc-100">Analyze then build.</strong>
+            Rushing the process results in more mistakes. Make use of the proper debug techniques 
           </p>
         </li>
         <li>
           <span class="p-num">/02</span>
           <p>
             <strong class="text-zinc-100">Stay close to the physics.</strong>
-            I'd rather be the person who knows why a circuit works than the one who knows
+            I want to be both the person who knows why a circuit works and the one who knows
             twenty frameworks for connecting circuits.
           </p>
         </li>
@@ -597,14 +609,15 @@ const deptsRepresented = Object.keys(deptCounts).length;
           <span class="p-num">/03</span>
           <p>
             <strong class="text-zinc-100">Document everything.</strong>
-            Work that isn't written down didn't happen. The writeup is half the project.
+            The work that isn't visible is the work that isn't useful. If I can't explain
+            something clearly, I probably don't understand it well enough yet.
           </p>
         </li>
         <li>
           <span class="p-num">/04</span>
           <p>
             <strong class="text-zinc-100">Teach what I'm learning.</strong>
-            Tutoring isn't separate from research &mdash; it's the test of whether I
+            Tutoring isn't separate from research  it's the test of whether I
             actually understand the material.
           </p>
         </li>
