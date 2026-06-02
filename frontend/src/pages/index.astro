@@ -240,11 +240,7 @@ const deptsRepresented = Object.keys(deptCounts).length;
   </div>
 </section>
     
-    {/*
-      Add this to the existing inline <script is:inline> at the bottom of body.
-      It just records the entry point of pointerenter so the liquid fill can
-      expand from where the cursor actually crossed the button edge.
-    */}
+
     <script is:inline>
       (function () {
         const els = document.querySelectorAll('.btn-primary, .btn-ghost');
@@ -261,20 +257,6 @@ const deptsRepresented = Object.keys(deptCounts).length;
     </script>
 
       <hr class="section-divider-glow" />
----
-// ════════════════════════════════════════════════════════════════════════
-// REPLACEMENT for the "How I work" section in index.astro
-// (the [EDIT 4] block from the v3 integration)
-//
-// Reordering:
-//   01 — Theory → code      (now the tall feature card on the left)
-//   02 — Simulate first     (top-right small)
-//   03 — Systems & hardware (bottom-right small)
-//   04 — Documenting        (wide bottom card, unchanged position)
-//
-// Reading flow: theory → simulate → build → document.
-// ════════════════════════════════════════════════════════════════════════
----
 
 <section class="section">
   <header class="mb-8 sm:mb-10">
