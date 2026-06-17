@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+const { title = 'Sivan Syed — Physics & ECE', description = 'Physics and ECE student at UT Austin. Robotics, controls, power electronics, and mechanical design.' } = Astro.props;
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav-inner">
+        <a href="/" class="brand">Sivan Syed<b>.</b></a>
+        <nav class="links">
+          <a href="/#work" class:list={[{ active: path === '/' }]}>Work</a>
+          <a href="/#about">About</a>
+          <a href="/resume.pdf" class="mono">Résumé ↗</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <span class="mono dim">// SIVAN SYED — AUSTIN, TX</span>
+        <span class="mono dim">
+          <a href="mailto:hello@example.com">EMAIL</a> ·
+          <a href="https://github.com">GITHUB</a> ·
+          <a href="https://linkedin.com">LINKEDIN</a>
+        </span>
+      </div>
+    </footer>
+
+    <style>
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(8px);
+        background: color-mix(in srgb, var(--color-graphite) 80%, transparent);
+        border-bottom: 1px solid var(--color-neutral-line);
+      }
+      .nav-inner, .footer-inner {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 clamp(20px, 5vw, 64px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-inner { height: 64px; }
+      .brand {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+        text-decoration: none;
+      }
+      .brand b { color: var(--color-torque); }
+      .links {
+        display: flex;
+        gap: 28px;
+        font-size: 14px;
+        color: var(--color-paper-dim);
+      }
+      .links a {
+        text-decoration: none;
+        transition: color 0.2s;
+        padding: 4px 0;
+      }
+      .links a:hover, .links a.active { color: var(--color-paper); }
+      .mono { font-family: var(--font-mono); }
+      .footer {
+        border-top: 1px solid var(--color-neutral-line);
+        margin-top: 96px;
+      }
+      .footer-inner {
+        height: 72px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+      }
+      .footer .dim { color: var(--color-paper-dim); }
+      .footer a { text-decoration: none; transition: color 0.2s; }
+      .footer a:hover { color: var(--color-torque); }
+      @media (max-width: 560px) {
+        .footer-inner { flex-direction: column; gap: 10px; height: auto; padding-top: 24px; padding-bottom: 24px; }
+        .links { gap: 18px; }
+      }
+    </style>
+  </body>
+</html>

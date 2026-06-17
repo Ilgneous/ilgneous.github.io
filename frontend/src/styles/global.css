@@ -1,579 +1,64 @@
-@import "@fontsource-variable/space-grotesk";
-@import "@fontsource-variable/geist-mono";
 @import "tailwindcss";
+
+/* Local fonts */
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/inter";
+@import "@fontsource/space-mono/400.css";
+@import "@fontsource/space-mono/700.css";
+
 @theme {
-  --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", Monaco, monospace;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Palette — technical drawing / blueprint register */
+  --color-graphite: #0E1419;
+  --color-graphite-2: #141C23;
+  --color-graphite-3: #1B252E;
+  --color-paper: #F5F2EA;
+  --color-paper-dim: #B9B6AE;
+  --color-torque: #D4471F;
+  --color-torque-bright: #E85423;
+  --color-blueprint: #5B8AA6;
+  --color-neutral-line: rgba(245, 242, 234, 0.10);
+  --color-neutral-line-2: rgba(245, 242, 234, 0.06);
+
+  /* Type */
+  --font-display: "Fraunces Variable", Georgia, serif;
+  --font-body: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
 }
-@plugin "@tailwindcss/typography";
-@source "../**/*";
-:root { color-scheme: light dark }
-.prose { max-width: 70ch }
 
-@layer components {
-      /* ── Shimmer animation ── */
-      .animate-shimmer { background-size: 200% 100%; animation: shimmer 3s linear infinite; }
+* { box-sizing: border-box; }
 
-      /* ── Layout ── */
-      .section { @apply mx-auto max-w-6xl py-10; }
-      .section-title { @apply text-xl font-semibold tracking-tight mb-4; }
+html {
+  scroll-behavior: smooth;
+  background: var(--color-graphite);
+}
 
-      /* ── Section divider — violet/blue glow ── */
-      .section-divider-glow {
-        @apply border-0 h-px mx-auto my-8 w-full max-w-6xl rounded-full;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(124, 102, 220, 0.2),
-          rgba(99, 102, 241, 0.35),
-          rgba(139, 162, 255, 0.3),
-          rgba(99, 102, 241, 0.35),
-          rgba(124, 102, 220, 0.2),
-          transparent
-        );
-        box-shadow: 0 0 12px rgba(99, 102, 241, 0.12);
-      }
-
-      /* ── Cards — tighter, subtle purple edge glow on hover ── */
-      .card {
-        @apply relative overflow-hidden rounded-2xl border border-zinc-800/70 bg-zinc-900/40 p-5 backdrop-blur transition-all duration-300 ease-out;
-        box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
-      }
-      .card:hover {
-        @apply border-zinc-600/80 bg-zinc-900/60;
-        box-shadow:
-          inset 0 1px 0 0 rgba(255,255,255,0.05),
-          0 0 20px -4px rgba(99, 102, 241, 0.08);
-      }
-
-      .card-border {
-        @apply pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300;
-        background: linear-gradient(135deg, rgba(139, 142, 255, 0.15), rgba(99, 102, 241, 0.22), rgba(168, 140, 255, 0.12));
-        -webkit-mask: linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
-        -webkit-mask-composite: xor; mask-composite: exclude; padding: 1px;
-      }
-      .card:hover .card-border { @apply opacity-100; }
-
-      /* ── KPI pill ── */
-      .kpi { @apply relative rounded-xl border border-zinc-800/70 bg-zinc-900/30 p-4 text-center backdrop-blur transition-colors duration-300 hover:border-zinc-600/70; }
-      .kpi-ring { @apply pointer-events-none absolute inset-0 rounded-xl; background: radial-gradient(60% 50% at 50% 20%, rgba(99,102,241,0.18), transparent 60%); }
-
-      /* ── Primary action — blue-to-purple gradient ── */
-      .btn-primary {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-500/30 px-4 py-2 text-sm font-semibold text-zinc-100 shadow-sm outline-none transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-indigo-400/40;
-        background-image: linear-gradient(135deg, rgba(79, 82, 220, 0.35), rgba(99, 102, 241, 0.25), rgba(129, 100, 210, 0.2));
-      }
-      .btn-primary:hover {
-        border-color: rgba(99, 102, 241, 0.45);
-        background-image: linear-gradient(135deg, rgba(79, 82, 220, 0.5), rgba(99, 102, 241, 0.4), rgba(129, 100, 210, 0.3));
-        box-shadow: 0 4px 20px -4px rgba(99, 102, 241, 0.25);
-      }
-
-      /* ── Ghost/secondary action ── */
-      .btn-ghost {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-800 px-4 py-2 text-sm font-semibold text-zinc-200/90 transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-600 hover:text-white focus-visible:ring-2 focus-visible:ring-indigo-400/30;
-        background-image: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
-      }
-
-      /* ── Inputs ── */
-      .input { @apply rounded-xl border border-zinc-800 bg-black/40 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-indigo-400/25 transition-colors; }
-
-      /* ── FAQ accordion ── */
-      .faq { @apply rounded-xl border border-zinc-800/70 bg-zinc-900/30 p-4 backdrop-blur transition-colors duration-300 open:border-indigo-500/25; }
-
-      /* ── Nav links ── */
-      .navlink { @apply rounded-lg px-3 py-1 text-zinc-300/90 transition-all duration-200 hover:text-white; }
-      .navlink:hover { text-shadow: 0 0 10px rgba(139, 142, 255, 0.2); }
-
-      /* ── Tech tag chips ── */
-      .tech-tag {
-        @apply rounded-md border border-zinc-800/70 bg-zinc-900/50 px-2 py-1 text-xs text-zinc-400;
-        transition: border-color 0.2s, color 0.2s;
-      }
-      .tech-tag:hover { @apply border-indigo-500/25 text-zinc-300; }
-
-      /* ── Timeline dot — the small purple dots on "Now" page ── */
-      .timeline-dot {
-        @apply absolute left-0 top-2 size-2 rounded-full;
-        background: rgba(129, 120, 241, 0.7);
-        box-shadow: 0 0 10px rgba(99, 102, 241, 0.35), 0 0 3px rgba(99, 102, 241, 0.5);
-      }
-
-      /* ── Accent text utility ── */
-      .text-accent { color: rgba(165, 160, 255, 0.9); }
-
-      /* ── Subtle left accent bar for cards ── */
-      .card-accent-left {
-        border-left: 2px solid rgba(99, 102, 241, 0.25);
-      }
-      .card-accent-left:hover {
-        border-left-color: rgba(99, 102, 241, 0.5);
-      }
-
-      /* ──────────────────────────────────────────────────────────────────────────
-    ADDITIONS to frontend/src/styles/global.css
-    Append everything below INSIDE your existing `@layer components { ... }`
-    block, after your current button rules. Nothing here removes existing
-    styles — it upgrades .btn-primary and .btn-ghost with a liquid-fill hover
-    originated from the cursor, and adds two helper utilities used by the
-    refactored hero (mono-eyebrow + status pulse).
-    ────────────────────────────────────────────────────────────────────────── */
-
-  /* ── Liquid hover for buttons — a colored fill expands radially from the
-        point where the cursor entered. Uses CSS custom properties --bx/--by
-        set by a tiny pointerenter listener (see hero snippet's <script>).   */
-  .btn-primary, .btn-ghost {
-    /* needed so the ::before sits behind the text, but inside the rounded box */
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    --bx: 50%;
-    --by: 50%;
-  }
-  .btn-primary > *, .btn-ghost > * { position: relative; z-index: 1; }
-
-  .btn-primary::before,
-  .btn-ghost::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    z-index: 0;
-    /* circle starts as a 0-radius dot at the entry point and expands on hover */
-    clip-path: circle(0% at var(--bx) var(--by));
-    transition: clip-path 600ms cubic-bezier(0.65, 0, 0.18, 1);
-    pointer-events: none;
-  }
-  .btn-primary::before {
-    background: linear-gradient(135deg, #4f52dc 0%, #6366f1 45%, #8b6fd9 100%);
-  }
-  .btn-ghost::before {
-    background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,111,217,0.18));
-  }
-  .btn-primary:hover::before,
-  .btn-ghost:hover::before {
-    clip-path: circle(140% at var(--bx) var(--by));
-  }
-  /* Once the fill is in place, push the text contrast a bit harder */
-  .btn-primary:hover { color: #fff; border-color: rgba(99,102,241,0.55); }
-  .btn-ghost:hover  { color: #fff; border-color: rgba(99,102,241,0.45); }
-
-  /* Respect reduced-motion users — snap rather than animate */
-  @media (prefers-reduced-motion: reduce) {
-    .btn-primary::before, .btn-ghost::before { transition: none; }
-  }
-
-  /* ── Refined eyebrow text used in the new hero ─────────────────────────── */
-  .eyebrow {
-    @apply inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] text-indigo-300/70;
-  }
-  .eyebrow::before {
-    content: "";
-    width: 18px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(165,180,252,0.7));
-  }
-
-  /* ── Status pulse used in the "currently working on" line ──────────────── */
-  .status-dot {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 9999px;
-    background: rgb(129 140 248 / 0.9);
-    box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.6);
-    animation: status-pulse 2.4s ease-out infinite;
-    vertical-align: middle;
-    margin-right: 8px;
-  }
-  @keyframes status-pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.55); }
-    70%  { box-shadow: 0 0 0 10px rgba(129, 140, 248, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(129, 140, 248, 0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .status-dot { animation: none; }
-  }
-
-  /* ── A new accent: kerned, slightly condensed display style for headlines.
-        Drop the .display class onto the <h1> in the hero for hierarchy.    */
-  .display {
-    font-family: var(--font-display);
-    font-feature-settings: "ss01", "cv11";
-    letter-spacing: -0.025em;
-    line-height: 0.95;
-    text-wrap: balance;
-    padding-bottom: 0.15em;
-  }
-
-  .eyebrow-mono {
-  @apply inline-flex items-center gap-2 font-mono text-[11px] uppercase
-         tracking-[0.18em] text-indigo-300/60;
-  }
-
-  .panel {
-    @apply relative overflow-hidden rounded-2xl border border-zinc-800/70
-          bg-zinc-900/40 p-6 backdrop-blur transition-all duration-300 ease-out;
-    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
-  }
-  .panel:hover {
-    @apply border-indigo-500/30;
-    background-color: rgba(24, 24, 27, 0.55);
-    box-shadow:
-      inset 0 1px 0 0 rgba(255,255,255,0.05),
-      0 0 30px -6px rgba(99, 102, 241, 0.20);
-  }
-  
-  .panel-meta {
-    @apply absolute top-4 right-5 font-mono text-[10px] tracking-[0.18em]
-          text-indigo-300/40 transition-colors duration-300;
-  }
-  .panel:hover .panel-meta { @apply text-indigo-300/70; }
-  
-  .panel-glyph {
-    @apply text-indigo-300/45 transition-colors duration-300;
-  }
-  .panel:hover .panel-glyph { @apply text-indigo-300/80; }
-  
-  /* Corner brackets — fade in on hover, mission-control "targeting reticle" */
-  .panel-bracket {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border-color: rgba(165, 180, 252, 0);
-    transition: border-color 350ms ease-out;
-    pointer-events: none;
-  }
-  .panel:hover .panel-bracket { border-color: rgba(165, 180, 252, 0.65); }
-  .panel-bracket-tl { top: 8px; left: 8px;     border-top: 1px solid; border-left: 1px solid; }
-  .panel-bracket-tr { top: 8px; right: 8px;    border-top: 1px solid; border-right: 1px solid; }
-  .panel-bracket-bl { bottom: 8px; left: 8px;  border-bottom: 1px solid; border-left: 1px solid; }
-  .panel-bracket-br { bottom: 8px; right: 8px; border-bottom: 1px solid; border-right: 1px solid; }
-  
-
-  /* ── Hero scroll cue ────────────────────────────────────────────────────
-  Animated downward chevron at the bottom of the hero. Sits inside
-  the hero <section> so it floats over the faded edge of the field. */
-  .scroll-cue {
-    @apply absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col
-          items-center gap-2 font-mono text-[10px] uppercase
-          tracking-[0.25em] text-zinc-500;
-    pointer-events: none;
-  }
-  .scroll-cue-chevron {
-    width: 14px;
-    height: 14px;
-    color: rgba(165, 180, 252, 0.55);
-    animation: scroll-cue-bounce 2s ease-in-out infinite;
-  }
-  @keyframes scroll-cue-bounce {
-    0%, 100% { transform: translateY(0);    opacity: 0.45; }
-    50%      { transform: translateY(7px);  opacity: 1;    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .scroll-cue-chevron { animation: none; }
-  }
-  
-  
-  /* ── Optional: transmission-line divider (alternative to .section-divider-glow)
-        Drop in via: <hr class="section-divider-tx" />                       */
-  .section-divider-tx {
-    @apply relative border-0 my-12 w-full max-w-6xl mx-auto;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(99, 102, 241, 0.3) 12%,
-      rgba(165, 180, 252, 0.6) 50%,
-      rgba(99, 102, 241, 0.3) 88%,
-      transparent 100%
-    );
-  }
-  .section-divider-tx::before,
-  .section-divider-tx::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    width: 4px;
-    height: 4px;
-    background: rgba(165, 180, 252, 0.7);
-    border-radius: 9999px;
-    transform: translateY(-50%);
-    box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
-  }
-  .section-divider-tx::before { left: calc(50% - 80px); }
-  .section-divider-tx::after  { left: calc(50% + 80px); }
-
-  /* ════════════════════════════════════════════════════════════════════════
-   ADDITIONS to frontend/src/styles/global.css
-   Append everything below INSIDE the existing `@layer components { ... }`
-   block, after the v3 additions.
-   ════════════════════════════════════════════════════════════════════════ */
-
-
-/* ─── Mission Profile ────────────────────────────────────────────────── */
-
-.trajectory {
-  list-style: none;
+body {
   margin: 0;
-  padding: 0;
+  background: var(--color-graphite);
+  color: var(--color-paper);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-.phase {
-  position: relative;
-  display: grid;
-  grid-template-columns: 28px 1fr;
-  gap: 14px;
-  padding-bottom: 28px;
-}
-.phase:last-child { padding-bottom: 0; }
 
-.phase-rail {
-  position: relative;
-  width: 28px;
+::selection {
+  background: var(--color-torque);
+  color: #fff;
 }
-.phase-rail::before {
-  content: "";
-  position: absolute;
-  left: 13px;
-  top: 18px;
-  bottom: -28px;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    rgba(99, 102, 241, 0.5),
-    rgba(99, 102, 241, 0.2) 60%,
-    rgba(99, 102, 241, 0.08)
-  );
-}
-.phase:last-child .phase-rail::before { display: none; }
 
-.phase-marker {
-  position: absolute;
-  left: 8px;
-  top: 4px;
-  width: 12px;
-  height: 12px;
-  border-radius: 9999px;
-  border: 1.5px solid rgba(99, 102, 241, 0.5);
-  background: rgb(9, 9, 11);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.06);
+/* Focus visibility — quality floor */
+:focus-visible {
+  outline: 2px solid var(--color-torque);
+  outline-offset: 3px;
 }
-.phase-current .phase-marker {
-  background: rgba(129, 140, 248, 0.95);
-  border-color: rgba(165, 180, 252, 0.95);
-  box-shadow:
-    0 0 0 3px rgba(99, 102, 241, 0.18),
-    0 0 12px 2px rgba(99, 102, 241, 0.45);
-  animation: phase-pulse 2.4s ease-in-out infinite;
-}
-.phase-target .phase-marker {
-  border-style: dashed;
-  border-color: rgba(196, 181, 253, 0.55);
-}
-@keyframes phase-pulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18), 0 0 12px 2px rgba(99, 102, 241, 0.45); }
-  50%      { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.10), 0 0 18px 4px rgba(99, 102, 241, 0.30); }
-}
+
+a { color: inherit; }
+
 @media (prefers-reduced-motion: reduce) {
-  .phase-current .phase-marker { animation: none; }
-}
-
-.phase-chip {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 10px;
-  padding: 2px 7px;
-  background: rgba(24, 24, 27, 0.6);
-  border: 1px solid rgba(63, 63, 70, 0.7);
-  border-radius: 4px;
-  color: rgba(212, 212, 216, 0.8);
-}
-
-.principles {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.principles li {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
-}
-.p-num {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
-  color: rgba(165, 180, 252, 0.6);
-  padding-top: 1px;
-  letter-spacing: 0.05em;
-}
-.principles li p {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: rgba(212, 212, 216, 0.82);
-}
-
-
-/* ─── Coursework transcript ──────────────────────────────────────────── */
-
-.dept-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.dept-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 4px 9px 4px 8px;
-  border-radius: 5px;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
-  background: rgba(24, 24, 27, 0.5);
-  border: 1px solid rgba(63, 63, 70, 0.6);
-  color: rgba(212, 212, 216, 0.85);
-}
-.dept-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  background: var(--dept-color, rgba(99, 102, 241, 0.7));
-  box-shadow: 0 0 6px var(--dept-glow, rgba(99, 102, 241, 0.5));
-}
-.dept-count {
-  font-size: 10px;
-  color: rgba(161, 161, 170, 0.7);
-  margin-left: 2px;
-  padding-left: 6px;
-  border-left: 1px solid rgba(63, 63, 70, 0.7);
-}
-
-.dept-ece    { --dept-color: rgb(129, 140, 248);  --dept-glow: rgba(99, 102, 241, 0.5); }
-.dept-phy   { --dept-color: rgb(196, 181, 253);  --dept-glow: rgba(167, 139, 250, 0.5); }
-.dept-math  { --dept-color: rgb(125, 211, 252);  --dept-glow: rgba(56, 189, 248, 0.5); }
-.dept-cs    { --dept-color: rgb(110, 231, 183);  --dept-glow: rgba(52, 211, 153, 0.5); }
-.dept-me    { --dept-color: rgb(252, 165, 165);  --dept-glow: rgba(248, 113, 113, 0.5); }
-.dept-other { --dept-color: rgb(212, 212, 216);  --dept-glow: rgba(161, 161, 170, 0.4); }
-
-.transcript {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.term {
-  border: 1px solid rgba(63, 63, 70, 0.45);
-  border-radius: 12px;
-  background: rgba(9, 9, 11, 0.30);
-  backdrop-filter: blur(6px);
-  overflow: hidden;
-  transition: border-color 250ms ease;
-}
-.term:hover { border-color: rgba(99, 102, 241, 0.30); }
-.term-current { border-color: rgba(99, 102, 241, 0.40); }
-.term-current:hover { border-color: rgba(99, 102, 241, 0.55); }
-
-.term-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(63, 63, 70, 0.4);
-  background: rgba(24, 24, 27, 0.35);
-}
-.term-label { color: rgba(244, 244, 245, 0.95); }
-.term-completed .term-status { color: rgba(113, 113, 122, 0.8); margin-left: 10px; }
-.term-current   .term-status { color: rgba(165, 180, 252, 0.85); margin-left: 10px; }
-.term-upcoming  .term-status { color: rgba(196, 181, 253, 0.65); margin-left: 10px; }
-
-.course-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.course {
-  display: grid;
-  grid-template-columns: 96px 1fr;
-  align-items: center;
-  gap: 16px;
-  padding: 11px 16px;
-  border-top: 1px solid rgba(63, 63, 70, 0.25);
-  position: relative;
-  transition: background 200ms ease;
-}
-.course:first-child { border-top: none; }
-.course:hover { background: rgba(99, 102, 241, 0.04); }
-
-.course::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--dept-color);
-  opacity: 0.4;
-  transition: opacity 200ms ease;
-}
-.course:hover::before { opacity: 1; }
-
-.course-code {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  color: var(--dept-color);
-  font-weight: 500;
-}
-.course-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  min-width: 0;
-}
-.course-title {
-  font-family: var(--font-display, ui-sans-serif, sans-serif);
-  font-size: 14.5px;
-  color: rgba(228, 228, 231, 0.92);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.course-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-.course-flag {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 9.5px;
-  letter-spacing: 0.12em;
-  color: rgba(196, 181, 253, 0.85);
-  border: 1px solid rgba(167, 139, 250, 0.35);
-  border-radius: 3px;
-  padding: 1px 5px;
-}
-.course-depth {
-  display: inline-flex;
-  gap: 2px;
-  align-items: center;
-}
-.depth-bar {
-  width: 4px;
-  height: 10px;
-  background: rgba(63, 63, 70, 0.7);
-  border-radius: 1px;
-}
-.depth-bar.on { background: var(--dept-color); }
-
-@media (max-width: 640px) {
-  .course { grid-template-columns: 78px 1fr; gap: 12px; padding: 10px 14px; }
-  .course-code { font-size: 11px; }
-  .course-title { font-size: 13.5px; }
-}
-
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
