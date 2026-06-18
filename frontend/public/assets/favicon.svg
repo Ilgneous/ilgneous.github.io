@@ -1,1 +1,22 @@
-<?xml version="1.0" ?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="black"/><text x="50" y="63.0" text-anchor="middle" font-size="50" fill="white">S</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <rect x="0" y="0" width="48" height="48" rx="11" fill="#0c0e11"></rect>
+
+  
+  <path d="M24 6.5 L41.5 42.5 L24 34.5 Z" fill="url(#fav-shade)"></path>
+  
+  <path d="M24 6.5 L6.5 42.5 L24 34.5 Z" fill="url(#fav-lit)"></path>
+  
+  <path d="M24 8 L24 34" stroke="#fff1e2" stroke-width="1.2" stroke-linecap="round" opacity="0.7"></path>
+
+  <defs>
+    <linearGradient id="fav-lit" x1="6.5" y1="6.5" x2="24" y2="42.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffcc9e"></stop>
+      <stop offset="0.55" stop-color="#f8813f"></stop>
+      <stop offset="1" stop-color="#d2521a"></stop>
+    </linearGradient>
+    <linearGradient id="fav-shade" x1="41.5" y1="6.5" x2="24" y2="42.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#df551c"></stop>
+      <stop offset="1" stop-color="#8d320c"></stop>
+    </linearGradient>
+  </defs>
+</svg>
