@@ -110,12 +110,15 @@ const phases = [
     <div class="hero__inner container">
       <div>
         <Eyebrow dot color="accent">Portfolio · index 2026</Eyebrow>
-        <h1 class="hero__title">
-          Bridging theory<br />with hardware that<br /><span class="hero__title-accent">makes an impact.</span>
+        <h1 class="hero__title hero__title--type" data-typewriter aria-label="Hi, I'm Sivan Syed. Welcome to my corner of the internet.">
+          <span class="tw-stage">
+            <span class="tw-ghost" aria-hidden="true">Hi, I'm <span class="hero__title-accent">Sivan Syed</span>. Welcome to my corner of the internet.</span>
+            <span class="tw-live" aria-hidden="true"><span class="tw-live__seg" data-seg="0" data-text="Hi, I'm "></span><span class="tw-live__seg hero__title-accent" data-seg="1" data-text="Sivan Syed"></span><span class="tw-live__seg" data-seg="2" data-text=". Welcome to my corner of the internet."></span><span class="tw-caret"></span></span>
+          </span>
         </h1>
-        <p class="hero__lead">
-          I'm an engineer building prototypes that merge mechanics, electronics, and
-          software — across condensed-matter physics, plasma, robotics, and aerospace.
+        <p class="hero__lead hero__lead--type">
+          Here's a peek into my <a href="#primary" class="hero__dungeon">dungeon</a>: robots, circuits,
+          and the occasional carbon-fiber experiment. Have a look around.
         </p>
         <div class="hero__actions">
           <Button variant="primary" size="lg" href="#primary">View the work →</Button>
@@ -247,6 +250,99 @@ const phases = [
   </section>
 </Base>
 
+<script>
+  // Typewriter hero. The hidden .tw-ghost twin reserves the headline's exact
+  // wrapped box. In the visible .tw-live layer we render EVERY character up
+  // front (real spaces preserved, so line-wrapping is the final wrapping and is
+  // computed once); typing only flips each character from hidden to shown via a
+  // class, which changes color/opacity but never layout — so nothing reflows
+  // and no word can jump as later characters appear.
+  function runTypewriter() {
+    const title = document.querySelector("[data-typewriter]");
+    if (!title) return;
+
+    const live = title.querySelector(".tw-live");
+    const segs = Array.from(title.querySelectorAll(".tw-live__seg"));
+    const caret = title.querySelector(".tw-caret");
+    const lead = document.querySelector(".hero__lead--type");
+    if (!live) return;
+
+    function finish() {
+      title.classList.add("is-done");
+      if (lead) lead.classList.add("is-shown");
+    }
+
+    // Flatten segments into characters, tagged with accent color, then build
+    // one span per character. Real spaces stay as real text nodes so the
+    // browser wraps exactly as it does for the ghost twin.
+    live.textContent = "";
+    const chars = [];
+    for (let s = 0; s < segs.length; s++) {
+      const text = segs[s].getAttribute("data-text") || "";
+      const accent = segs[s].classList.contains("hero__title-accent");
+      for (let j = 0; j < text.length; j++) {
+        const c = text.charAt(j);
+        const span = document.createElement("span");
+        span.className = "tw-c is-pending";
+        if (accent) span.classList.add("is-accent");
+        span.textContent = c;
+        live.appendChild(span);
+        chars.push({ span: span, c: c });
+      }
+    }
+    if (caret) live.appendChild(caret);
+
+    // Position the caret (absolutely placed, out of flow) at the right edge of
+    // the last revealed character. offsetLeft/Top are relative to .tw-live,
+    // which is the caret's positioned ancestor, so the caret never disturbs the
+    // character flow or wrapping.
+    function placeCaret(n) {
+      if (!caret) return;
+      const ref = chars[n - 1];
+      if (!ref) {
+        caret.classList.remove("is-armed");
+        return;
+      }
+      const el = ref.span;
+      caret.style.left = (el.offsetLeft + el.offsetWidth) + "px";
+      caret.style.top = el.offsetTop + "px";
+      caret.classList.add("is-armed");
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      for (let k = 0; k < chars.length; k++) chars[k].span.classList.remove("is-pending");
+      placeCaret(chars.length);
+      finish();
+      return;
+    }
+
+    const punct = new Set([",", ".", "!", "?", "&"]);
+    function delayFor(c) {
+      let d = 42 + Math.random() * 38;
+      if (punct.has(c)) d += 180;
+      return d;
+    }
+
+    let i = 0;
+    function step() {
+      if (i >= chars.length) { finish(); return; }
+      chars[i].span.classList.remove("is-pending");
+      placeCaret(i + 1);
+      const c = chars[i].c;
+      i++;
+      setTimeout(step, delayFor(c));
+    }
+
+    setTimeout(step, 360);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", runTypewriter, { once: true });
+  } else {
+    runTypewriter();
+  }
+</script>
+
 <style>
   .container { max-width: var(--container); margin: 0 auto; }
 
@@ -277,12 +373,65 @@ const phases = [
     font-feature-settings: var(--display-features);
   }
   .hero__title-accent { color: var(--accent); text-shadow: var(--glow-ember-text); }
+
+  .tw-stage { position: relative; display: block; }
+  .tw-ghost { visibility: hidden; }
+  .tw-live {
+    position: absolute;
+    inset: 0;
+    color: var(--text-display);
+  }
+  .tw-live__seg { color: inherit; }
+  .tw-live__seg.hero__title-accent { color: var(--accent); text-shadow: var(--glow-ember-text); }
+  /* Every character span is created by JS, so these rules must be :global —
+     scoped Astro styles only match elements present at build time. Chars are
+     present from the start so wrapping is final and stable; 'is-pending' chars
+     are transparent (occupy space, invisible); accent chars are ember once shown. */
+  :global(.tw-c) { color: var(--text-display); transition: color 90ms linear; }
+  :global(.tw-c.is-accent) { color: var(--accent); text-shadow: var(--glow-ember-text); }
+  :global(.tw-c.is-pending) { color: transparent; text-shadow: none; }
+  .tw-caret {
+    position: absolute;
+    width: 0.06em;
+    height: 0.92em;
+    background: var(--accent);
+    box-shadow: var(--glow-ember-text);
+    border-radius: 1px;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .hero__title--type .tw-caret.is-armed { opacity: 1; }
+  .hero__title--type.is-done .tw-caret.is-armed { animation: ilg-caret-blink 1.05s steps(1, end) infinite; }
+  @keyframes ilg-caret-blink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
   .hero__lead {
     max-width: 52ch;
     margin-top: 22px;
     font-size: 17px;
     line-height: 1.6;
     color: var(--text-secondary);
+  }
+  .hero__lead--type {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  }
+  .hero__lead--type.is-shown { opacity: 1; transform: translateY(0); }
+  .hero__dungeon {
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--accent-line);
+    text-underline-offset: 3px;
+    transition: color var(--dur-fast) var(--ease-out), text-decoration-color var(--dur-fast) var(--ease-out);
+  }
+  .hero__dungeon:hover { color: var(--text-accent); text-decoration-color: var(--accent); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__title--type .tw-caret.is-armed { animation: none !important; }
+    .hero__lead--type { opacity: 1; transform: none; transition: none; }
   }
   .hero__actions { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
   .hero__status { display: flex; align-items: center; gap: 10px; margin-top: 34px; }
