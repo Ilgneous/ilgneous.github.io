@@ -1,0 +1,179 @@
+---
+// ProjectCard — the workhorse of the portfolio index. An image plate with a
+// graphite scrim, an index coordinate, title with underline-grow on hover, a
+// one-line summary, a tech-tag row, and optional status. Whole card links out.
+import Tag from "./Tag.astro";
+import StatusBadge from "./StatusBadge.astro";
+import { splitHighlight } from "./highlight";
+
+interface Props {
+  index?: string;
+  title: string;
+  summary?: string;
+  highlight?: string | readonly string[] | null;
+  image?: string | null;
+  tech?: readonly string[];
+  status?: "nominal" | "active" | "caution" | "critical" | "planned" | null;
+  href?: string;
+  maxTags?: number;
+}
+const {
+  index = "01",
+  title,
+  summary = "",
+  highlight = null,
+  image = null,
+  tech = [],
+  status = null,
+  href = "#",
+  maxTags = 4,
+} = Astro.props;
+
+const shown = tech.slice(0, maxTags);
+const overflow = tech.length - shown.length;
+const segments = splitHighlight(summary, highlight);
+---
+
+<a href={href} class="card">
+  <div class="card__plate">
+    {image ? (
+      <img src={image} alt={title} loading="lazy" class="card__img" />
+    ) : (
+      <div class="card__placeholder"></div>
+    )}
+    <div class="card__scrim"></div>
+    <span class="card__index">{`// ${index}`}</span>
+    {status ? <span class="card__status"><StatusBadge status={status} /></span> : null}
+  </div>
+
+  <div class="card__body">
+    <h3 class="card__title"><span class="card__title-ink">{title}</span></h3>
+    <p class="card__summary">
+      {segments.map((s) => (s.hit ? <span class="hl">{s.text}</span> : s.text))}
+    </p>
+    <div class="card__tags">
+      {shown.map((t) => <Tag size="sm" interactive={false}>{t}</Tag>)}
+      {overflow > 0 ? <span class="card__overflow">{`+${overflow}`}</span> : null}
+    </div>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    overflow: hidden;
+    box-shadow: var(--shadow-inset-hi);
+    transition:
+      border-color var(--dur) var(--ease-out),
+      background var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out);
+  }
+  .card:hover {
+    border-color: var(--accent-line);
+    background: var(--surface);
+    box-shadow: var(--shadow-panel), var(--glow-ember-sm);
+    transform: translateY(-3px);
+  }
+
+  .card__plate {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--surface-sunken);
+    border-bottom: 1px solid var(--border);
+  }
+  .card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.9) brightness(0.92);
+    transform: scale(1);
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      filter var(--dur-slow) var(--ease-out);
+  }
+  .card:hover .card__img {
+    filter: saturate(1.05) contrast(1.02);
+    transform: scale(1.04);
+  }
+  .card__placeholder {
+    position: absolute;
+    inset: 0;
+    background-image: var(--blueprint-grid);
+    background-size: var(--blueprint-grid-size);
+  }
+  .card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgba(12, 14, 17, 0.55) 100%);
+  }
+  .card__index {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-label);
+    color: var(--paper-200);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    transition: color var(--dur) var(--ease-out);
+  }
+  .card:hover .card__index { color: var(--ember-300); }
+  .card__status { position: absolute; top: 10px; right: 12px; }
+
+  .card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    flex: 1;
+  }
+  .card__title {
+    font-size: var(--text-lg);
+    font-weight: var(--weight-semibold);
+    color: var(--text-primary);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1.2;
+    transition: color var(--dur) var(--ease-out);
+  }
+  .card:hover .card__title { color: var(--text-accent); }
+  .card__title-ink {
+    display: inline-block;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 2px;
+    padding-bottom: 2px;
+    transition: background-size var(--dur) var(--ease-out);
+  }
+  .card:hover .card__title-ink { background-size: 100% 2px; }
+
+  .card__summary {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    line-height: var(--leading-snug);
+    margin: 0;
+    flex: 1;
+  }
+  .card__summary .hl { color: var(--text-accent); }
+
+  .card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+  }
+  .card__overflow {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--text-faint);
+    align-self: center;
+  }
+</style>

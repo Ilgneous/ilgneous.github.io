@@ -1,0 +1,113 @@
+---
+// EmbedFigure — a framed slot for a diagram, scope capture, or photo. Until a
+// real asset exists it shows a blueprint-grid placeholder with a kicker, a
+// title/subtitle, and a figure number. Pass `src` to drop in the real image.
+interface Props {
+  kicker: string;        // e.g. "EMBED · TIMING"
+  title: string;
+  subtitle?: string;
+  fig: string;           // e.g. "FIG.01"
+  ratio?: string;        // CSS aspect-ratio, e.g. "4 / 3"
+  src?: string | null;
+  alt?: string;
+  video?: boolean;       // show a play-button affordance (gameplay clip slot)
+}
+const {
+  kicker,
+  title,
+  subtitle,
+  fig,
+  ratio = "16 / 10",
+  src = null,
+  alt = "",
+  video = false,
+} = Astro.props;
+---
+
+<figure class="embed" style={`aspect-ratio:${ratio};`}>
+  {src ? (
+    <img class="embed__img" src={src} alt={alt || title} loading="lazy" />
+  ) : (
+    <>
+      <div class="embed__grid"></div>
+      <div class="embed__dash"></div>
+      <span class="embed__kicker">▸ {kicker}</span>
+      <div class="embed__center">
+        {video ? <span class="embed__play"><span class="embed__play-tri">▶</span></span> : null}
+        <div class="embed__title">{title}</div>
+        {subtitle ? <div class="embed__subtitle">{subtitle}</div> : null}
+      </div>
+    </>
+  )}
+  <span class="embed__fig">{fig}</span>
+</figure>
+
+<style>
+  .embed {
+    position: relative;
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--surface-sunken);
+    box-shadow: var(--shadow-panel);
+  }
+  .embed__img { width: 100%; height: 100%; object-fit: cover; }
+  .embed__grid {
+    position: absolute;
+    inset: 0;
+    background-image: var(--blueprint-grid), var(--blueprint-grid-coarse);
+    background-size: var(--blueprint-grid-size), var(--blueprint-grid-coarse-size);
+    background-position: center;
+  }
+  .embed__dash {
+    position: absolute;
+    inset: 16px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+  }
+  .embed__kicker {
+    position: absolute;
+    top: 12px;
+    left: 15px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-accent);
+  }
+  .embed__center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 26px;
+    gap: 7px;
+  }
+  .embed__play {
+    width: 58px;
+    height: 58px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--accent-line);
+    background: var(--accent-soft);
+    box-shadow: var(--glow-ember-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+  .embed__play-tri { color: var(--text-accent); font-size: 20px; margin-left: 4px; }
+  .embed__title { font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); }
+  .embed__subtitle { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .embed__fig {
+    position: absolute;
+    bottom: 12px;
+    right: 15px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--text-faint);
+  }
+</style>

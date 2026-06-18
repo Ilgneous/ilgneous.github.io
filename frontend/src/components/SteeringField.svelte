@@ -12,8 +12,8 @@
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const C = {
-      paper: '#F5F2EA', dim: '#6B7280', torque: '#D4471F',
-      blue: '#5B8AA6', graphite: '#0E1419',
+      paper: '#f6f2e9', dim: '#8b8474', torque: '#f26a28',
+      blue: '#5fafc2', graphite: '#0c0e11',
     };
     const DEG = (r) => r * 180 / Math.PI;
 
@@ -280,12 +280,12 @@
     position: relative;
     width: min(560px, 100%);
     aspect-ratio: 1 / 0.66;
-    border: 1px solid var(--color-neutral-line, rgba(245,242,234,.10));
+    border: 1px solid var(--border, rgba(236,231,217,.12));
     border-radius: 3px;
     background:
-      linear-gradient(var(--color-neutral-line, rgba(245,242,234,.10)) 1px, transparent 1px) 0 0 / 100% 30px,
-      linear-gradient(90deg, var(--color-neutral-line, rgba(245,242,234,.10)) 1px, transparent 1px) 0 0 / 30px 100%,
-      var(--color-graphite-2, #141C23);
+      linear-gradient(var(--border, rgba(236,231,217,.12)) 1px, transparent 1px) 0 0 / 100% 30px,
+      linear-gradient(90deg, var(--border, rgba(236,231,217,.12)) 1px, transparent 1px) 0 0 / 30px 100%,
+      var(--surface-sunken, #111418);
     overflow: hidden;
     touch-action: none;
   }
@@ -305,9 +305,9 @@
     font-size: 10.5px;
     letter-spacing: 0.13em;
     text-transform: uppercase;
-    color: var(--color-paper-dim, #B9B6AE);
+    color: var(--text-muted, #b3ac9b);
   }
-  .tag b { color: var(--color-blueprint, #5B8AA6); font-weight: 400; }
+  .tag b { color: var(--signal-400, #5fafc2); font-weight: 400; }
   .readout {
     position: absolute;
     right: 13px;
@@ -317,9 +317,9 @@
     font-family: var(--font-mono, monospace);
     font-size: 10.5px;
     line-height: 1.7;
-    color: var(--color-paper-dim, #B9B6AE);
+    color: var(--text-muted, #b3ac9b);
   }
-  .readout span { color: var(--color-torque, #D4471F); }
+  .readout span { color: var(--accent, #f26a28); }
   .hint {
     position: absolute;
     left: 13px;
@@ -329,6 +329,6 @@
     font-size: 10px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-neutral, #6B7280);
+    color: var(--text-faint, #8b8474);
   }
 </style>

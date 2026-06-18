@@ -1,0 +1,55 @@
+---
+// Kpi — a single telemetry stat. Big display value over a mono label, with
+// an optional unit. Drop several in a grid for a stat strip.
+interface Props {
+  value: string | number;
+  label: string;
+  unit?: string | null;
+  accent?: boolean;
+  align?: "left" | "center";
+}
+const { value, label, unit = null, accent = false, align = "left" } = Astro.props;
+---
+
+<div class:list={["kpi", align === "center" && "kpi--center"]}>
+  <div class:list={["kpi__value", accent && "kpi__value--accent"]}>
+    {value}{unit ? <span class="kpi__unit">{unit}</span> : null}
+  </div>
+  <div class="kpi__label">{label}</div>
+</div>
+
+<style>
+  .kpi {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+    text-align: left;
+  }
+  .kpi--center { align-items: center; text-align: center; }
+  .kpi__value {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-display);
+    line-height: 1;
+    color: var(--text-display);
+    font-feature-settings: var(--display-features);
+    display: flex;
+    align-items: baseline;
+    gap: 0.15em;
+  }
+  .kpi__value--accent { color: var(--text-accent); }
+  .kpi__unit {
+    font-size: var(--text-lg);
+    color: var(--text-muted);
+    font-weight: var(--weight-medium);
+  }
+  .kpi__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--text-faint);
+  }
+</style>

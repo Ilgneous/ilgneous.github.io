@@ -1,0 +1,289 @@
+---
+// FeaturedProject — the flagship treatment. A wide split: a tall image plate
+// on one side, a content column (codename, big title, summary, metric strip,
+// tech, CTA) on the other. `flip` alternates the side. Whole card links to a
+// dedicated case study.
+import Tag from "./Tag.astro";
+import StatusBadge from "./StatusBadge.astro";
+import { splitHighlight } from "./highlight";
+
+interface Metric {
+  value: string | number;
+  unit?: string;
+  label: string;
+  accent?: boolean;
+}
+interface Props {
+  index?: string;
+  codename: string;
+  title: string;
+  summary?: string;
+  highlight?: string | readonly string[] | null;
+  image?: string | null;
+  tech?: readonly string[];
+  status?: "nominal" | "active" | "caution" | "critical" | "planned" | null;
+  metrics?: readonly Metric[];
+  flip?: boolean;
+  domain?: string | null;
+  year?: string | null;
+  href?: string;
+  cta?: string;
+}
+const {
+  index = "F1",
+  codename,
+  title,
+  summary = "",
+  highlight = null,
+  image = null,
+  tech = [],
+  status = null,
+  metrics = [],
+  flip = false,
+  domain = null,
+  year = null,
+  href = "#",
+  cta = "Open case study",
+} = Astro.props;
+
+const segments = splitHighlight(summary, highlight);
+const meta = [domain, year].filter(Boolean).join(" · ");
+const plateGradient = flip
+  ? "linear-gradient(270deg, transparent 50%, rgba(12,14,17,0.55))"
+  : "linear-gradient(90deg, transparent 50%, rgba(12,14,17,0.55))";
+---
+
+<a href={href} class:list={["fp", flip && "fp--flip"]}>
+  <div class="fp__plate">
+    {image ? (
+      <img src={image} alt={title} class="fp__img" />
+    ) : (
+      <div class="fp__placeholder"></div>
+    )}
+    <div class="fp__plate-grad" style={`background:${plateGradient};`}></div>
+    <span class="fp__index">{`// ${index}`}</span>
+    {status ? <span class="fp__status"><StatusBadge status={status} /></span> : null}
+  </div>
+
+  <div class="fp__body">
+    <div class="fp__eyebrow">
+      <span class="fp__codename">{codename}</span>
+      {meta ? <span class="fp__meta">{meta}</span> : null}
+    </div>
+    <h3 class="fp__title"><span class="fp__title-ink">{title}</span></h3>
+    <p class="fp__summary">
+      {segments.map((s) => (s.hit ? <span class="hl">{s.text}</span> : s.text))}
+    </p>
+    {metrics.length ? (
+      <div class="fp__metrics">
+        {metrics.map((m) => (
+          <div class="fp__metric">
+            <span class:list={["fp__metric-val", m.accent && "fp__metric-val--accent"]}>
+              {m.value}{m.unit ? <span class="fp__metric-unit">{m.unit}</span> : null}
+            </span>
+            <span class="fp__metric-label">{m.label}</span>
+          </div>
+        ))}
+      </div>
+    ) : null}
+    <div class="fp__tags">
+      {tech.slice(0, 5).map((t) => <Tag size="sm" interactive={false}>{t}</Tag>)}
+    </div>
+    <div class="fp__cta-wrap">
+      <span class="fp__cta">{cta} <span class="fp__arrow">&rarr;</span></span>
+    </div>
+  </div>
+</a>
+
+<style>
+  .fp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-inset-hi);
+    transition:
+      border-color var(--dur) var(--ease-out),
+      background var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+  .fp:hover {
+    border-color: var(--accent-line);
+    background: var(--surface);
+    box-shadow: var(--shadow-panel), var(--glow-ember-sm);
+  }
+  /* flip swaps the visual order of plate and body */
+  .fp--flip .fp__plate { order: 2; }
+  .fp--flip .fp__body { order: 1; }
+
+  .fp__plate {
+    position: relative;
+    min-height: 360px;
+    overflow: hidden;
+    background: var(--surface-sunken);
+  }
+  .fp__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.9) brightness(0.92);
+    transform: scale(1);
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      filter var(--dur-slow) var(--ease-out);
+  }
+  .fp:hover .fp__img {
+    filter: saturate(1.05) contrast(1.02);
+    transform: scale(1.04);
+  }
+  .fp__placeholder {
+    position: absolute;
+    inset: 0;
+    background-image: var(--blueprint-grid), var(--blueprint-grid-coarse);
+    background-size: var(--blueprint-grid-size), var(--blueprint-grid-coarse-size);
+    background-position: center;
+  }
+  .fp__plate-grad { position: absolute; inset: 0; }
+  .fp__index {
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-label);
+    color: var(--paper-200);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+    transition: color var(--dur) var(--ease-out);
+  }
+  .fp:hover .fp__index { color: var(--ember-300); }
+  .fp__status { position: absolute; top: 13px; right: 15px; }
+
+  .fp__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-10);
+  }
+  .fp__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .fp__codename {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--text-accent);
+  }
+  .fp__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+  }
+  .fp__title {
+    font-size: var(--text-3xl);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-display);
+    line-height: 1.02;
+    color: var(--text-primary);
+    margin: 0;
+    transition: color var(--dur) var(--ease-out);
+  }
+  .fp:hover .fp__title { color: var(--text-accent); }
+  .fp__title-ink {
+    display: inline-block;
+    background-image: linear-gradient(var(--accent), var(--accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 2px;
+    padding-bottom: 3px;
+    transition: background-size var(--dur) var(--ease-out);
+  }
+  .fp:hover .fp__title-ink { background-size: 100% 2px; }
+
+  .fp__summary {
+    font-size: var(--text-md);
+    line-height: 1.55;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 46ch;
+  }
+  .fp__summary .hl { color: var(--text-accent); }
+
+  .fp__metrics {
+    display: flex;
+    gap: var(--space-8);
+    margin-top: var(--space-1);
+    flex-wrap: wrap;
+  }
+  .fp__metric { display: flex; flex-direction: column; gap: 4px; }
+  .fp__metric-val {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-semibold);
+    color: var(--text-display);
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.12em;
+  }
+  .fp__metric-val--accent { color: var(--text-accent); }
+  .fp__metric-unit { font-size: var(--text-sm); color: var(--text-muted); }
+  .fp__metric-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--text-faint);
+  }
+
+  .fp__tags {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-top: var(--space-1);
+  }
+
+  .fp__cta-wrap { margin-top: var(--space-3); }
+  .fp__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--control-md);
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all var(--dur) var(--ease-out);
+  }
+  .fp:hover .fp__cta {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--text-on-accent);
+    box-shadow: var(--glow-ember-sm);
+  }
+  .fp__arrow { font-family: var(--font-mono); }
+
+  @media (max-width: 820px) {
+    .fp { grid-template-columns: 1fr; }
+    .fp--flip .fp__plate { order: 1; }
+    .fp--flip .fp__body { order: 2; }
+    .fp__plate { min-height: 220px; }
+    .fp__body { padding: var(--space-8); }
+  }
+</style>

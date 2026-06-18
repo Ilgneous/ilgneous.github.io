@@ -1,0 +1,106 @@
+---
+// Button — primary action ignites with an ember fill; ghost is a graphite
+// outline; quiet is text-only; danger is a critical outline. Renders as a
+// <button> or <a> (pass href). Hover/press handled in CSS.
+interface Props {
+  variant?: "primary" | "ghost" | "quiet" | "danger";
+  size?: "sm" | "md" | "lg";
+  disabled?: boolean;
+  full?: boolean;
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  [key: string]: any;
+}
+const {
+  variant = "primary",
+  size = "md",
+  disabled = false,
+  full = false,
+  href,
+  type = "button",
+  ...rest
+} = Astro.props;
+
+const Tag = href ? "a" : "button";
+const cls = ["btn", `btn--${variant}`, `btn--${size}`, full && "btn--full", disabled && "btn--disabled"];
+---
+
+<Tag
+  class:list={cls}
+  href={href}
+  type={href ? undefined : type}
+  aria-disabled={disabled ? "true" : undefined}
+  {...rest}
+>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-tight);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    text-decoration: none;
+    transition:
+      background var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out),
+      color var(--dur) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+  .btn--full { display: flex; width: 100%; }
+
+  /* sizes */
+  .btn--sm { height: var(--control-sm); padding: 0 var(--space-3); font-size: var(--text-sm); gap: var(--space-2); }
+  .btn--md { height: var(--control-md); padding: 0 var(--space-5); font-size: var(--text-sm); gap: var(--space-2); }
+  .btn--lg { height: var(--control-lg); padding: 0 var(--space-6); font-size: var(--text-base); gap: var(--space-3); }
+
+  /* primary */
+  .btn--primary {
+    background: var(--accent);
+    color: var(--text-on-accent);
+    border-color: var(--accent);
+    box-shadow: var(--shadow-inset-hi);
+  }
+  .btn--primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--ember-300);
+    transform: translateY(-1px);
+    box-shadow: var(--glow-ember-md), var(--shadow-inset-hi);
+  }
+  .btn--primary:active { transform: translateY(0) scale(0.98); }
+
+  /* ghost */
+  .btn--ghost {
+    background: var(--surface-raised);
+    color: var(--text-secondary);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-inset-hi);
+  }
+  .btn--ghost:hover {
+    background: var(--surface-hover);
+    color: var(--text-display);
+    border-color: var(--accent-line);
+    transform: translateY(-1px);
+  }
+  .btn--ghost:active { transform: translateY(0) scale(0.98); }
+
+  /* quiet */
+  .btn--quiet { background: transparent; color: var(--text-muted); border-color: transparent; }
+  .btn--quiet:hover { background: var(--accent-soft); color: var(--text-accent); }
+
+  /* danger */
+  .btn--danger { background: transparent; color: var(--status-critical); border-color: var(--status-critical); }
+  .btn--danger:hover { background: #c44f3d; color: var(--paper-50); }
+
+  .btn--disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+</style>

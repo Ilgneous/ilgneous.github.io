@@ -1,0 +1,42 @@
+---
+// SectionDivider — a transmission-line rule. A thin ember-cored gradient with
+// two glowing nodes, used between major sections.
+interface Props {
+  nodes?: boolean;
+  glow?: "ember" | "signal";
+}
+const { nodes = true, glow = "ember" } = Astro.props;
+const core = glow === "signal" ? "rgba(95,175,194,0.5)" : "var(--accent-line)";
+const point = glow === "signal" ? "var(--signal-400)" : "var(--ember-300)";
+---
+
+<div class="divider">
+  <div
+    class="divider__line"
+    style={`background:linear-gradient(90deg, transparent 0%, ${core} 14%, ${point} 50%, ${core} 86%, transparent 100%);`}
+  ></div>
+  {nodes ? (
+    <>
+      <span class="divider__node" style={`left:calc(50% - 80px); background:${point}; box-shadow:0 0 8px ${point};`}></span>
+      <span class="divider__node" style={`left:calc(50% + 80px); background:${point}; box-shadow:0 0 8px ${point};`}></span>
+    </>
+  ) : null}
+</div>
+
+<style>
+  .divider {
+    position: relative;
+    height: 1px;
+    width: 100%;
+    margin: var(--space-12) 0;
+  }
+  .divider__line { position: absolute; inset: 0; }
+  .divider__node {
+    position: absolute;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: var(--radius-pill);
+    transform: translateY(-50%);
+  }
+</style>

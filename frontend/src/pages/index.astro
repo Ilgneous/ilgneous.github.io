@@ -1,140 +1,425 @@
 ---
-import Base from '../layouts/Base.astro';
-import SteeringField from '../components/SteeringField.svelte';
-import { getCollection } from 'astro:content';
+import Base from "../layouts/Base.astro";
+import Eyebrow from "../components/ds/Eyebrow.astro";
+import Button from "../components/ds/Button.astro";
+import Panel from "../components/ds/Panel.astro";
+import Kpi from "../components/ds/Kpi.astro";
+import SectionDivider from "../components/ds/SectionDivider.astro";
+import Tag from "../components/ds/Tag.astro";
+import Trajectory from "../components/ds/Trajectory.astro";
+import FeaturedProject from "../components/ds/FeaturedProject.astro";
+import ProjectCard from "../components/ds/ProjectCard.astro";
 
-const B = import.meta.env.BASE_URL;
+// ────────────────────────────────────────────────────────────────────────────
+// CONTENT — ported from the PortfolioSite template's renderVals().
+// These are placeholder/real-ish entries. When you migrate to your content
+// collection, replace `featured` and `projects` with getCollection("projects")
+// output and map the frontmatter into these same shapes.
+// ────────────────────────────────────────────────────────────────────────────
+const base = "/assets/projects/";
 
-const all = await getCollection('projects');
-all.sort((a, b) => {
-  const ao = a.data.order ?? 999;
-  const bo = b.data.order ?? 999;
-  if (ao !== bo) return ao - bo;
-  return (b.data.date ?? '').localeCompare(a.data.date ?? '');
-});
+const featured = [
+  {
+    index: "F1", codename: "Project Lykos", title: "Multiplayer Racing Simulator",
+    domain: "Embedded · Sim", year: "2026", status: "nominal", flip: false, image: null,
+    href: "/work/lykos",
+    summary: "An embedded two-player racing sim built from the silicon up — CAN firmware at 1 Mbps, custom PCBs, hand-built cockpits, and a from-scratch renderer, in six weeks under $100.",
+    highlight: ["1 Mbps", "from-scratch renderer"],
+    tech: ["C", "CAN bus", "TM4C123", "OnShape", "Raspberry Pi 5"],
+    metrics: [
+      { value: "2", label: "Players", accent: true },
+      { value: "1", unit: "Mbps", label: "CAN baud" },
+      { value: "<$100", label: "Budget" },
+    ],
+  },
+  {
+    index: "F2", codename: "Project RipWing", title: "Safety-Critical UAV Flight Controller",
+    domain: "Aerospace · Embedded", year: "2026", status: "active", flip: true, image: null,
+    href: "/work/ripwing",
+    summary: "A custom flight controller that catches failure before it crashes — RTOS-isolated stabilization plus an edge TinyML anomaly pipeline that cut simulated crashes by 92%.",
+    highlight: ["TinyML", "92%"],
+    tech: ["Rust", "C", "FreeRTOS", "STM32", "TinyML"],
+    metrics: [
+      { value: "92", unit: "%", label: "Crash reduction", accent: true },
+      { value: "20", unit: "ms", label: "Fault reaction" },
+      { value: "±2", unit: "µs", label: "Loop jitter" },
+    ],
+  },
+  {
+    index: "F3", codename: "Longhorn Racing", title: "FSAE Steering & Vehicle Dynamics",
+    domain: "Mechanical · Dynamics", year: "2025", status: "nominal", flip: false, image: base + "IRPCB.png",
+    href: "/work/fsae",
+    summary: "A steering rebuild 68% lighter and sharper in the hands — carbon column, printed bevel gearboxes, deliberate anti-Ackermann — that grew into a full-vehicle kinematic and compliance model.",
+    highlight: ["68% lighter", "full-vehicle"],
+    tech: ["SolidWorks", "FEA", "Carbon Fiber", "Python", "Vehicle Dynamics"],
+    metrics: [
+      { value: "68", unit: "%", label: "Mass cut", accent: true },
+      { value: "CFRP", label: "Column" },
+      { value: "~6", unit: "%", label: "Anti-Ackermann" },
+    ],
+  },
+] as const;
 
-const statBySlug: Record<string, { stat: string; statLabel: string }> = {
-  'fsae-steering-system': { stat: '68%', statLabel: 'lighter' },
-  'boost-converter': { stat: 'SMPS', statLabel: 'from scratch' },
-};
+const projects = [
+  {
+    index: "02", title: "Ping-Pong Balancer", status: "active", href: "#",
+    summary: "A 3-DoF platform that tracks and stabilizes a ball in real time via OpenCV + IK.",
+    highlight: "real time", image: null,
+    tech: ["OpenCV", "Python", "Dynamixel", "Controls", "Raspberry Pi 5"],
+  },
+  {
+    index: "12", title: "Transformer Model for PSD", status: null, href: "#",
+    summary: "Pulse-shape discrimination for radioactive sources — >98% classification accuracy.",
+    highlight: ">98% classification accuracy", image: base + "TransformerModel.png",
+    tech: ["Transformer", "PyTorch", "Signal Processing", "Python"],
+  },
+  {
+    index: "14", title: "Surrogate ML for MHD", status: null, href: "#",
+    summary: "Feed-forward surrogate emulating MHD sims at >98% fidelity — turnaround under 20 min.",
+    highlight: ">98% fidelity", image: base + "LBFGS.png",
+    tech: ["Neural Network", "MATLAB", "Python", "Plasma Physics"],
+  },
+  {
+    index: "03", title: "E-Bike Boost Converter", status: null, href: "#",
+    summary: "Designed, simulated, and tested a high-efficiency DC-DC boost for an e-bike battery.",
+    highlight: "high-efficiency DC-DC boost", image: base + "BoostPCB.png",
+    tech: ["LTspice", "KiCad", "Power Electronics", "PCB Design"],
+  },
+  {
+    index: "05", title: "WLS Fiber Characterization", status: null, href: "#",
+    summary: "Measured emission spectra and attenuation of WLS fibers for the LEGEND experiment.",
+    highlight: null, image: base + "UVvBlueLED.png",
+    tech: ["Optics", "SiPM", "Spectrometer", "Python", "DAQ"],
+  },
+] as const;
 
-const dedicatedPages: Record<string, string> = {
-  'fsae-steering-system': `${B}work/fsae`,
-};
-
-const fallbackStat: { stat: string | null; statLabel: string | null } = { stat: null, statLabel: null };
-
-const projects = all.map((p, i) => ({
-  slug: p.slug,
-  index: String(i + 1).padStart(2, '0'),
-  title: p.data.title,
-  blurb: p.data.summary,
-  tags: p.data.tech.slice(0, 4),
-  href: dedicatedPages[p.slug] ?? `${B}projects/${p.slug}`,
-  isDedicated: Boolean(dedicatedPages[p.slug]),
-  ...(statBySlug[p.slug] ?? fallbackStat),
-}));
+const phases = [
+  { chip: "ACTIVE", title: "Ping-Pong Balancer", detail: "Assembling the 3-DoF platform; bringing up the vision + control loop.", state: "current" },
+  { chip: "RESEARCH", title: "LEGEND detector R&D", detail: "WLS fiber characterization — published on arXiv.", state: "done" },
+  { chip: "TEAM", title: "Longhorn Racing Electric", detail: "Steering + vehicle dynamics for the 2026 car.", state: "done" },
+  { chip: "NEXT", title: "Aerospace & hardware roles", detail: "Tailoring the toolkit toward flight & advanced hardware.", state: "target" },
+] as const;
 ---
 
 <Base>
+  <!-- ── HERO ─────────────────────────────────────────────────────────── -->
   <section class="hero">
-    <div class="hero-inner">
-      <div class="wave mono">👋 &nbsp;hello there</div>
-      <h1>Hi, I'm <span class="nm">Sivan Syed</span> — physics &amp; ECE at UT Austin.</h1>
-      <p class="lede">
-        Here's a peek into my <span class="dungeon">dungeon</span>: robots, circuits,
-        and the occasional carbon-fiber experiment. Have a look around.
-      </p>
-      <SteeringField client:load />
-      <a href="#work" class="scroll mono">scroll to explore</a>
-    </div>
-  </section>
+    <div class="hero__grid blueprint" aria-hidden="true"></div>
+    <div class="hero__spotlight" aria-hidden="true"></div>
 
-  <section class="band" id="about">
-    <div class="wrap">
-      <div class="eyebrow mono">// WHAT I DO</div>
-      <div class="cols">
-        <p class="big">
-          I like problems that live between disciplines — where the physics, the
-          electronics, and the mechanical design all have to agree before anything works.
+    <div class="hero__inner container">
+      <div>
+        <Eyebrow dot color="accent">Portfolio · index 2026</Eyebrow>
+        <h1 class="hero__title">
+          Bridging theory<br />with hardware that<br /><span class="hero__title-accent">makes an impact.</span>
+        </h1>
+        <p class="hero__lead">
+          I'm an engineer building prototypes that merge mechanics, electronics, and
+          software — across condensed-matter physics, plasma, robotics, and aerospace.
         </p>
-        <p class="small">
-          Most of what I build starts on paper: a free-body diagram, a control loop,
-          a circuit. Then it becomes hardware, and the interesting part begins — the
-          gap between what the model says and what the bench measures. These are a few
-          of the projects where that gap taught me the most.
-        </p>
+        <div class="hero__actions">
+          <Button variant="primary" size="lg" href="#primary">View the work →</Button>
+          <Button variant="ghost" size="lg" href="#contact">Contact</Button>
+        </div>
+        <div class="hero__status">
+          <span class="hero__pulse"></span>
+          <span class="hero__status-text">
+            Currently building <span class="accent">Ping-Pong Balancer</span> — 3-DoF vision-stabilized platform
+          </span>
+        </div>
       </div>
+
+      <Panel reticle meta="SYS / NOMINAL" padding="24px">
+        <div class="readout__label">Status readout</div>
+        <div class="readout__kpis">
+          <Kpi value="13" label="Projects logged" accent />
+          <Kpi value="5" label="Domains" />
+          <Kpi value="68" unit="%" label="FSAE mass cut" />
+          <Kpi value=">98" unit="%" label="Model fidelity" />
+        </div>
+        <div class="readout__rule"></div>
+        <div class="readout__rows">
+          <div class="readout__row"><span class="readout__key">EDU</span><span class="readout__val">Physics + ECE · UT Austin</span></div>
+          <div class="readout__row"><span class="readout__key">TEAM</span><span class="readout__val">Longhorn Racing Electric</span></div>
+          <div class="readout__row"><span class="readout__key">LAB</span><span class="readout__val">LEGEND — arXiv:2509.20390</span></div>
+        </div>
+      </Panel>
     </div>
   </section>
 
-  <section class="work" id="work">
-    <div class="wrap">
-      <div class="eyebrow mono">// SELECTED WORK</div>
-      <ul class="proj-list">
-        {projects.map((p) => (
-          <li class="proj">
-            <a href={p.href} class="proj-link">
-              <span class="proj-index mono">{p.index}</span>
-              <span class="proj-main">
-                <span class="proj-head">
-                  <span class="proj-title">{p.title}</span>
-                  {p.isDedicated && <span class="badge mono">case study</span>}
-                </span>
-                <span class="proj-blurb">{p.blurb}</span>
-                <span class="proj-tags">
-                  {p.tags.map((t) => <span class="tag mono">{t}</span>)}
-                </span>
-              </span>
-              {p.stat && (
-                <span class="proj-stat">
-                  <span class="proj-stat-n">{p.stat}</span>
-                  <span class="proj-stat-k mono">{p.statLabel}</span>
-                </span>
-              )}
-            </a>
-          </li>
-        ))}
-      </ul>
+  <!-- ── PRIMARY MISSIONS ─────────────────────────────────────────────── -->
+  <section id="primary" class="section container">
+    <SectionDivider />
+    <div class="section__head">
+      <div>
+        <Eyebrow color="accent">Primary missions</Eyebrow>
+        <h2 class="section__title">Flagship builds</h2>
+      </div>
+      <span class="section__aside">Dedicated case studies</span>
+    </div>
+    <div class="flagships">
+      {featured.map((f) => <FeaturedProject {...f} />)}
     </div>
   </section>
 
-  <style>
-    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 64px); }
-    .eyebrow { font-size: 12px; letter-spacing: 0.16em; color: var(--color-blueprint); margin-bottom: 28px; }
-    .mono { font-family: var(--font-mono); }
-    .hero { min-height: calc(100vh - 64px); display: flex; align-items: center; justify-content: center; }
-    .hero-inner { max-width: 1180px; width: 100%; padding: clamp(40px, 7vh, 80px) clamp(20px, 5vw, 64px); display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .wave { font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-blueprint); margin-bottom: 22px; }
-    h1 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.02em; font-size: clamp(32px, 5.4vw, 60px); line-height: 1.04; max-width: 16ch; margin: 0; }
-    h1 .nm { color: var(--color-torque); }
-    .lede { margin: 24px 0 0; max-width: 50ch; font-size: 18px; line-height: 1.6; color: #D8D5CD; }
-    .dungeon { color: var(--color-paper); font-weight: 600; border-bottom: 1.5px solid var(--color-torque); padding-bottom: 1px; }
-    :global(.hero-inner .panel) { margin-top: clamp(34px, 5vh, 54px); }
-    .scroll { margin-top: 30px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-paper-dim); text-decoration: none; display: inline-flex; align-items: center; gap: 9px; transition: color 0.2s; }
-    .scroll::after { content: "↓"; color: var(--color-torque); }
-    .scroll:hover { color: var(--color-paper); }
-    .band { padding: clamp(60px, 10vh, 110px) 0; border-top: 1px solid var(--color-neutral-line); }
-    .cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(32px, 6vw, 80px); align-items: start; }
-    .big { font-family: var(--font-display); font-weight: 500; font-size: clamp(22px, 2.6vw, 30px); line-height: 1.32; margin: 0; letter-spacing: -0.01em; }
-    .small { font-size: 16px; line-height: 1.7; color: #C9C6BE; margin: 0; padding-top: 6px; }
-    @media (max-width: 760px) { .cols { grid-template-columns: 1fr; gap: 24px; } }
-    .work { padding-bottom: clamp(20px, 4vh, 40px); }
-    .proj-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-neutral-line); }
-    .proj { border-bottom: 1px solid var(--color-neutral-line); }
-    .proj-link { display: grid; grid-template-columns: auto 1fr auto; gap: clamp(16px, 3vw, 40px); align-items: start; padding: clamp(24px, 3.5vw, 38px) 8px; text-decoration: none; transition: background 0.25s, padding-left 0.25s; }
-    .proj-link:hover { background: var(--color-graphite-2); padding-left: 20px; }
-    .proj-index { color: var(--color-blueprint); font-size: 13px; padding-top: 6px; }
-    .proj-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-    .proj-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(22px, 3vw, 32px); letter-spacing: -0.01em; }
-    .proj-link:hover .proj-title { color: var(--color-torque); }
-    .badge { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-blueprint); border: 1px solid color-mix(in srgb, var(--color-blueprint) 40%, transparent); padding: 3px 8px; border-radius: 2px; }
-    .proj-blurb { display: block; margin-top: 12px; max-width: 60ch; font-size: 15.5px; line-height: 1.6; color: #C2BFB7; }
-    .proj-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-    .proj-tags .tag { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-paper-dim); border: 1px solid var(--color-neutral-line); padding: 4px 9px; border-radius: 2px; }
-    .proj-stat { text-align: right; padding-top: 4px; white-space: nowrap; }
-    .proj-stat-n { display: block; font-family: var(--font-display); font-weight: 600; font-size: clamp(24px, 3vw, 34px); color: var(--color-torque); letter-spacing: -0.01em; }
-    .proj-stat-k { display: block; font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-paper-dim); margin-top: 2px; }
-    @media (max-width: 640px) { .proj-link { grid-template-columns: auto 1fr; } .proj-stat { grid-column: 2; text-align: left; margin-top: 14px; } .proj-stat-n { font-size: 22px; } }
-  </style>
+  <!-- ── LAB LOG ──────────────────────────────────────────────────────── -->
+  <section id="work" class="section container section--work">
+    <SectionDivider />
+    <div class="section__head section__head--stack">
+      <Eyebrow color="accent">Lab log</Eyebrow>
+      <h2 class="section__title">Side projects &amp; experiments</h2>
+    </div>
+    <div class="lab-grid">
+      {projects.map((p) => <ProjectCard {...p} />)}
+    </div>
+  </section>
+
+  <!-- ── ABOUT / NOW ──────────────────────────────────────────────────── -->
+  <section id="about" class="section container">
+    <SectionDivider />
+    <div class="about">
+      <div>
+        <Eyebrow color="accent">The goal</Eyebrow>
+        <h2 class="about__title">Push the boundaries of science and engineering</h2>
+        <p class="about__body">
+          I aim to contribute to bleeding-edge research and technology in
+          physics-driven engineering — fields that demand both rigorous theoretical
+          insight and innovative hardware. Whether it's condensed-matter physics,
+          plasma, or robotics, I bridge theory with practical systems that ship.
+        </p>
+        <div class="about__tags">
+          <Tag>Electronics hardware</Tag>
+          <Tag>Computational engineering</Tag>
+          <Tag>Robotics</Tag>
+          <Tag>Aerospace</Tag>
+        </div>
+      </div>
+      <Panel meta="MISSION PROFILE" padding="26px">
+        <Eyebrow dot color="accent">Now</Eyebrow>
+        <div class="about__traj">
+          <Trajectory phases={phases} />
+        </div>
+      </Panel>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ──────────────────────────────────────────────────────── -->
+  <section id="contact" class="section container">
+    <SectionDivider />
+    <div class="contact">
+      <div>
+        <Eyebrow color="accent">Open channel</Eyebrow>
+        <h2 class="contact__title">Let's build something<br />on the edge.</h2>
+        <p class="contact__body">
+          Recruiting, collaborating, or just curious about a project? Send a transmission.
+        </p>
+        <div class="contact__rows">
+          <div class="contact__row"><span class="contact__key">EMAIL</span><span class="contact__val">hello@ilgneous.dev</span></div>
+          <div class="contact__row"><span class="contact__key">GITHUB</span><span class="contact__val">github.com/Ilgneous</span></div>
+          <div class="contact__row"><span class="contact__key">BASE</span><span class="contact__val">Austin, TX</span></div>
+        </div>
+      </div>
+
+      <Panel reticle meta="TX / READY" padding="28px">
+        <form class="form" method="POST" action="#" onsubmit="return false;">
+          <div class="form__pair">
+            <label class="field">
+              <span class="field__label">Name</span>
+              <input class="field__input" type="text" name="name" placeholder="Your name" />
+            </label>
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input class="field__input" type="email" name="email" placeholder="you@domain.com" />
+            </label>
+          </div>
+          <label class="field">
+            <span class="field__label">Subject</span>
+            <input class="field__input" type="text" name="subject" placeholder="Role / project / hello" />
+          </label>
+          <label class="field">
+            <span class="field__label">Message</span>
+            <textarea class="field__input field__textarea" name="message" rows="4" placeholder="Tell me about the role or project…"></textarea>
+          </label>
+          <Button variant="primary" full type="submit">Transmit message</Button>
+        </form>
+      </Panel>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .container { max-width: var(--container); margin: 0 auto; }
+
+  /* ── HERO ── */
+  .hero { position: relative; overflow: hidden; padding: 72px 32px 56px; }
+  .hero__grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 35%, transparent 78%);
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 35%, transparent 78%);
+  }
+  .hero__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .hero__title {
+    font-size: clamp(44px, 6vw, 82px);
+    font-weight: 600;
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    color: var(--text-display);
+    margin: 20px 0 0;
+    font-feature-settings: var(--display-features);
+  }
+  .hero__title-accent { color: var(--accent); text-shadow: var(--glow-ember-text); }
+  .hero__lead {
+    max-width: 52ch;
+    margin-top: 22px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+  .hero__actions { display: flex; gap: 14px; margin-top: 30px; flex-wrap: wrap; }
+  .hero__status { display: flex; align-items: center; gap: 10px; margin-top: 34px; }
+  .hero__pulse {
+    width: 7px; height: 7px; border-radius: 99px;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--ember-glow);
+    animation: ilg-pulse 2.4s var(--ease-out) infinite;
+    flex-shrink: 0;
+  }
+  .hero__status-text {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+  }
+  .hero__status-text .accent { color: var(--text-accent); }
+
+  /* ── Status readout panel ── */
+  .readout__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 18px;
+  }
+  .readout__kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; }
+  .readout__rule { height: 1px; background: var(--hairline); margin: 20px 0; }
+  .readout__rows { display: flex; flex-direction: column; gap: 8px; }
+  .readout__row { display: flex; gap: 12px; font-family: var(--font-mono); font-size: 12px; }
+  .readout__key { color: var(--text-faint); width: 40px; flex-shrink: 0; }
+  .readout__val { color: var(--text-secondary); }
+
+  /* ── Section scaffolding ── */
+  .section { padding: 8px 32px; }
+  .section--work { padding-bottom: 64px; }
+  .section__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .section__head--stack { display: block; }
+  .section__title {
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--text-display);
+    margin: 14px 0 0;
+  }
+  .section__aside {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding-bottom: 6px;
+  }
+
+  .flagships { display: flex; flex-direction: column; gap: 24px; }
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── About ── */
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; padding-top: 8px; }
+  .about__title {
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--text-display);
+    margin: 14px 0 0;
+    line-height: 1.1;
+  }
+  .about__body { font-size: 16px; line-height: 1.65; color: var(--text-secondary); margin-top: 18px; }
+  .about__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .about__traj { margin-top: 20px; }
+
+  /* ── Contact ── */
+  .contact { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: center; padding: 20px 0; }
+  .contact__title {
+    font-size: clamp(30px, 4vw, 50px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text-display);
+    margin: 14px 0 0;
+    line-height: 1;
+  }
+  .contact__body { font-size: 16px; line-height: 1.6; color: var(--text-muted); margin-top: 18px; max-width: 42ch; }
+  .contact__rows { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+  .contact__row { display: flex; gap: 14px; font-family: var(--font-mono); font-size: 13px; }
+  .contact__key { color: var(--text-faint); width: 56px; }
+  .contact__val { color: var(--text-secondary); }
+
+  /* ── Form ── */
+  .form { display: flex; flex-direction: column; gap: 16px; }
+  .form__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: var(--space-2); }
+  .field__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--text-faint);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .field:focus-within .field__label { color: var(--text-accent); }
+  .field__input {
+    width: 100%;
+    height: var(--control-md);
+    padding: 0 var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .field__input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .field__textarea { height: auto; padding: var(--space-3); line-height: var(--leading-normal); resize: vertical; }
+
+  /* ── Responsive ── */
+  @media (max-width: 880px) {
+    .hero__inner { grid-template-columns: 1fr; gap: 36px; }
+    .about { grid-template-columns: 1fr; gap: 32px; }
+    .contact { grid-template-columns: 1fr; gap: 36px; }
+  }
+  @media (max-width: 560px) {
+    .hero { padding: 48px 18px 40px; }
+    .section { padding: 8px 18px; }
+    .form__pair { grid-template-columns: 1fr; }
+  }
+</style>

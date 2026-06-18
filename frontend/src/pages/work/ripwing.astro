@@ -1,0 +1,648 @@
+---
+import Base from "../../layouts/Base.astro";
+import Eyebrow from "../../components/ds/Eyebrow.astro";
+import Button from "../../components/ds/Button.astro";
+import Panel from "../../components/ds/Panel.astro";
+import Tag from "../../components/ds/Tag.astro";
+import Kpi from "../../components/ds/Kpi.astro";
+import StatusBadge from "../../components/ds/StatusBadge.astro";
+import SectionDivider from "../../components/ds/SectionDivider.astro";
+import Trajectory from "../../components/ds/Trajectory.astro";
+import Station from "../../components/ds/Station.astro";
+import EmbedFigure from "../../components/ds/EmbedFigure.astro";
+import AttitudeTuner from "../../components/AttitudeTuner.svelte";
+import RipWingHIL from '../../components/RipWingHIL.svelte';
+
+// ── Case-study config (ported from the template's renderVals / props) ──
+const githubUrl = "https://github.com/Ilgneous/UAV-Flight-Controller";
+const heroStatus = "active";
+const showRoadmap = true;
+
+// Tuner preset — Balanced. Swap to Aggressive {2.6,1.4,0.12} or Damped {0.9,0.4,0.34}.
+const tunerKp = 1.28, tunerKi = 0.8, tunerKd = 0.18;
+
+const tags = ["Rust", "C", "FreeRTOS", "STM32", "KiCAD", "TF Lite Micro", "Saleae Logic", "scikit-learn"];
+
+const faultBudget = [
+  { rate: "400 Hz", title: "Stabilization loop", note: "Bare-metal · never starved" },
+  { rate: "≥50 Hz", title: "Anomaly inference", note: "On-chip · no clock theft" },
+  { rate: "25 ms",  title: "Fault containment", note: "Deterministic window" },
+];
+
+const componentMap = [
+  { key: "MCU",     val: "ARM Cortex-M4 · STM32" },
+  { key: "SENSE",   val: "Dual-redundant IMUs · SPI" },
+  { key: "RTOS",    val: "FreeRTOS · hard real-time" },
+  { key: "FLIGHT",  val: "400 Hz stabilization · C HAL" },
+  { key: "EDGE ML", val: "Quantized model · Rust pipeline" },
+  { key: "BOARD",   val: "Custom 4-layer · KiCAD" },
+];
+
+const results = [
+  { value: "92", unit: "%",    label: "Simulated crash reduction", accent: true },
+  { value: "20", unit: " ms",  label: "Fault-to-reaction latency" },
+  { value: "±2", unit: " µs",  label: "400 Hz loop jitter" },
+  { value: "42", unit: " KB",  label: "Flash · 12 KB RAM footprint" },
+];
+
+const phases = [
+  { chip: "NEXT", title: "100% pure Rust", detail: "Rewrite remaining C drivers on async embassy-stm32 for end-to-end memory safety.", state: "target" },
+  { chip: "NEXT", title: "CAN-FD bus", detail: "Poll modern telemetry-capable ESCs for per-motor phase current — richer ML features.", state: "target" },
+  { chip: "NEXT", title: "Predictive maintenance", detail: "From reactive detection to estimating remaining useful life of arms and bearings.", state: "target" },
+];
+
+const navLinks = [
+  { href: "#ch-arch", label: "Architecture" },
+  { href: "#ch-loop", label: "The Loop" },
+  { href: "#ch-decisions", label: "Decisions" },
+  { href: "#results", label: "Telemetry" },
+];
+---
+
+<Base
+  title="Project RipWing — Case Study · Ilgneous"
+  description="Safety-critical UAV flight controller with edge TinyML anomaly detection — RTOS-isolated 400 Hz stabilization that cut simulated crashes by 92%."
+  navLinks={navLinks}
+  ctaHref="/"
+  ctaLabel="← All work"
+>
+  <!-- ── HERO ─────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero__grid blueprint" aria-hidden="true"></div>
+    <div class="hero__spotlight" aria-hidden="true"></div>
+
+    <div class="hero__inner container">
+      <div>
+        <div class="hero__badges">
+          <Eyebrow color="accent">Flagship build · RipWing</Eyebrow>
+          <StatusBadge status={heroStatus}>In build</StatusBadge>
+        </div>
+        <div class="hero__codename">CODENAME · RIPWING &nbsp;//&nbsp; SAFETY-CRITICAL UAV FLIGHT CONTROLLER</div>
+        <h1 class="hero__title">Project&nbsp;RipWing</h1>
+        <p class="hero__lead">
+          A custom flight controller that catches failure before it becomes a crash.
+          Built from scratch on a 4-layer board, it runs an RTOS that walls off core
+          stabilization from a <span class="accent">TinyML</span> anomaly pipeline —
+          detecting IMU drift and motor degradation in under 20 ms and cutting
+          simulated catastrophic crashes by <span class="accent">92%</span>.
+        </p>
+
+        <div class="meta-grid">
+          <div class="meta-cell"><div class="meta-cell__key">Role</div><div class="meta-cell__val">Embedded Systems Lead</div></div>
+          <div class="meta-cell"><div class="meta-cell__key">Timeline</div><div class="meta-cell__val">May–Aug 2026</div></div>
+          <div class="meta-cell"><div class="meta-cell__key">Domain</div><div class="meta-cell__val">Aerospace · Embedded · Edge ML</div></div>
+          <div class="meta-cell"><div class="meta-cell__key">Stack</div><div class="meta-cell__val">Rust · C · FreeRTOS · STM32 · TinyML</div></div>
+        </div>
+
+        <div class="hero__actions">
+          <Button variant="primary" size="lg" href={githubUrl}>View the code →</Button>
+          <Button variant="ghost" size="lg" href="#ch-loop">Tune the loop ↓</Button>
+        </div>
+      </div>
+
+      <Panel reticle meta="FAULT BUDGET" padding="24px">
+        <div class="legend__label">Hard real-time targets</div>
+        <div class="legend__intro">What the system has to guarantee, every flight.</div>
+        {faultBudget.map((b, i) => (
+          <div class:list={["legend__row", i === faultBudget.length - 1 && "legend__row--last"]}>
+            <span class="legend__rate">{b.rate}</span>
+            <span class="legend__detail">
+              <span class="legend__title">{b.title}</span>
+              <span class="legend__note">{b.note}</span>
+            </span>
+          </div>
+        ))}
+      </Panel>
+    </div>
+
+    <div class="hero__builtwith container">
+      <span class="hero__builtwith-label">Built with ·</span>
+      {tags.map((t) => <Tag>{t}</Tag>)}
+    </div>
+  </section>
+
+  <!-- ── PROBLEM ──────────────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="measure">
+      <SectionDivider />
+      <div class="problem">
+        <div class="problem__aside">
+          <div class="problem__station">Station 00</div>
+          <h2 class="problem__title">The Problem</h2>
+        </div>
+        <div>
+          <p class="problem__lead">
+            Standard flight controllers fail-safe on <span class="ink">rigid thresholds</span> —
+            and complex, multi-variable degradation slips right past them, straight into a flyaway.
+          </p>
+          <p class="problem__body">
+            Conventional PX4 / ArduPilot setups react to single tripped limits. When a drone
+            hits something subtler — micro-cracks in the frame, high-frequency motor vibration,
+            intermittent sensor drift — they can't diagnose the root cause fast enough, and the
+            result is an unrecoverable crash. RipWing's goal was a tightly integrated hardware +
+            software environment that holds a rock-steady 400 Hz flight loop, runs on-chip anomaly
+            inference at ≥50 Hz without stealing cycles from it, and contains physical or electrical
+            faults inside a deterministic 25 ms window — long enough to preserve telemetry and structure.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CH 01 · ARCHITECTURE ─────────────────────────────────────────── -->
+  <section id="ch-arch" class="section">
+    <div class="measure">
+      <SectionDivider />
+      <Station station="Station 01 · System" title="The architecture">
+        <p class="station__lead">
+          An ARM Cortex-M4 with dual-redundant IMUs over high-speed SPI, scheduled by
+          FreeRTOS under hard real-time constraints.
+        </p>
+
+        <div class="split">
+          <div>
+            <p class="prose">
+              The board reads <span class="ink">two IMUs</span> in parallel over high-speed SPI
+              for redundancy, and FreeRTOS enforces the scheduling: the stabilization task owns the
+              highest priority and runs deterministically at 400 Hz, while the inference task is
+              fenced below it so it can <span class="ink">never starve the motor mixer</span>.
+            </p>
+            <p class="prose">
+              That hard separation is the whole point — safety-critical flight control and
+              best-effort ML diagnostics share one MCU, but never share a failure mode.
+            </p>
+          </div>
+          <EmbedFigure
+            kicker="EMBED · TIMING"
+            title="FreeRTOS thread schedule"
+            subtitle="Task priorities + execution-jitter timing diagram"
+            fig="FIG.01"
+            ratio="4 / 3"
+          />
+        </div>
+
+        <div class="cmap">
+          {componentMap.map((c) => (
+            <div class="cmap__cell">
+              <span class="cmap__key">{c.key}</span>
+              <div class="cmap__val">{c.val}</div>
+            </div>
+          ))}
+        </div>
+      </Station>
+    </div>
+  </section>
+
+  <!-- ── CH 02 · THE LOOP (interactive) ───────────────────────────────── -->
+  <section id="ch-loop" class="section">
+    <div class="measure">
+      <SectionDivider />
+      <Station station="Station 02 · Interactive" title="Tune the loop">
+        <p class="station__lead">
+          A live single-axis (roll) controller running the same rigid-body dynamics — J·θ̈ = τ —
+          integrated at the 400 Hz firmware rate. Drag the craft to perturb it, fire a disturbance,
+          or command a step, and watch the loop recover.
+          <span class="ink-soft">These are the same gains you'd flash to the MCU — tune here first, then port the numbers.</span>
+        </p>
+
+        <div class="tuner">
+          <AttitudeTuner client:visible kp={tunerKp} ki={tunerKi} kd={tunerKd} />
+        </div>
+        <p class="figcaption">
+          FIG.02 — Live closed-loop sim. ζ is the damping ratio derived from your gains;
+          saturation shows how often the motor differential hits its ±0.6 N·m limit.
+        </p>
+      </Station>
+    </div>
+  </section>
+
+  <!-- ── CH 03 · DECISIONS ────────────────────────────────────────────── -->
+  <section id="ch-decisions" class="section">
+    <div class="measure">
+      <Station station="Station 03 · Trade-offs" title="The hard calls">
+        <p class="station__lead">
+          Anyone can follow a tutorial. The decisions that shaped RipWing each cost something —
+          here's what, and why it was worth it.
+        </p>
+
+        <div class="decision">
+          <Panel accentLeft meta="DECISION · LANGUAGE" padding="22px 24px">
+            <div class="decision__kicker">Memory safety where it matters</div>
+            <h3 class="decision__title">A hybrid C / Rust flight stack</h3>
+            <div class="decision__verdict">
+              <span class="decision__pick">Rust + C</span>
+              <span class="decision__vs">vs all-C or all-Rust</span>
+            </div>
+            <p class="decision__body">
+              In a concurrent RTOS, data races and null-pointer dereferences are killers — so
+              <span class="ink"> Rust handles the safety-critical telemetry parsing and the TinyML data pipeline</span>,
+              eliminating buffer overflows by construction. Legacy C stays for the low-level
+              register-access HAL. The trade: real toolchain friction — FFI bindings via cbindgen
+              and a longer initial build configuration.
+            </p>
+          </Panel>
+        </div>
+
+        <div class="decision">
+          <Panel accentLeft meta="DECISION · INFERENCE" padding="22px 24px">
+            <div class="decision__kicker">Keep the brain on the board</div>
+            <h3 class="decision__title">On-chip TinyML over companion-computer offload</h3>
+            <div class="decision__verdict">
+              <span class="decision__pick">On-MCU INT8</span>
+              <span class="decision__vs">vs Raspberry Pi over UART/I²C</span>
+            </div>
+            <p class="decision__body">
+              Offloading to a companion computer adds <span class="ink">&gt;50 ms of latency</span>
+              plus payload weight and power. A quantized model running directly on the main MCU brings
+              inference under 2 ms. The trade: a hard 64 KB RAM budget, forcing aggressive feature
+              selection and 8-bit integer quantization — which cost ~1.4% raw accuracy but met every
+              real-time constraint.
+            </p>
+          </Panel>
+        </div>
+      </Station>
+    </div>
+  </section>
+
+  <!-- ── CH 04 · ROADBLOCK ────────────────────────────────────────────── -->
+  <!-- The roadblock chapter needs a custom header (eyebrow + resolved chip)
+       instead of the standard Station label+title, so its rail is inline. -->
+  <section class="section">
+    <div class="measure">
+      <div class="rail">
+        <div class="rail__col">
+          <div class="rail__node"></div>
+          <div class="rail__line rail__line--fade"></div>
+        </div>
+        <div class="rail__body">
+          <div class="roadblock__head">
+            <Eyebrow color="accent">Roadblock</Eyebrow>
+            <span class="chip-resolved">
+              <span class="chip-resolved__dot"></span>
+              <span class="chip-resolved__text">Resolved · SPI clean</span>
+            </span>
+          </div>
+          <h2 class="roadblock__title">The board that cried wolf</h2>
+          <p class="prose prose--wide">
+            During early integration, high-current switching noise from the ESCs induced severe EMI
+            across the SPI lines. Bit flips followed — and the flight controller read them as
+            <span class="ink"> environmental anomalies</span>, falsely triggering emergency landings.
+            The code looked fine, which is the worst kind of bug.
+          </p>
+
+          <div class="split split--center">
+            <p class="prose">
+              I went to the wire. A <span class="ink">Saleae logic analyzer</span> on the SPI lines,
+              motors throttled on a static bench, correlated the packet error rate with high di/dt
+              loops — and found voltage ripple propagating through the 3.3 V analog rail.
+            </p>
+            <EmbedFigure
+              kicker="EMBED · CAPTURE"
+              title="SPI capture — pre/post fix"
+              subtitle="Packet error rate vs motor throttle"
+              fig="FIG.03"
+              ratio="16 / 10"
+            />
+          </div>
+
+          <p class="prose prose--wide prose--gap">
+            The fix was in the copper. I redesigned the board in KiCAD from a 2-layer to a
+            <span class="ink"> 4-layer stackup</span> with dedicated, unbroken internal ground and
+            power planes, isolated the high-current ESC traces, dropped digital isolators on the SPI
+            lines, and decoupled the sensitive sensor rails with star-grounded LC pi-filters. The
+            anomalies went quiet — and the ones that remained were real.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TELEMETRY / RESULTS ──────────────────────────────────────────── -->
+  <section id="results" class="section">
+    <div class="measure">
+      <SectionDivider />
+      <div class="results__head">
+        <Eyebrow color="accent">Telemetry</Eyebrow>
+        <h2 class="results__title">It catches the failure</h2>
+      </div>
+      <div class="results__grid">
+        {results.map((r) => (
+          <div class="results__cell">
+            <Kpi value={r.value} unit={r.unit} label={r.label} accent={r.accent} />
+          </div>
+        ))}
+      </div>
+      <p class="prose prose--wide prose--gap">
+        In hardware-in-the-loop testing the system survived single-motor power degradation and
+        artificial sensor drift, identifying faults and executing safety routines far faster than a
+        human could react. The quantized model fit in 42 KB of flash and 12 KB of RAM — leaving
+        <span class="ink"> over 75% of the MCU's memory free</span> — while tuned FreeRTOS priorities
+        held the 400 Hz loop to ±2 µs of jitter, so inference never starved the motor-mixing matrix.
+      </p>
+    </div>
+  </section>
+
+<section class="section">
+    <div class="measure">
+      <SectionDivider />
+      <Station station="Station 04 · Simulation" title="Hardware-in-the-loop">
+        <p class="station__lead">
+          Before the airframe ever leaves the bench, the controller flies against a
+          simulated quad — and against faults I can trigger on demand.
+        </p>
+
+        <p class="prose prose--wide">
+          This is the same software-in-the-loop rig that runs against the STM32 over
+          serial, ported to run live in your browser. Inject a slowly drifting Z-gyro
+          bias or knock 30% of the thrust off Motor 3, and watch the stabiliser
+          compensate while the on-board anomaly detector flags the fault.
+        </p>
+
+        <div class="tuner">
+          <RipWingHIL client:visible />
+        </div>
+
+        <p class="figcaption">
+          FIG.04 — Interactive: trigger a fault and watch the IMU, the four motor
+          PWM outputs, and the live anomaly score respond.
+        </p>
+      </Station>
+    </div>
+  </section>
+
+
+  <!-- ── NEXT STEPS ───────────────────────────────────────────────────── -->
+  {showRoadmap && (
+    <section class="section">
+      <div class="measure">
+        <SectionDivider />
+        <div class="next">
+          <div>
+            <Eyebrow color="accent">Next steps</Eyebrow>
+            <h2 class="next__title">From reactive to predictive</h2>
+            <p class="next__body">
+              Hardware and software are never truly finished. The roadmap pushes RipWing toward
+              full memory safety, richer per-motor telemetry, and a model that sees failure coming
+              rather than catching it mid-flight.
+            </p>
+          </div>
+          <Panel meta="ROADMAP" padding="26px">
+            <Eyebrow dot color="accent">Planned</Eyebrow>
+            <div class="next__traj">
+              <Trajectory phases={phases} />
+            </div>
+          </Panel>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ── CONTACT CTA ──────────────────────────────────────────────────── -->
+  <section class="section section--cta">
+    <div class="measure">
+      <SectionDivider />
+      <div class="cta">
+        <div class="cta__spotlight" aria-hidden="true"></div>
+        <div class="cta__left">
+          <Eyebrow dot color="accent">Open channel</Eyebrow>
+          <h2 class="cta__title">Want the deep dive on RipWing?</h2>
+          <p class="cta__body">
+            Happy to walk the RTOS scheduling, the Rust/C boundary, the EMI fix, or the edge-ML pipeline.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <Button variant="primary" size="lg" href={githubUrl}>View the code →</Button>
+          <Button variant="ghost" size="lg" href="/">Back to portfolio</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .container { max-width: var(--container); margin: 0 auto; }
+  /* case-study text column is a touch narrower than the home grid */
+  .measure { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+  .section { padding: 8px 32px; }
+  .section--cta { padding-top: 24px; }
+
+  /* shared prose */
+  .ink { color: var(--text-display); }
+  .ink-soft { color: var(--text-secondary); }
+  .prose { font-size: 16px; line-height: 1.7; color: var(--text-secondary); margin: 0; }
+  .prose + .prose { margin-top: 16px; }
+  .prose--wide { max-width: 64ch; }
+  .prose--gap { margin-top: 24px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin-top: 34px; }
+  .split--center { align-items: center; margin-top: 26px; }
+
+  /* ── HERO ── */
+  .hero { position: relative; overflow: hidden; padding: 72px 32px 56px; }
+  .hero__grid {
+    position: absolute; inset: 0; pointer-events: none;
+    -webkit-mask-image: radial-gradient(120% 92% at 50% 0%, #000 35%, transparent 80%);
+    mask-image: radial-gradient(120% 92% at 50% 0%, #000 35%, transparent 80%);
+  }
+  .hero__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 52px;
+    align-items: start;
+  }
+  .hero__badges { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+  .hero__codename {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px;
+  }
+  .hero__title {
+    font-size: clamp(48px, 6.4vw, 92px); font-weight: 600; line-height: 0.92;
+    letter-spacing: -0.03em; color: var(--text-display); margin: 0;
+    font-feature-settings: var(--display-features);
+  }
+  .hero__lead {
+    max-width: 52ch; margin-top: 22px; font-size: clamp(18px, 1.6vw, 21px);
+    line-height: 1.5; color: var(--text-secondary);
+  }
+  .hero__lead .accent { color: var(--text-accent); }
+  .hero__actions { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+
+  .hero__builtwith {
+    position: relative; margin-top: 34px;
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .hero__builtwith-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-faint); margin-right: 6px;
+  }
+
+  /* hero meta grid */
+  .meta-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px;
+    margin-top: 32px; background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-md); overflow: hidden;
+  }
+  .meta-cell { background: var(--surface-raised); padding: 16px 18px; }
+  .meta-cell__key {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-faint);
+  }
+  .meta-cell__val { font-size: 15px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; }
+
+  /* fault-budget legend */
+  .legend__label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px;
+  }
+  .legend__intro { font-size: 14px; line-height: 1.5; color: var(--text-muted); margin-bottom: 20px; }
+  .legend__row {
+    display: flex; align-items: center; gap: 14px; padding: 11px 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .legend__row--last { border-bottom: 1px solid var(--hairline); }
+  .legend__rate { font-family: var(--font-mono); font-size: 12px; color: var(--text-accent); width: 54px; flex-shrink: 0; }
+  .legend__detail { flex: 1; }
+  .legend__title { display: block; font-size: 15px; color: var(--text-display); font-weight: 600; }
+  .legend__note {
+    display: block; font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint);
+  }
+
+  /* ── PROBLEM ── */
+  .problem { display: grid; grid-template-columns: 200px 1fr; gap: 36px; padding-top: 8px; }
+  .problem__station {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-accent);
+  }
+  .problem__title {
+    font-size: 30px; font-weight: 600; letter-spacing: -0.02em;
+    color: var(--text-display); margin: 8px 0 0; line-height: 1.05;
+  }
+  .problem__lead {
+    margin: 0; font-size: clamp(19px, 2vw, 24px); line-height: 1.5;
+    letter-spacing: -0.01em; color: var(--text-secondary); text-wrap: pretty;
+  }
+  .problem__body { margin: 16px 0 0; font-size: 16px; line-height: 1.65; color: var(--text-muted); }
+
+  /* ── Station lead + per-section helpers ── */
+  .station__lead {
+    font-size: 18px; line-height: 1.55; color: var(--text-muted);
+    margin: 14px 0 0; max-width: 62ch;
+  }
+  .station__lead .ink-soft { color: var(--text-secondary); }
+
+  /* component map */
+  .cmap {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
+    margin-top: 28px; background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-md); overflow: hidden;
+  }
+  .cmap__cell { background: var(--surface-raised); padding: 14px 16px; }
+  .cmap__key { font-family: var(--font-mono); font-size: 11px; color: var(--text-accent); }
+  .cmap__val { font-size: 13.5px; color: var(--text-secondary); margin-top: 4px; }
+
+  /* tuner */
+  .tuner { margin-top: 28px; }
+  .figcaption {
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
+    letter-spacing: 0.04em; color: var(--text-faint); margin: 14px 4px 0;
+  }
+
+  /* ── DECISIONS ── */
+  .decision { margin-top: 24px; }
+  .decision:first-of-type { margin-top: 30px; }
+  .decision__kicker {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-accent);
+  }
+  .decision__title { font-size: 18px; font-weight: 600; color: var(--text-display); margin: 7px 0 0; }
+  .decision__verdict { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+  .decision__pick {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-on-accent);
+    background: var(--accent); padding: 4px 10px; border-radius: 99px;
+  }
+  .decision__vs { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .decision__body { font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+  /* ── ROADBLOCK (inline rail) ── */
+  .rail { display: grid; grid-template-columns: 56px 1fr; gap: 22px; }
+  .rail__col { display: flex; flex-direction: column; align-items: center; padding-top: 6px; }
+  .rail__node {
+    width: 15px; height: 15px; border-radius: 99px; background: var(--accent);
+    box-shadow: var(--glow-ember-md); border: 2px solid var(--bg); flex-shrink: 0;
+  }
+  .rail__line { flex: 1; width: 2px; background: var(--accent-line); margin-top: 6px; }
+  .rail__line--fade { background: linear-gradient(var(--accent-line), transparent); }
+  .rail__body { padding-bottom: 40px; }
+  .roadblock__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .chip-resolved {
+    display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px;
+    border: 1px solid var(--border); border-radius: 99px; background: var(--surface-sunken);
+  }
+  .chip-resolved__dot { width: 7px; height: 7px; border-radius: 99px; background: var(--status-nominal); }
+  .chip-resolved__text {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-secondary);
+  }
+  .roadblock__title {
+    font-size: clamp(28px, 3.2vw, 40px); font-weight: 600; letter-spacing: -0.025em;
+    color: var(--text-display); margin: 12px 0 0; line-height: 1.05;
+  }
+  .roadblock__title + .prose { margin-top: 16px; }
+
+  /* ── RESULTS ── */
+  .results__head { margin-bottom: 6px; }
+  .results__title {
+    font-size: clamp(30px, 4vw, 46px); font-weight: 600; letter-spacing: -0.025em;
+    color: var(--text-display); margin: 14px 0 0;
+  }
+  .results__grid {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+    margin-top: 24px; background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-xl); overflow: hidden;
+  }
+  .results__cell { background: var(--surface-raised); padding: 26px 24px; }
+
+  /* ── NEXT ── */
+  .next { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; padding-top: 8px; }
+  .next__title {
+    font-size: clamp(28px, 3.4vw, 40px); font-weight: 600; letter-spacing: -0.025em;
+    color: var(--text-display); margin: 14px 0 0; line-height: 1.1;
+  }
+  .next__body { font-size: 15.5px; line-height: 1.65; color: var(--text-secondary); margin: 16px 0 0; }
+  .next__traj { margin-top: 20px; }
+
+  /* ── CTA ── */
+  .cta {
+    position: relative; overflow: hidden; border: 1px solid var(--border);
+    border-radius: var(--radius-xl); background: var(--surface-raised);
+    padding: 40px 36px; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 24px;
+  }
+  .cta__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
+  .cta__left { position: relative; }
+  .cta__title {
+    font-size: clamp(26px, 3vw, 38px); font-weight: 600; letter-spacing: -0.025em;
+    color: var(--text-display); margin: 12px 0 0; line-height: 1.05;
+  }
+  .cta__body { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin: 12px 0 0; max-width: 48ch; }
+  .cta__actions { position: relative; display: flex; gap: 14px; flex-wrap: wrap; }
+
+  /* ── Responsive ── */
+  @media (max-width: 880px) {
+    .hero__inner { grid-template-columns: 1fr; gap: 36px; }
+    .split { grid-template-columns: 1fr; gap: 24px; }
+    .problem { grid-template-columns: 1fr; gap: 16px; }
+    .cmap { grid-template-columns: 1fr 1fr; }
+    .results__grid { grid-template-columns: 1fr 1fr; }
+    .next { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 560px) {
+    .hero { padding: 48px 18px 40px; }
+    .section { padding: 8px 18px; }
+    .measure { padding: 0 18px; }
+    .cmap, .results__grid, .meta-grid { grid-template-columns: 1fr; }
+  }
+</style>

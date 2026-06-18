@@ -1,0 +1,39 @@
+---
+// Tag — a tech/skill chip. Quiet graphite by default; ember edge lights on
+// hover (CSS, only when interactive). Used for tech stacks on project cards.
+interface Props {
+  size?: "sm" | "md";
+  interactive?: boolean;
+}
+const { size = "md", interactive = true } = Astro.props;
+---
+
+<span class:list={["tag", `tag--${size}`, interactive && "tag--interactive"]}>
+  <slot />
+</span>
+
+<style>
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    letter-spacing: var(--tracking-mono);
+    color: var(--text-muted);
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    line-height: 1.4;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      background var(--dur-fast) var(--ease-out);
+  }
+  .tag--sm { padding: 2px 7px; font-size: var(--text-2xs); }
+  .tag--md { padding: 3px 9px; font-size: var(--text-xs); }
+  .tag--interactive:hover {
+    color: var(--text-secondary);
+    background: var(--surface-hover);
+    border-color: var(--accent-line);
+  }
+</style>

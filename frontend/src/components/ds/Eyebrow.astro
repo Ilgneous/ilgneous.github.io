@@ -1,0 +1,53 @@
+---
+// Eyebrow — mono, uppercase, letter-spaced label above headings.
+// A leading hairline rule (or a live pulsing status dot) gives it telemetry feel.
+interface Props {
+  dot?: boolean;
+  rule?: boolean;
+  color?: "muted" | "accent" | "signal";
+}
+const { dot = false, rule = true, color = "muted" } = Astro.props;
+const colors = {
+  muted: "var(--text-faint)",
+  accent: "var(--text-accent)",
+  signal: "var(--signal-400)",
+};
+const c = colors[color] ?? colors.muted;
+---
+
+<span class="eyebrow" style={`color:${c};`}>
+  {dot ? (
+    <span class="eyebrow__dot"></span>
+  ) : rule ? (
+    <span class="eyebrow__rule"></span>
+  ) : null}
+  <slot />
+</span>
+
+<style>
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    line-height: 1;
+  }
+  .eyebrow__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--ember-glow);
+    animation: ilg-pulse 2.4s var(--ease-out) infinite;
+    flex-shrink: 0;
+  }
+  .eyebrow__rule {
+    width: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-line));
+    flex-shrink: 0;
+  }
+</style>

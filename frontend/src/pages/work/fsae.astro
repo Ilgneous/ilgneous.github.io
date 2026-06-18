@@ -1,299 +1,583 @@
 ---
-import Base from '../../layouts/Base.astro';
-import SteeringField from '../../components/SteeringField.svelte';
+import Base from "../../layouts/Base.astro";
+import Eyebrow from "../../components/ds/Eyebrow.astro";
+import Button from "../../components/ds/Button.astro";
+import Panel from "../../components/ds/Panel.astro";
+import Tag from "../../components/ds/Tag.astro";
+import Kpi from "../../components/ds/Kpi.astro";
+import StatusBadge from "../../components/ds/StatusBadge.astro";
+import SectionDivider from "../../components/ds/SectionDivider.astro";
+import Station from "../../components/ds/Station.astro";
+import EmbedFigure from "../../components/ds/EmbedFigure.astro";
+import SteeringField from "../../components/SteeringField.svelte";
+
+// ── Case-study config (ported from the template's renderVals / props) ──
+const githubUrl = "https://github.com/Ilgneous";
+
+const tags = ["SolidWorks", "FEA", "Carbon fiber", "Metal SLS", "Vehicle dynamics", "Python", "Milliken MMM"];
+
+const heroMeta = [
+  { key: "Role", val: "Steering Lead · Vehicle Dynamics" },
+  { key: "Timeline", val: "2025 season · Longhorn Racing" },
+  { key: "Domain", val: "Mechanical · Vehicle dynamics" },
+  { key: "Stack", val: "SolidWorks · FEA · Python · CFRP · SLS" },
+];
 
 const stats = [
-  { n: '68%', k: 'mass reduction' },
-  { n: 'CFRP', k: 'steering column' },
-  { n: 'LPBF', k: 'metal printed gearboxes' },
-  { n: '~6%', k: 'anti-Ackermann' },
+  { value: "68", unit: "%", label: "Steering mass reduction", accent: true },
+  { value: "CFRP", label: "Steering column layup" },
+  { value: "LPBF", label: "Metal-printed gearboxes" },
+  { value: "~6", unit: "%", label: "Anti-Ackermann, on purpose" },
 ];
 
 const decisions = [
   {
-    h: 'Steel column → carbon-fiber tube',
-    p: 'The old steering column was a steel tube — heavy, and adding rotating inertia right where the driver feels it most. Switching to a multi-layer CFRP layup cut the mass dramatically while keeping torsional stiffness high, so steering feel got sharper, not vaguer. This single change drove most of the 68% reduction.',
+    n: "Decision 01",
+    h: "Steel column → carbon-fiber tube",
+    body: `The old column was a steel tube — heavy, and adding rotating inertia right where the driver feels it most. A multi-layer CFRP layup cut the mass dramatically while keeping torsional stiffness high, so feel got <span class="ink">sharper, not vaguer</span>. This single change drove most of the 68%.`,
   },
   {
-    h: 'Double-U-joint → printed bevel gearboxes',
-    p: 'Routing the column around the driver\'s legs used to mean a chain of universal joints, which introduced compliance and non-constant velocity through the steering motion. I replaced them with compact metal SLS-printed bevel gearboxes — fewer parts, tighter packaging in the nose cone, and a cleaner transmission of the driver\'s input.',
+    n: "Decision 02",
+    h: "Double-U-joint → printed bevel gearboxes",
+    body: `Routing the column around the driver's legs meant a chain of universal joints — compliance and non-constant velocity through the motion. I replaced them with compact <span class="ink">metal SLS-printed bevel gearboxes</span>: fewer parts, tighter packaging in the nose cone, a cleaner transmission of input.`,
   },
   {
-    h: 'KAZ rack → NARRco rack',
-    p: 'Rack selection came down to a weighted decision matrix across mass, tolerance, ratio, and packaging. The lighter, tighter-tolerance NARRco rack won — less backlash at the wheel and a better fit within the bulkhead constraints.',
+    n: "Decision 03",
+    h: "KAZ rack → NARRco rack",
+    body: `Rack selection came down to a weighted decision matrix across mass, tolerance, ratio, and packaging. The lighter, tighter-tolerance NARRco rack won — <span class="ink">less backlash</span> at the wheel and a better fit within the bulkhead constraints.`,
   },
   {
-    h: 'Slight anti-Ackermann, on purpose',
-    p: 'On a high-grip autocross car running real slip angles, perfect Ackermann isn\'t optimal — the heavily loaded outer tire wants a slightly larger angle. So the steering arm geometry was tuned for a modest anti-Ackermann, validated against bump-steer through full suspension travel so the toe stays honest over bumps.',
+    n: "Decision 04",
+    h: "Slight anti-Ackermann, on purpose",
+    body: `On a high-grip autocross car running real slip angles, perfect Ackermann isn't optimal — the heavily loaded <span class="ink">outer tire wants a larger angle</span>. The steering-arm geometry was tuned for a modest anti-Ackermann, validated against bump-steer through full suspension travel so toe stays honest over bumps.`,
   },
 ];
 
-const phases = [
-  { n: '01', h: 'Requirements & concept', items: ['Define steering ratio, compliance, and ergonomics targets', 'Benchmark the previous steel-column / double-U-joint system', 'Map packaging limits inside the nose cone and bulkhead'] },
-  { n: '02', h: 'Kinematics & vehicle dynamics', items: ['Compute the target anti-Ackermann percentage', 'Sweep tie-rod and upright geometry to minimize bump steer', 'Apply the Milliken Moment Method to balance understeer / oversteer'] },
-  { n: '03', h: 'Mechanical redesign & analysis', items: ['Replace steel column with multi-layer CFRP tube', 'Design custom SLS-printed bevel gearboxes', 'FEA on housings, shafts, and the CFRP column for stiffness and safety factors'] },
-  { n: '04', h: 'Fabrication & assembly', items: ['CNC-machine housings, mounts, and interfaces', 'Metal-print and post-process the bevel gearboxes', 'Lay up the CFRP column; build welding jigs; align the assembly centerline'] },
-  { n: '05', h: 'Testing & validation', items: ['Measure gearbox lash, bearing preload, and column compliance', 'Validate Ackermann and bump-steer on the assembled chassis', 'Track-test steering effort, feel, and transient handling'] },
+const results = [
+  { value: "68", unit: "%", label: "Lighter steering system", accent: true },
+  { value: "0", unit: " U-joints", label: "Replaced by printed bevels" },
+  { value: "4", label: "Decisions, each a weighted trade" },
+  { value: "Full", label: "Vehicle kinematic model" },
+];
+
+const methods = [
+  { key: "Design", val: "SolidWorks · full-system CAD · steering kinematics" },
+  { key: "Analysis", val: "FEA on housings, shafts, CFRP column · compliance / FEM" },
+  { key: "Fabrication", val: "Carbon-fiber layup · metal SLS · CNC · TIG fixtures" },
+  { key: "Dynamics", val: "Milliken Moment Method · Ackermann · bump-steer · Python" },
+];
+
+const navLinks = [
+  { href: "#ch-geo", label: "Geometry" },
+  { href: "#ch-vehicle", label: "Vehicle" },
+  { href: "#ch-fem", label: "Compliance" },
+  { href: "#results", label: "Telemetry" },
 ];
 ---
 
-<Base title="FSAE Steering System — Sivan Syed" description="A carbon-fiber Formula SAE steering system, 68% lighter than its predecessor, with tuned anti-Ackermann geometry.">
-  <article>
-    <!-- HERO -->
-    <header class="phero">
-      <div class="wrap">
-        <a href="/#work" class="back mono">← back to work</a>
-        <div class="eyebrow mono">// CASE STUDY · MECHANICAL · 2025</div>
-        <h1>FSAE Steering System</h1>
-        <p class="sub">
-          A complete redesign of a Formula SAE car's steering — from a heavy steel
-          column to carbon fiber and custom-printed gearboxes, <strong>68% lighter</strong>
-          and sharper in the driver's hands.
+<Base
+  title="FSAE — Flagship Build · Ilgneous"
+  description="Longhorn Racing FSAE: a steering rebuild 68% lighter that grew into a full-vehicle kinematic and compliance model."
+  navLinks={navLinks}
+  ctaHref="/"
+  ctaLabel="← All work"
+>
+  <!-- ── HERO ─────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero__grid blueprint" aria-hidden="true"></div>
+    <div class="hero__spotlight" aria-hidden="true"></div>
+
+    <div class="hero__inner container">
+      <div>
+        <div class="hero__badges">
+          <Eyebrow color="accent">Flagship build · FSAE</Eyebrow>
+          <StatusBadge status="nominal">On car</StatusBadge>
+        </div>
+        <div class="hero__codename">LONGHORN RACING ELECTRIC &nbsp;//&nbsp; STEERING → VEHICLE DYNAMICS</div>
+        <h1 class="hero__title">Steering, then<br />the whole car.</h1>
+        <p class="hero__lead">
+          It started with the one system the driver touches every second of every lap —
+          a steering rebuild <span class="accent">68% lighter</span> and sharper in the hands.
+          Then the question grew: if the linkage is honest, is the <span class="ink">whole vehicle</span>?
+          That pulled the work from a single mechanism out to a full kinematic and compliance model of the car.
         </p>
-        <SteeringField client:load />
-        <p class="cap mono">FIG.01 — Interactive: move your cursor to steer. Outer wheel leads the inner — a slight anti-Ackermann split.</p>
-      </div>
-    </header>
 
-    <!-- STATS -->
-    <section class="wrap stats-wrap">
-      <div class="stats">
-        {stats.map((s) => (
-          <div class="stat">
-            <div class="stat-n">{s.n}</div>
-            <div class="stat-k mono">{s.k}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <!-- NARRATIVE -->
-    <section class="wrap prose">
-      <div class="eyebrow mono">// THE BRIEF</div>
-      <p class="big">
-        Steering is the one system the driver touches every second of every lap.
-        It has to be light, stiff, and honest — and the car it came on was none of those.
-      </p>
-      <p>
-        The previous design used a steel column and a chain of universal joints to route
-        the wheel around the driver's legs. It worked, but it was heavy, it flexed under load,
-        and the U-joints made the steering feel slightly different depending on where in the
-        rotation you were. The goal was a system that disappeared — that let the driver feel
-        the front tires directly, with as little mass and compliance in between as possible.
-      </p>
-    </section>
-
-    <!-- KEY DECISIONS -->
-    <section class="wrap">
-      <div class="eyebrow mono">// KEY DECISIONS</div>
-      <div class="decisions">
-        {decisions.map((d) => (
-          <div class="decision">
-            <h3>{d.h}</h3>
-            <p>{d.p}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <!-- PROCESS (genuine sequence → numbered) -->
-    <section class="wrap proc-wrap">
-      <div class="eyebrow mono">// HOW IT CAME TOGETHER</div>
-      <ol class="phases">
-        {phases.map((ph) => (
-          <li class="phase">
-            <div class="phase-n mono">{ph.n}</div>
-            <div class="phase-body">
-              <h3>{ph.h}</h3>
-              <ul>
-                {ph.items.map((it) => <li>{it}</li>)}
-              </ul>
+        <div class="meta-grid">
+          {heroMeta.map((m) => (
+            <div class="meta-cell">
+              <div class="meta-cell__key">{m.key}</div>
+              <div class="meta-cell__val">{m.val}</div>
             </div>
-          </li>
-        ))}
-      </ol>
-    </section>
+          ))}
+        </div>
 
-    <!-- TOOLS -->
-    <section class="wrap tools-wrap">
-      <div class="eyebrow mono">// TOOLS & METHODS</div>
-      <div class="tools">
-        <div class="tool-group">
-          <span class="tg-k mono">Design</span>
-          <span class="tg-v">SolidWorks · full-system CAD · steering kinematics</span>
-        </div>
-        <div class="tool-group">
-          <span class="tg-k mono">Analysis</span>
-          <span class="tg-v">FEA on housings, shafts, CFRP column</span>
-        </div>
-        <div class="tool-group">
-          <span class="tg-k mono">Fabrication</span>
-          <span class="tg-v">Carbon-fiber layup · metal SLS · CNC · TIG fixtures</span>
-        </div>
-        <div class="tool-group">
-          <span class="tg-k mono">Dynamics</span>
-          <span class="tg-v">Milliken Moment Method · Ackermann · bump-steer</span>
+        <div class="hero__actions">
+          <Button variant="primary" size="lg" href={githubUrl}>View the analysis →</Button>
+          <Button variant="ghost" size="lg" href="#ch-geo">Start at the linkage</Button>
         </div>
       </div>
-    </section>
 
-    <!-- NEXT -->
-    <section class="wrap next-wrap">
-      <a href="/#work" class="next">
-        <span class="mono dim">← all work</span>
-        <span class="next-t">See the other projects</span>
-      </a>
-    </section>
-  </article>
+      <!-- HERO EMBED: interactive steering field -->
+      <div class="hero__embed">
+        <SteeringField client:visible />
+        <p class="figcaption">
+          FIG.01 — Interactive: move your cursor to steer. The outer wheel leads the inner —
+          a slight <span class="ink-soft">anti-Ackermann</span> split tuned for slip angle, not the geometric ideal.
+        </p>
+      </div>
+    </div>
 
-  <style>
-    .wrap { max-width: 1000px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 64px); }
-    .mono { font-family: var(--font-mono); }
-    .eyebrow {
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      color: var(--color-blueprint);
-      margin-bottom: 24px;
-    }
+    <div class="hero__builtwith container">
+      <span class="hero__builtwith-label">Built with ·</span>
+      {tags.map((t) => <Tag>{t}</Tag>)}
+    </div>
+  </section>
 
-    /* HERO */
-    .phero { padding: clamp(32px, 6vh, 64px) 0 clamp(40px, 6vh, 70px); text-align: center; }
-    .phero .wrap { display: flex; flex-direction: column; align-items: center; }
-    .back {
-      align-self: flex-start;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--color-paper-dim);
-      text-decoration: none;
-      margin-bottom: 40px;
-      transition: color 0.2s;
-    }
-    .back:hover { color: var(--color-torque); }
-    h1 {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: clamp(36px, 6vw, 66px);
-      line-height: 1.02;
-      letter-spacing: -0.02em;
-      margin: 0;
-      max-width: 14ch;
-    }
-    .sub {
-      margin: 22px 0 0;
-      max-width: 52ch;
-      font-size: 18px;
-      line-height: 1.6;
-      color: #D8D5CD;
-    }
-    .sub strong { color: var(--color-paper); font-weight: 600; }
-    :global(.phero .panel) { margin-top: clamp(32px, 5vh, 50px); }
-    .cap {
-      margin-top: 16px;
-      font-size: 11px;
-      letter-spacing: 0.06em;
-      color: var(--color-paper-dim);
-      max-width: 54ch;
-      line-height: 1.6;
-    }
+  <!-- ── BRIEF ────────────────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="measure">
+      <SectionDivider />
+      <div class="problem">
+        <div class="problem__aside">
+          <div class="problem__station">Station 00</div>
+          <h2 class="problem__title">The Brief</h2>
+        </div>
+        <div>
+          <p class="problem__lead">
+            Steering is the one system the driver touches every second of every lap.
+            It has to be <span class="ink">light, stiff, and honest</span> — and the car it came on was none of those.
+          </p>
+          <p class="problem__body">
+            The previous design used a steel column and a chain of universal joints to route the wheel
+            around the driver's legs. It worked, but it was heavy, it flexed under load, and the U-joints
+            made the steering feel slightly different depending on where in the rotation you were. The goal
+            was a system that disappeared — that let the driver feel the front tires directly, with as little
+            mass and compliance in between as possible. Solving that mechanism honestly is what later opened
+            the door to modeling the whole vehicle.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    /* STATS */
-    .stats-wrap { margin-top: clamp(20px, 4vh, 40px); }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--color-neutral-line);
-      border: 1px solid var(--color-neutral-line);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .stat { background: var(--color-graphite); padding: 24px 20px; }
-    .stat-n {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: clamp(26px, 3.4vw, 36px);
-      color: var(--color-torque);
-      letter-spacing: -0.01em;
-    }
-    .stat-k { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-paper-dim); margin-top: 6px; }
-    @media (max-width: 620px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  <!-- ── STATS STRIP ──────────────────────────────────────────────────── -->
+  <section class="section section--stats">
+    <div class="measure">
+      <div class="stats-grid">
+        {stats.map((s) => (
+          <div class="stats-cell">
+            <Kpi value={s.value} unit={s.unit} label={s.label} accent={s.accent} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
 
-    /* PROSE */
-    .prose { margin-top: clamp(60px, 10vh, 110px); }
-    .prose .big {
-      font-family: var(--font-display);
-      font-weight: 500;
-      font-size: clamp(22px, 2.8vw, 30px);
-      line-height: 1.34;
-      letter-spacing: -0.01em;
-      margin: 0 0 28px;
-      max-width: 30ch;
-    }
-    .prose p:not(.big) { font-size: 17px; line-height: 1.75; color: #C9C6BE; max-width: 64ch; margin: 0; }
+  <!-- ── CH 01 · GEOMETRY ─────────────────────────────────────────────── -->
+  <section id="ch-geo" class="section">
+    <div class="measure">
+      <SectionDivider />
+      <Station station="Station 01 · The Linkage" title="Steering geometry">
+        <p class="station__lead">
+          Four decisions, each a weighted trade. Together they took most of the mass out and put the feel back in.
+        </p>
 
-    /* DECISIONS */
-    section + section { margin-top: clamp(56px, 9vh, 100px); }
-    .decisions { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--color-neutral-line); border: 1px solid var(--color-neutral-line); border-radius: 3px; overflow: hidden; }
-    .decision { background: var(--color-graphite); padding: clamp(24px, 3vw, 36px); }
-    .decision h3 {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: clamp(18px, 2vw, 22px);
-      letter-spacing: -0.01em;
-      margin: 0 0 14px;
-      color: var(--color-paper);
-    }
-    .decision p { font-size: 15px; line-height: 1.65; color: #BEBBB3; margin: 0; }
-    @media (max-width: 720px) { .decisions { grid-template-columns: 1fr; } }
+        <div class="dmatrix">
+          {decisions.map((d) => (
+            <div class="dmatrix__cell">
+              <div class="dmatrix__n">{d.n}</div>
+              <h3 class="dmatrix__h">{d.h}</h3>
+              <p class="dmatrix__p" set:html={d.body}></p>
+            </div>
+          ))}
+        </div>
 
-    /* PHASES */
-    .phases { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-neutral-line); }
-    .phase {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: clamp(18px, 3vw, 40px);
-      padding: clamp(22px, 3vw, 32px) 0;
-      border-bottom: 1px solid var(--color-neutral-line);
-    }
-    .phase-n { color: var(--color-blueprint); font-size: 14px; padding-top: 4px; }
-    .phase-body h3 {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: clamp(19px, 2.2vw, 24px);
-      letter-spacing: -0.01em;
-      margin: 0 0 14px;
-    }
-    .phase-body ul { margin: 0; padding-left: 18px; }
-    .phase-body li { font-size: 15px; line-height: 1.7; color: #BEBBB3; margin-bottom: 4px; }
+        <p class="station__note">
+          <span class="station__note-arrow">↑</span>
+          The steering field up top is that geometry, solved live — the same anti-Ackermann split,
+          drawn from the linkage solver rather than described.
+        </p>
+      </Station>
+    </div>
+  </section>
 
-    /* TOOLS */
-    .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 48px; }
-    .tool-group { border-top: 1px solid var(--color-neutral-line); padding-top: 14px; }
-    .tg-k { display: block; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-blueprint); margin-bottom: 8px; }
-    .tg-v { font-size: 15px; line-height: 1.5; color: #C9C6BE; }
-    @media (max-width: 620px) { .tools { grid-template-columns: 1fr; } }
+  <!-- ── CH 02 · VEHICLE MODELING ─────────────────────────────────────── -->
+  <section id="ch-vehicle" class="section">
+    <div class="measure">
+      <Station station="Station 02 · The Whole Car" title="From a linkage to a vehicle">
+        <p class="station__lead">
+          A linkage that behaves is only honest if the car around it does too. So the model grew outward —
+          from four ball joints to the whole vehicle's balance.
+        </p>
 
-    /* NEXT */
-    .next-wrap { margin-top: clamp(56px, 9vh, 100px); }
-    .next {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding: clamp(28px, 4vw, 44px);
-      border: 1px solid var(--color-neutral-line);
-      border-radius: 3px;
-      text-decoration: none;
-      transition: border-color 0.25s, background 0.25s;
-    }
-    .next:hover { border-color: var(--color-torque); background: var(--color-graphite-2); }
-    .next .dim { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-paper-dim); }
-    .next-t {
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: clamp(22px, 3vw, 30px);
-      letter-spacing: -0.01em;
-    }
-    .next:hover .next-t { color: var(--color-torque); }
-  </style>
+        <div class="split">
+          <div>
+            <p class="prose">
+              I built a <span class="ink">kinematic model of the full vehicle</span> to optimize performance
+              and stability — sweeping tie-rod and upright geometry to minimize bump steer, and balancing
+              understeer / oversteer with the <span class="ink">Milliken Moment Method</span>.
+            </p>
+            <p class="prose">
+              The anti-Ackermann target stopped being a static number. With compliance modeled in, I tuned
+              <span class="ink"> slip-angle behavior</span> directly — then closed the loop against Python
+              simulation and track feedback until the model and the car agreed.
+            </p>
+          </div>
+          <EmbedFigure
+            kicker="EMBED · PLOT"
+            title="Milliken Moment diagram"
+            subtitle="Yaw moment vs lateral accel — the balance map"
+            fig="FIG.02"
+            ratio="4 / 3"
+          />
+        </div>
+
+        <div class="decision">
+          <Panel accentLeft meta="METHOD · VALIDATION" padding="22px 24px">
+            <div class="decision__kicker">Model, then trust the track</div>
+            <h3 class="decision__title">A closed feedback loop: Python sim ⇄ track data</h3>
+            <div class="decision__verdict">
+              <span class="decision__pick">Simulate → drive → correct</span>
+              <span class="decision__vs">vs sim-only or seat-of-the-pants</span>
+            </div>
+            <p class="decision__body">
+              Each geometry change was predicted in the Python model, validated on the assembled chassis for
+              Ackermann and bump-steer, then track-tested for effort, feel, and transient handling.
+              Disagreements fed straight back into the compliance terms — so the model earned its trust
+              instead of assuming it.
+            </p>
+          </Panel>
+        </div>
+      </Station>
+    </div>
+  </section>
+
+  <!-- ── CH 03 · COMPLIANCE / FEM ─────────────────────────────────────── -->
+  <section id="ch-fem" class="section">
+    <div class="measure">
+      <Station station="Station 03 · Where It Bends" title="Compliance & FEM" fade>
+        <p class="station__lead">
+          Stiffness isn't infinite, and pretending it is hides the truth. The current work models exactly where the car gives.
+        </p>
+
+        <div class="split split--center">
+          <EmbedFigure
+            kicker="EMBED · FEA"
+            title="Von Mises stress field"
+            subtitle="Gearbox housing / CFRP column — safety factors"
+            fig="FIG.03"
+            ratio="4 / 3"
+          />
+          <div>
+            <p class="prose">
+              I'm building a <span class="ink">compliance model</span> to simulate the stress of vehicle parts
+              under load — extending the FEA already run on housings, shafts, and the CFRP column for stiffness
+              and safety factors out to a whole-vehicle picture.
+            </p>
+            <p class="prose">
+              The next layer is <span class="ink">collision detection through FEM</span> — so the model doesn't
+              just predict where parts deflect, but where they'd interfere or fail through the full envelope of
+              motion and loading.
+            </p>
+          </div>
+        </div>
+
+        <div class="warstory">
+          <div class="warstory__head">
+            <Eyebrow color="accent">The hard part</Eyebrow>
+            <span class="chip-caution">
+              <span class="chip-caution__dot"></span>
+              <span class="chip-caution__text">In progress · modeling</span>
+            </span>
+          </div>
+          <h3 class="warstory__title">Bump-steer hides in the toe</h3>
+          <p class="prose prose--wide prose--gap">
+            The geometry that's perfect at ride height can lie through suspension travel: as the wheel moves up
+            and down, the tie-rod arc drags the toe with it. A car that feels planted on a smooth skidpad can
+            dart over a bump. The fix isn't a single number — it's <span class="ink">co-tuning</span> the
+            tie-rod and upright geometry so toe stays honest across the full travel, then proving it in the
+            model before it ever reaches the track.
+          </p>
+        </div>
+      </Station>
+    </div>
+  </section>
+
+  <!-- ── TELEMETRY / RESULTS ──────────────────────────────────────────── -->
+  <section id="results" class="section">
+    <div class="measure">
+      <SectionDivider />
+      <div class="results__head">
+        <Eyebrow color="accent">Telemetry</Eyebrow>
+        <h2 class="results__title">What the rebuild bought</h2>
+      </div>
+      <div class="results__grid">
+        {results.map((r) => (
+          <div class="results__cell">
+            <Kpi value={r.value} unit={r.unit} label={r.label} accent={r.accent} />
+          </div>
+        ))}
+      </div>
+      <p class="prose prose--wide prose--gap">
+        The carbon column and printed gearboxes took the mass and the slop out at once, the NARRco rack killed
+        backlash at the wheel, and a deliberate anti-Ackermann split made the loaded outer tire happy. From there
+        the work scaled up — a full-vehicle kinematic model and a compliance / FEM pass now in flight.
+      </p>
+
+      <div class="methods">
+        {methods.map((m) => (
+          <div class="methods__cell">
+            <div class="methods__key">{m.key}</div>
+            <div class="methods__val">{m.val}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT CTA ──────────────────────────────────────────────────── -->
+  <section class="section section--cta">
+    <div class="measure">
+      <SectionDivider />
+      <div class="cta">
+        <div class="cta__spotlight" aria-hidden="true"></div>
+        <div class="cta__left">
+          <Eyebrow dot color="accent">Open channel</Eyebrow>
+          <h2 class="cta__title">Want to talk vehicle dynamics?</h2>
+          <p class="cta__body">
+            Happy to walk the geometry, the FEA, or the modeling loop — from the linkage out to the whole car.
+          </p>
+        </div>
+        <div class="cta__actions">
+          <Button variant="primary" size="lg" href={githubUrl}>View the analysis →</Button>
+          <Button variant="ghost" size="lg" href="/">Back to portfolio</Button>
+        </div>
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .container { max-width: var(--container); margin: 0 auto; }
+  .measure { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+  .section { padding: 8px 32px; }
+  .section--stats { padding-top: 24px; }
+  .section--cta { padding-top: 24px; }
+
+  /* shared prose. .ink is :global because it also appears inside set:html
+     (decision-matrix bodies), where Astro's scoped hash isn't applied. */
+  :global(.ink) { color: var(--text-display); }
+  .ink-soft { color: var(--text-secondary); }
+  .prose { font-size: 16px; line-height: 1.7; color: var(--text-secondary); margin: 0; }
+  .prose + .prose { margin-top: 16px; }
+  .prose--wide { max-width: 64ch; }
+  .prose--gap { margin-top: 24px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin-top: 34px; }
+  .split--center { align-items: center; margin-top: 34px; }
+
+  /* ── HERO ── */
+  .hero { position: relative; overflow: hidden; padding: 72px 32px 56px; }
+  .hero__grid {
+    position: absolute; inset: 0; pointer-events: none;
+    -webkit-mask-image: radial-gradient(120% 92% at 50% 0%, #000 35%, transparent 80%);
+    mask-image: radial-gradient(120% 92% at 50% 0%, #000 35%, transparent 80%);
+  }
+  .hero__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
+  .hero__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 52px;
+    align-items: start;
+  }
+  .hero__badges { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+  .hero__codename {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px;
+  }
+  .hero__title {
+    font-size: clamp(44px, 6vw, 88px); font-weight: 600; line-height: 0.94;
+    letter-spacing: -0.03em; color: var(--text-display); margin: 0;
+    font-feature-settings: var(--display-features);
+  }
+  .hero__lead {
+    max-width: 52ch; margin-top: 22px; font-size: clamp(18px, 1.6vw, 21px);
+    line-height: 1.5; color: var(--text-secondary);
+  }
+  .hero__lead .accent { color: var(--text-accent); }
+  .hero__actions { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+  .hero__embed { padding-top: 4px; }
+
+  .hero__builtwith {
+    position: relative; margin-top: 34px;
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .hero__builtwith-label {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-faint); margin-right: 6px;
+  }
+
+  /* hero meta grid */
+  .meta-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px;
+    margin-top: 32px; background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-md); overflow: hidden;
+  }
+  .meta-cell { background: var(--surface-raised); padding: 16px 18px; }
+  .meta-cell__key {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-faint);
+  }
+  .meta-cell__val { font-size: 15px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; }
+
+  .figcaption {
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
+    letter-spacing: 0.04em; color: var(--text-faint); margin: 14px 4px 0;
+  }
+  .figcaption .ink-soft { color: var(--text-secondary); }
+
+  /* ── BRIEF (problem) ── */
+  .problem { display: grid; grid-template-columns: 200px 1fr; gap: 36px; padding-top: 8px; }
+  .problem__station {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-accent);
+  }
+  .problem__title {
+    font-size: 30px; font-weight: 600; letter-spacing: -0.02em;
+    color: var(--text-display); margin: 8px 0 0; line-height: 1.05;
+  }
+  .problem__lead {
+    margin: 0; font-size: clamp(19px, 2vw, 24px); line-height: 1.5;
+    letter-spacing: -0.01em; color: var(--text-secondary); text-wrap: pretty;
+  }
+  .problem__body { margin: 16px 0 0; font-size: 16px; line-height: 1.65; color: var(--text-muted); }
+
+  /* ── STATS STRIP ── */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+    background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-xl); overflow: hidden;
+  }
+  .stats-cell { background: var(--surface-raised); padding: 26px 24px; }
+
+  /* ── Station helpers ── */
+  .station__lead {
+    font-size: 18px; line-height: 1.55; color: var(--text-muted);
+    margin: 14px 0 0; max-width: 58ch;
+  }
+  .station__note {
+    font-size: 15px; line-height: 1.7; color: var(--text-muted);
+    margin: 22px 0 0; max-width: 64ch;
+  }
+  .station__note-arrow { color: var(--text-faint); font-family: var(--font-mono); font-size: 13px; }
+
+  /* ── Decision matrix (2×2) ── */
+  .dmatrix {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 30px;
+    background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-xl); overflow: hidden;
+  }
+  .dmatrix__cell { background: var(--surface-raised); padding: 26px 28px; }
+  .dmatrix__n {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-accent);
+  }
+  .dmatrix__h {
+    font-size: 19px; font-weight: 600; color: var(--text-display);
+    margin: 8px 0 12px; letter-spacing: -0.01em; line-height: 1.2;
+  }
+  .dmatrix__p { font-size: 15px; line-height: 1.65; color: var(--text-secondary); margin: 0; }
+
+  /* ── Decision panel (validation method) ── */
+  .decision { margin-top: 30px; }
+  .decision__kicker {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-accent);
+  }
+  .decision__title { font-size: 18px; font-weight: 600; color: var(--text-display); margin: 7px 0 0; }
+  .decision__verdict { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+  .decision__pick {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-on-accent);
+    background: var(--accent); padding: 4px 10px; border-radius: 99px;
+  }
+  .decision__vs { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .decision__body { font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+
+  /* ── War story (compliance) ── */
+  .warstory { margin-top: 40px; border-top: 1px solid var(--hairline); padding-top: 30px; }
+  .warstory__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .chip-caution {
+    display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px;
+    border: 1px solid var(--border); border-radius: 99px; background: var(--surface-sunken);
+  }
+  .chip-caution__dot { width: 7px; height: 7px; border-radius: 99px; background: var(--status-caution); }
+  .chip-caution__text {
+    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-secondary);
+  }
+  .warstory__title {
+    font-size: clamp(24px, 2.6vw, 32px); font-weight: 600; letter-spacing: -0.02em;
+    color: var(--text-display); margin: 12px 0 0; line-height: 1.1;
+  }
+
+  /* ── RESULTS ── */
+  .results__head { margin-bottom: 6px; }
+  .results__title {
+    font-size: clamp(30px, 4vw, 46px); font-weight: 600; letter-spacing: -0.025em;
+    color: var(--text-display); margin: 14px 0 0;
+  }
+  .results__grid {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
+    margin-top: 24px; background: var(--border); border: 1px solid var(--border);
+    border-radius: var(--radius-xl); overflow: hidden;
+  }
+  .results__cell { background: var(--surface-raised); padding: 26px 24px; }
+
+  /* tools & methods */
+  .methods {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 48px; margin-top: 34px;
+  }
+  .methods__cell { border-top: 1px solid var(--border); padding-top: 14px; }
+  .methods__key {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-accent); margin-bottom: 8px;
+  }
+  .methods__val { font-size: 15px; line-height: 1.5; color: var(--text-secondary); }
+
+  /* ── CTA ── */
+  .cta {
+    position: relative; overflow: hidden; border: 1px solid var(--border);
+    border-radius: var(--radius-xl); background: var(--surface-raised);
+    padding: 40px 36px; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 24px;
+  }
+  .cta__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
+  .cta__left { position: relative; }
+  .cta__title {
+    font-size: clamp(26px, 3vw, 38px); font-weight: 600; letter-spacing: -0.025em;
+    color: var(--text-display); margin: 12px 0 0; line-height: 1.05;
+  }
+  .cta__body { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin: 12px 0 0; max-width: 48ch; }
+  .cta__actions { position: relative; display: flex; gap: 14px; flex-wrap: wrap; }
+
+  /* ── Responsive ── */
+  @media (max-width: 880px) {
+    .hero__inner { grid-template-columns: 1fr; gap: 36px; }
+    .split { grid-template-columns: 1fr; gap: 24px; }
+    /* keep the figure below the prose on mobile even when source order leads with it */
+    .split--center > :global(figure) { order: 2; }
+    .problem { grid-template-columns: 1fr; gap: 16px; }
+    .dmatrix { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .results__grid { grid-template-columns: 1fr 1fr; }
+    .methods { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .hero { padding: 48px 18px 40px; }
+    .section { padding: 8px 18px; }
+    .measure { padding: 0 18px; }
+    .stats-grid, .results__grid { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,64 +1,334 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500;600&display=swap');
 @import "tailwindcss";
 
-/* Local fonts */
-@import "@fontsource-variable/fraunces";
-@import "@fontsource-variable/inter";
-@import "@fontsource/space-mono/400.css";
-@import "@fontsource/space-mono/700.css";
+/* Fonts — Space Grotesk (display+body) + Geist Mono (telemetry).
+   If you prefer the self-hosted @fontsource-variable packages you already had,
+   delete this @import and keep your `import '@fontsource-variable/...'` lines
+   in the layout; the family names below resolve to either source. */
 
+/* ============================================================================
+   global.css — Ilgneous portfolio
+   Tailwind v4 + the Ilgneous Design System tokens (graphite / paper / ember).
+   Replaces the previous indigo/violet (--color-torque/blueprint) vocabulary.
+
+   Structure:
+     1. @import "tailwindcss"          — Tailwind v4 engine
+     2. @theme { ... }                 — tokens Tailwind should turn into
+                                          utilities (colors, fonts, radii…)
+     3. :root { ... }                  — raw DS tokens + semantic aliases that
+                                          are referenced directly as var(--…)
+                                          (surfaces, glows, blueprint textures)
+     4. base element styles            — body, headings, links, scrollbar, etc.
+
+   NOTE ON THE TWO BLOCKS: Tailwind v4 reads @theme to generate utility classes
+   (e.g. text-ember-500, bg-graphite-800, font-mono). The DS components and the
+   ported case-study pages mostly reference var(--…) directly, so every token
+   also exists as a plain custom property. @theme variables ARE custom
+   properties too, so there is no duplication of *values* — @theme holds the
+   palette + type + radii (the things you'll want as utilities); :root holds the
+   semantic aliases, alpha helpers, shadows, motion, and textures.
+   ========================================================================== */
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   1. @theme — palette, type, spacing, radii → Tailwind utilities
+   ════════════════════════════════════════════════════════════════════════ */
 @theme {
-  /* Palette — technical drawing / blueprint register */
-  --color-graphite: #0E1419;
-  --color-graphite-2: #141C23;
-  --color-graphite-3: #1B252E;
-  --color-paper: #F5F2EA;
-  --color-paper-dim: #B9B6AE;
-  --color-torque: #D4471F;
-  --color-torque-bright: #E85423;
-  --color-blueprint: #5B8AA6;
-  --color-neutral-line: rgba(245, 242, 234, 0.10);
-  --color-neutral-line-2: rgba(245, 242, 234, 0.06);
+  /* ── Graphite grounds ── */
+  --color-graphite-1000: #08090b;
+  --color-graphite-950:  #0c0e11;
+  --color-graphite-900:  #111418;
+  --color-graphite-850:  #161a1f;
+  --color-graphite-800:  #1c2127;
+  --color-graphite-750:  #232931;
+  --color-graphite-700:  #2c333c;
+  --color-graphite-600:  #3a424d;
+  --color-graphite-500:  #525b66;
+  --color-graphite-400:  #6e7884;
 
-  /* Type */
-  --font-display: "Fraunces Variable", Georgia, serif;
-  --font-body: "Inter Variable", system-ui, sans-serif;
-  --font-mono: "Space Mono", ui-monospace, monospace;
+  /* ── Drafting-paper text ── */
+  --color-paper-50:  #f6f2e9;
+  --color-paper-100: #ece7d9;
+  --color-paper-200: #d8d2c2;
+  --color-paper-300: #b3ac9b;
+  --color-paper-400: #8b8474;
+
+  /* ── Ember / ignition ── */
+  --color-ember-200: #ffd2a8;
+  --color-ember-300: #ffb37a;
+  --color-ember-400: #ff8c4b;
+  --color-ember-500: #f26a28;
+  --color-ember-600: #d2521a;
+  --color-ember-700: #a53e13;
+
+  /* ── Signal / telemetry ── */
+  --color-signal-300: #8fcbd9;
+  --color-signal-400: #5fafc2;
+  --color-signal-500: #3e8da0;
+
+  /* ── Status ── */
+  --color-status-nominal:  #6fc2a0;
+  --color-status-caution:  #e8a23a;
+  --color-status-critical: #e5604d;
+
+  /* ── Fonts ── */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-body:    "Space Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono:    "Geist Mono", ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  /* ── Radii ── */
+  --radius-xs:   3px;
+  --radius-sm:   5px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  20px;
+  --radius-pill: 999px;
 }
 
-* { box-sizing: border-box; }
+/* ════════════════════════════════════════════════════════════════════════
+   2. :root — semantic aliases + everything referenced as var(--…)
+   These are NOT meant to become utilities; they're the names the DS
+   components and ported pages call directly.
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Alpha helpers */
+  --ember-soft:            rgba(242, 106, 40, 0.14);
+  --ember-line:            rgba(242, 106, 40, 0.42);
+  --ember-glow:            rgba(242, 106, 40, 0.35);
+  --signal-soft:           rgba(95, 175, 194, 0.14);
+  --paper-hairline:        rgba(236, 231, 217, 0.09);
+  --paper-hairline-strong: rgba(236, 231, 217, 0.16);
 
-html {
-  scroll-behavior: smooth;
-  background: var(--color-graphite);
+  /* Convenience aliases so var(--ember-500) etc. also resolve outside @theme */
+  --ember-200: var(--color-ember-200);
+  --ember-300: var(--color-ember-300);
+  --ember-400: var(--color-ember-400);
+  --ember-500: var(--color-ember-500);
+  --ember-600: var(--color-ember-600);
+  --ember-700: var(--color-ember-700);
+  --graphite-1000: var(--color-graphite-1000);
+  --graphite-950:  var(--color-graphite-950);
+  --graphite-900:  var(--color-graphite-900);
+  --graphite-850:  var(--color-graphite-850);
+  --graphite-800:  var(--color-graphite-800);
+  --graphite-750:  var(--color-graphite-750);
+  --graphite-700:  var(--color-graphite-700);
+  --graphite-600:  var(--color-graphite-600);
+  --graphite-500:  var(--color-graphite-500);
+  --graphite-400:  var(--color-graphite-400);
+  --paper-50:  var(--color-paper-50);
+  --paper-100: var(--color-paper-100);
+  --paper-200: var(--color-paper-200);
+  --paper-300: var(--color-paper-300);
+  --paper-400: var(--color-paper-400);
+  --signal-300: var(--color-signal-300);
+  --signal-400: var(--color-signal-400);
+  --signal-500: var(--color-signal-500);
+  --status-nominal:  var(--color-status-nominal);
+  --status-caution:  var(--color-status-caution);
+  --status-critical: var(--color-status-critical);
+
+  /* Surfaces */
+  --bg:             var(--graphite-950);
+  --bg-void:        var(--graphite-1000);
+  --surface:        var(--graphite-850);
+  --surface-raised: var(--graphite-800);
+  --surface-hover:  var(--graphite-750);
+  --surface-sunken: var(--graphite-900);
+
+  /* Lines */
+  --border:        var(--graphite-700);
+  --border-strong: var(--graphite-600);
+  --border-faint:  var(--paper-hairline);
+  --hairline:      var(--paper-hairline);
+
+  /* Text */
+  --text-display:   var(--paper-50);
+  --text-primary:   var(--paper-100);
+  --text-secondary: var(--paper-200);
+  --text-muted:     var(--paper-300);
+  --text-faint:     var(--paper-400);
+  --text-accent:    var(--ember-400);
+  --text-on-accent: var(--graphite-1000);
+
+  /* Accent */
+  --accent:       var(--ember-500);
+  --accent-hover: var(--ember-400);
+  --accent-press: var(--ember-600);
+  --accent-soft:  var(--ember-soft);
+  --accent-line:  var(--ember-line);
+  --accent-glow:  var(--ember-glow);
+
+  /* Interaction */
+  --focus-ring: rgba(255, 140, 75, 0.55);
+  --reticle:    rgba(255, 179, 122, 0.7);
+
+  /* Type scale (display-forward) */
+  --text-2xs:  0.6875rem;
+  --text-xs:   0.75rem;
+  --text-sm:   0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md:   1.0625rem;
+  --text-lg:   1.25rem;
+  --text-xl:   1.5rem;
+  --text-2xl:  2rem;
+  --text-3xl:  2.5rem;
+  --text-4xl:  3.25rem;
+  --text-5xl:  4.25rem;
+  --text-6xl:  5.5rem;
+
+  /* Weights / leading / tracking */
+  --weight-light: 300; --weight-regular: 400; --weight-medium: 500;
+  --weight-semibold: 600; --weight-bold: 700;
+  --leading-none: 0.95; --leading-tight: 1.1; --leading-snug: 1.28;
+  --leading-normal: 1.5; --leading-relaxed: 1.65;
+  --tracking-display: -0.03em; --tracking-tight: -0.015em; --tracking-normal: 0;
+  --tracking-mono: 0.02em; --tracking-label: 0.14em; --tracking-eyebrow: 0.24em;
+  --display-features: "ss01", "cv11";
+
+  /* Spacing (4px grid) */
+  --space-0: 0; --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+  --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem;
+  --space-10: 2.5rem; --space-12: 3rem; --space-16: 4rem; --space-20: 5rem;
+  --space-24: 6rem; --space-32: 8rem;
+
+  /* Layout / controls */
+  --container: 1120px; --container-narrow: 720px; --gutter: var(--space-6);
+  --control-sm: 32px; --control-md: 40px; --control-lg: 48px; --tap-min: 44px;
+
+  /* Motion */
+  --dur-fast: 120ms; --dur: 240ms; --dur-slow: 420ms; --dur-slowest: 700ms;
+  --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in-out:   cubic-bezier(0.65, 0, 0.18, 1);
+  --ease-spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Shadows */
+  --shadow-inset-hi: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -8px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 20px 48px -16px rgba(0, 0, 0, 0.65);
+  --shadow-panel:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 10px 30px -16px rgba(0, 0, 0, 0.6);
+
+  /* Ember glows */
+  --glow-ember-sm: 0 0 12px -2px var(--ember-glow);
+  --glow-ember-md: 0 0 24px -4px var(--ember-glow);
+  --glow-ember-text: 0 0 18px rgba(255, 140, 75, 0.35);
+  --glow-signal: 0 0 14px -2px rgba(95, 175, 194, 0.45);
+
+  /* Focus ring */
+  --ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--focus-ring);
+
+  /* Blueprint / drafting textures */
+  --grid-line: rgba(236, 231, 217, 0.035);
+  --grid-line-strong: rgba(236, 231, 217, 0.06);
+  --blueprint-grid:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  --blueprint-grid-size: 24px 24px;
+  --blueprint-grid-coarse:
+    linear-gradient(var(--grid-line-strong) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line-strong) 1px, transparent 1px);
+  --blueprint-grid-coarse-size: 96px 96px;
+  --vignette: radial-gradient(120% 90% at 50% 0%, transparent 40%, var(--bg) 100%);
+  --spotlight-ember: radial-gradient(60% 50% at 50% 0%, rgba(242, 106, 40, 0.10), transparent 70%);
 }
+
+/* ════════════════════════════════════════════════════════════════════════
+   3. Base element styles (from the DS base.css)
+   ════════════════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--color-graphite);
-  color: var(--color-paper);
+  background-color: var(--bg);
+  color: var(--text-primary);
   font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--weight-regular);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
-::selection {
-  background: var(--color-torque);
-  color: #fff;
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  color: var(--text-display);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+h1 { font-size: var(--text-4xl); letter-spacing: var(--tracking-display); line-height: var(--leading-none); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4 { font-size: var(--text-lg); }
+
+p { margin: 0; text-wrap: pretty; }
+
+a {
+  color: var(--text-accent);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a:hover { color: var(--ember-300); }
+
+::selection { background: var(--ember-500); color: var(--graphite-1000); }
+
+code, kbd, samp, pre { font-family: var(--font-mono); font-size: 0.92em; }
+
+* { scrollbar-width: thin; scrollbar-color: var(--graphite-600) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: var(--graphite-600);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--bg);
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--graphite-500); }
+
+:focus-visible { outline: none; box-shadow: var(--ring); border-radius: var(--radius-sm); }
+
+img, svg, video { display: block; max-width: 100%; }
+hr { border: 0; height: 1px; background: var(--hairline); }
+
+.u-mono-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-faint);
 }
 
-/* Focus visibility — quality floor */
-:focus-visible {
-  outline: 2px solid var(--color-torque);
-  outline-offset: 3px;
+.blueprint {
+  background-image: var(--blueprint-grid), var(--blueprint-grid-coarse);
+  background-size: var(--blueprint-grid-size), var(--blueprint-grid-coarse-size);
+  background-position: center top;
 }
 
-a { color: inherit; }
+@keyframes ilg-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(242, 106, 40, 0.5); }
+  70%  { box-shadow: 0 0 0 7px rgba(242, 106, 40, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(242, 106, 40, 0); }
+}
+@keyframes ilg-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes ilg-blink {
+  0%, 49%  { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
   }
 }

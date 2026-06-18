@@ -1,0 +1,52 @@
+---
+// StatusBadge — a telemetry-style status pill. Maps a mission state to a
+// color + optional pulsing dot. Use for project status or system state.
+interface Props {
+  status?: "nominal" | "active" | "caution" | "critical" | "planned";
+  dot?: boolean;
+}
+const { status = "nominal", dot = true } = Astro.props;
+
+const map = {
+  nominal:  { color: "var(--status-nominal)",  bg: "rgba(111,194,160,0.10)", border: "rgba(111,194,160,0.30)", label: "Operational", pulse: false },
+  active:   { color: "var(--ember-400)",        bg: "var(--accent-soft)",     border: "var(--accent-line)",     label: "In progress", pulse: true },
+  caution:  { color: "var(--status-caution)",  bg: "rgba(232,162,58,0.10)",  border: "rgba(232,162,58,0.30)",  label: "On hold",     pulse: false },
+  critical: { color: "var(--status-critical)", bg: "rgba(229,96,77,0.10)",   border: "rgba(229,96,77,0.30)",   label: "Fault",       pulse: false },
+  planned:  { color: "var(--signal-400)",      bg: "var(--signal-soft)",     border: "rgba(95,175,194,0.30)",  label: "Planned",     pulse: false },
+} as const;
+
+const s = map[status] ?? map.nominal;
+const dotShadow = s.pulse ? "0 0 0 0 var(--ember-glow)" : `0 0 6px ${s.color}`;
+const dotAnim = s.pulse ? "ilg-pulse 2.4s var(--ease-out) infinite" : "none";
+const hasSlot = Astro.slots.has("default");
+---
+
+<span class="status" style={`color:${s.color}; background:${s.bg}; border-color:${s.border};`}>
+  {dot ? (
+    <span class="status__dot" style={`background:${s.color}; box-shadow:${dotShadow}; animation:${dotAnim};`}></span>
+  ) : null}
+  {hasSlot ? <slot /> : s.label}
+</span>
+
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 3px 10px 3px 8px;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    border: 1px solid;
+    border-radius: var(--radius-pill);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .status__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    flex-shrink: 0;
+  }
+</style>

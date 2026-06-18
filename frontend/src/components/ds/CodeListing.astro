@@ -1,0 +1,82 @@
+---
+// CodeListing — an inline source excerpt. A header bar (filename + listing id),
+// a gutter of line numbers, and monospace lines. Lines are passed as HTML
+// strings so callers can wrap tokens in <span> with token classes (.kw, .num,
+// .com) — see the token color rules below. Keep excerpts short; this is an
+// illustrative listing, not a file dump.
+interface Props {
+  file: string;          // e.g. "can_driver.c"
+  listing: string;       // e.g. "LST.01 · C"
+  lines: string[];       // each entry is one line of (HTML-allowed) code
+  caption?: string;
+}
+const { file, listing, lines, caption } = Astro.props;
+---
+
+<figure class="code">
+  <div class="code__bar">
+    <span class="code__file"><span class="code__file-kicker">▸ EMBED · CODE ·</span> {file}</span>
+    <span class="code__listing">{listing}</span>
+  </div>
+  <div class="code__body">
+    {lines.map((line, i) => (
+      <div class="code__line">
+        <span class="code__ln">{i + 1}</span>
+        <span class="code__src" set:html={line === "" ? "&nbsp;" : line}></span>
+      </div>
+    ))}
+  </div>
+  {caption ? <figcaption class="code__cap">{caption}</figcaption> : null}
+</figure>
+
+<style>
+  .code {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--surface-sunken);
+    box-shadow: var(--shadow-panel);
+  }
+  .code__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-raised);
+  }
+  .code__file { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+  .code__file-kicker { color: var(--text-faint); }
+  .code__listing {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-faint);
+  }
+  .code__body { padding: 14px 0; overflow-x: auto; }
+  .code__line {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 16px;
+    padding: 1px 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.85;
+  }
+  .code__ln { color: var(--text-faint); text-align: right; user-select: none; }
+  .code__src { color: var(--text-secondary); white-space: pre; }
+  .code__cap {
+    padding: 11px 16px;
+    border-top: 1px solid var(--hairline);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  /* token colors — used by spans inside the passed-in line HTML.
+     :global because set:html content doesn't receive the scoped hash. */
+  .code__src :global(.kw)  { color: var(--ember-400); }
+  .code__src :global(.num) { color: var(--signal-400); }
+  .code__src :global(.com) { color: var(--text-faint); }
+</style>

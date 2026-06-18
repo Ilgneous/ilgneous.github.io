@@ -1,0 +1,88 @@
+---
+// Panel — the core surface. A graphite card with a top inner highlight; on
+// hover the ember edge lights and optional mission-control corner reticle
+// brackets fade in. A meta tag (top-right) pins an ID/coordinate.
+interface Props {
+  meta?: string | null;
+  reticle?: boolean;
+  interactive?: boolean;
+  accentLeft?: boolean;
+  padding?: string;
+  class?: string;
+}
+const {
+  meta = null,
+  reticle = false,
+  interactive = true,
+  accentLeft = false,
+  padding = "var(--space-6)",
+  class: className = "",
+} = Astro.props;
+---
+
+<div
+  class:list={["panel", interactive && "panel--interactive", accentLeft && "panel--accent-left", className]}
+  style={`padding:${padding};`}
+>
+  {reticle ? (
+    <>
+      <span class="panel__bracket panel__bracket--tl"></span>
+      <span class="panel__bracket panel__bracket--tr"></span>
+      <span class="panel__bracket panel__bracket--bl"></span>
+      <span class="panel__bracket panel__bracket--br"></span>
+    </>
+  ) : null}
+  {meta ? <span class="panel__meta">{meta}</span> : null}
+  <slot />
+</div>
+
+<style>
+  .panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-inset-hi);
+    transition:
+      border-color var(--dur) var(--ease-out),
+      background var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+  .panel--accent-left { border-left: 2px solid var(--accent-line); }
+
+  .panel--interactive:hover {
+    border-color: var(--accent-line);
+    background: var(--surface);
+    box-shadow: var(--shadow-panel), var(--glow-ember-sm);
+  }
+  .panel--interactive.panel--accent-left:hover { border-left-color: var(--accent); }
+
+  /* reticle brackets */
+  .panel__bracket {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    pointer-events: none;
+    border-color: transparent;
+    transition: border-color var(--dur) var(--ease-out);
+  }
+  .panel__bracket--tl { top: 8px; left: 8px; border-top: 1px solid; border-left: 1px solid; }
+  .panel__bracket--tr { top: 8px; right: 8px; border-top: 1px solid; border-right: 1px solid; }
+  .panel__bracket--bl { bottom: 8px; left: 8px; border-bottom: 1px solid; border-left: 1px solid; }
+  .panel__bracket--br { bottom: 8px; right: 8px; border-bottom: 1px solid; border-right: 1px solid; }
+  .panel--interactive:hover .panel__bracket { border-color: var(--reticle); }
+
+  /* meta tag */
+  .panel__meta {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-label);
+    color: var(--text-faint);
+    transition: color var(--dur) var(--ease-out);
+  }
+  .panel--interactive:hover .panel__meta { color: var(--text-accent); }
+</style>
