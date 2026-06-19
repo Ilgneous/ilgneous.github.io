@@ -1,0 +1,444 @@
+---
+import Base from "../layouts/Base.astro";
+import Eyebrow from "../components/ds/Eyebrow.astro";
+import Button from "../components/ds/Button.astro";
+import Tag from "../components/ds/Tag.astro";
+
+// ── Documents ──────────────────────────────────────────────────────────────
+// The three discipline-tuned resumes. Drop replacement PDFs at these paths in
+// public/assets/ and the cards download / open straight from them.
+//   ELC → Electrical · MEC → Mechanical · COE → Controls / Computational
+const resumes = [
+  {
+    id: "ee",
+    code: "EE",
+    kind: "Resume",
+    title: "Electrical Engineering",
+    blurb:
+      "Circuit- and power-electronics focused — PCB design, embedded hardware, signal chains, and board bring-up.",
+    tech: ["PCB Design", "Power Electronics", "Embedded", "Signal Integrity"],
+    file: "/assets/SyedS_ResumeELC_Print.pdf",
+    download: "Sivan-Syed-Electrical-Engineering-Resume.pdf",
+  },
+  {
+    id: "me",
+    code: "ME",
+    kind: "Resume",
+    title: "Mechanical Engineering",
+    blurb:
+      "Hardware- and dynamics-focused — CAD, FEA, fluids and solids, and full-vehicle mechanical systems.",
+    tech: ["SolidWorks", "FEA", "Vehicle Dynamics", "Manufacturing"],
+    file: "/assets/SyedS_ResumeMEC_Print.pdf",
+    download: "Sivan-Syed-Mechanical-Engineering-Resume.pdf",
+  },
+  {
+    id: "cc",
+    code: "CC",
+    kind: "Resume",
+    title: "Controls / Computational",
+    blurb:
+      "Controls- and simulation-focused — real-time control loops, ML surrogates, and computational physics.",
+    tech: ["Controls", "Python", "Machine Learning", "Simulation"],
+    file: "/assets/SyedS_ResumeCOE_Print.pdf",
+    download: "Sivan-Syed-Controls-Computational-Resume.pdf",
+  },
+];
+
+const navLinks = [
+  { href: "/#primary", label: "Work" },
+  { href: "/#about", label: "About" },
+  { href: "/", label: "Home", buttonVariant: "ghost" as const }
+];
+---
+
+<Base
+  title="Resume — Sivan Syed"
+  description="Three resumes tuned to three disciplines — electrical, mechanical, and controls/computational. Preview, download, or open each in a new tab."
+  navLinks={navLinks}
+  ctaHref="/#contact"
+  ctaLabel="Get in touch"
+>
+  {/* ── HERO ──────────────────────────────────────────────────────────── */}
+  <section class="hero">
+    <div class="hero__grid blueprint" aria-hidden="true"></div>
+    <div class="hero__spotlight" aria-hidden="true"></div>
+    <div class="hero__inner">
+      <div class="hero__eyebrow">
+        <Eyebrow dot color="accent">Documents · pick your discipline</Eyebrow>
+      </div>
+      <h1 class="hero__title">Resume</h1>
+      <p class="hero__lede">
+        Three resumes tuned to three disciplines. Each sheet surfaces below —
+        click one to preview it, then download it or open it in a new tab.
+      </p>
+    </div>
+  </section>
+
+  {/* ── THE POND: 3 RESUMES ───────────────────────────────────────────── */}
+  <section class="pond">
+    <div class="pond__inner">
+      <div class="pond__grid">
+        {resumes.map((r) => (
+          <div class="pond-col">
+            <div class="pond-rise">
+              <div class="pond-bob">
+                <button
+                  class="sheet-btn"
+                  type="button"
+                  data-open={r.id}
+                  aria-label={`Preview ${r.title} resume`}
+                >
+                  <div class="sheet">
+                    <div class="sheet__paper">
+                      <div class="sheet__edge"></div>
+                      <div class="sheet__watermark">{r.code}</div>
+                      <div class="ln" style="height:11px;width:60%;background:rgba(22,24,28,0.84);"></div>
+                      <div class="ln" style="height:6px;width:38%;margin-top:8px;background:rgba(22,24,28,0.30);"></div>
+                      <div class="sheet__row" style="margin-top:11px;">
+                        <div class="ln" style="height:4px;width:24%;background:rgba(242,106,40,0.55);"></div>
+                        <div class="ln" style="height:4px;width:18%;background:rgba(22,24,28,0.22);"></div>
+                        <div class="ln" style="height:4px;width:20%;background:rgba(22,24,28,0.22);"></div>
+                      </div>
+                      <div class="sheet__rule"></div>
+                      <div class="ln" style="height:6px;width:30%;background:rgba(22,24,28,0.55);"></div>
+                      <div class="sheet__stack" style="margin-top:8px;">
+                        <div class="ln" style="height:4px;width:94%;background:rgba(22,24,28,0.18);"></div>
+                        <div class="ln" style="height:4px;width:88%;background:rgba(22,24,28,0.18);"></div>
+                        <div class="ln" style="height:4px;width:72%;background:rgba(22,24,28,0.18);"></div>
+                      </div>
+                      <div class="ln" style="height:6px;width:34%;margin-top:15px;background:rgba(22,24,28,0.55);"></div>
+                      <div class="sheet__stack" style="margin-top:8px;">
+                        <div class="ln" style="height:4px;width:90%;background:rgba(22,24,28,0.18);"></div>
+                        <div class="ln" style="height:4px;width:80%;background:rgba(22,24,28,0.18);"></div>
+                      </div>
+                    </div>
+                    <div class="sheet__plate">
+                      <div class="sheet__meta">
+                        <span class="sheet__code">{r.code}</span>
+                        <span class="sheet__kind">{r.kind}</span>
+                      </div>
+                      <h3 class="sheet__title">{r.title}</h3>
+                      <p class="sheet__blurb">{r.blurb}</p>
+                      <div class="sheet__cta">
+                        <span>Preview</span><span>→</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+            <div class="pond-ripple" aria-hidden="true"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* ── PREVIEW LIGHTBOX ──────────────────────────────────────────────── */}
+  <div class="modal" data-modal hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal__preview">
+        <iframe class="modal__frame" data-frame title="Resume preview" loading="lazy"></iframe>
+      </div>
+      <div class="modal__detail">
+        <div class="modal__meta">
+          <span class="modal__code" data-code></span>
+          <span class="modal__kind" data-kind></span>
+        </div>
+        <h2 class="modal__title" id="modal-title" data-title></h2>
+        <p class="modal__blurb" data-blurb></p>
+        <div class="modal__tags" data-tags></div>
+        <div class="modal__spacer"></div>
+        <div class="modal__rule"></div>
+        <div class="modal__actions">
+          <a class="modal__action modal__action--primary" data-download href="#" download>↓ Download PDF</a>
+          <a class="modal__action modal__action--ghost" data-open-tab href="#" target="_blank" rel="noopener">Open in new tab ↗</a>
+        </div>
+      </div>
+      <button class="modal__close" data-close type="button" aria-label="Close">✕</button>
+    </div>
+  </div>
+
+  {/* serialize doc data for the lightbox */}
+  <script type="application/json" data-resumes set:html={JSON.stringify(resumes)}></script>
+</Base>
+
+<style>
+  /* ── HERO ── */
+  .hero { position: relative; overflow: hidden; padding: 64px 32px 24px; }
+  .hero__grid {
+    position: absolute; inset: 0; pointer-events: none;
+    -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 72%);
+    mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 72%);
+  }
+  .hero__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
+  .hero__inner { position: relative; max-width: var(--container); margin: 0 auto; text-align: center; }
+  .hero__eyebrow { display: flex; justify-content: center; }
+  .hero__title {
+    font-size: clamp(40px, 5.6vw, 74px);
+    font-weight: 600; line-height: 0.98; letter-spacing: -0.03em;
+    color: var(--text-display); margin: 18px 0 0;
+    font-feature-settings: var(--display-features);
+  }
+  .hero__lede {
+    max-width: 56ch; margin: 20px auto 0;
+    font-size: 17px; line-height: 1.6; color: var(--text-secondary);
+  }
+
+  /* ── POND ── */
+  .pond { position: relative; padding: 28px 32px 80px; }
+  .pond__inner { max-width: var(--container); margin: 0 auto; }
+  .pond__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+  .pond-col { position: relative; }
+
+  .sheet-btn {
+    display: block; width: 100%; padding: 0; border: 0;
+    background: none; cursor: pointer; text-align: left; font-family: inherit;
+  }
+  .sheet {
+    position: relative; border-radius: var(--radius-md); overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+  }
+  .sheet-btn:hover .sheet {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.75), var(--glow-ember-sm);
+  }
+  .sheet-btn:focus-visible { outline: none; }
+  .sheet-btn:focus-visible .sheet { box-shadow: var(--ring), var(--shadow-lg); }
+
+  .sheet__paper {
+    aspect-ratio: 8.5/11;
+    background: linear-gradient(180deg, #faf7ef, #efe9dc);
+    padding: 13% 12% 9%; position: relative; box-sizing: border-box;
+  }
+  .sheet__edge { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--accent); }
+  .sheet__watermark {
+    position: absolute; right: 11%; top: 12%;
+    font-family: var(--font-mono); font-size: clamp(20px, 3vw, 30px);
+    font-weight: 700; letter-spacing: 0.04em; color: rgba(20,22,26,0.10);
+  }
+  .ln { border-radius: 2px; }
+  .sheet__row { display: flex; gap: 6px; }
+  .sheet__rule { height: 1px; background: rgba(22,24,28,0.16); margin: 14px 0 11px; }
+  .sheet__stack { display: flex; flex-direction: column; gap: 6px; }
+
+  .sheet__plate {
+    background: var(--surface-raised);
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    padding: 18px 18px 20px;
+  }
+  .sheet__meta { display: flex; align-items: center; gap: 9px; }
+  .sheet__code {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; color: var(--accent);
+    border: 1px solid var(--accent-line); border-radius: 5px; padding: 3px 7px;
+  }
+  .sheet__kind {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-faint);
+  }
+  .sheet__title {
+    font-family: var(--font-display); font-size: 20px; font-weight: 600;
+    letter-spacing: -0.02em; color: var(--text-display);
+    margin: 11px 0 0; line-height: 1.15;
+  }
+  .sheet__blurb { font-size: 13.5px; line-height: 1.55; color: var(--text-muted); margin: 9px 0 0; }
+  .sheet__cta {
+    display: flex; align-items: center; gap: 7px; margin-top: 14px;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-accent);
+  }
+
+  .pond-ripple {
+    height: 22px; margin: 14px 16% 0; border-radius: 50%;
+    background: radial-gradient(ellipse at center, var(--ember-soft), transparent 70%);
+    filter: blur(3px); pointer-events: none;
+  }
+
+  /* ── rise / bob / ripple animations ── */
+  @keyframes pond-rise {
+    from { opacity: 0; transform: translateY(54px) scale(0.965); filter: blur(3px); }
+    60%  { filter: blur(0); }
+    to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  }
+  @keyframes pond-bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-7px); }
+  }
+  @keyframes ripple-shimmer {
+    0%, 100% { opacity: 0.5; transform: scaleX(1); }
+    50%      { opacity: 0.85; transform: scaleX(1.06); }
+  }
+  .pond-rise { animation: pond-rise 1050ms var(--ease-out) both; }
+  .pond-col:nth-child(1) .pond-rise { animation-delay: 120ms; }
+  .pond-col:nth-child(2) .pond-rise { animation-delay: 300ms; }
+  .pond-col:nth-child(3) .pond-rise { animation-delay: 480ms; }
+  .pond-bob { animation: pond-bob 6.5s var(--ease-in-out) infinite; }
+  .pond-col:nth-child(2) .pond-bob { animation-delay: -2.1s; }
+  .pond-col:nth-child(3) .pond-bob { animation-delay: -4.3s; }
+  .pond-ripple { animation: ripple-shimmer 6.5s var(--ease-in-out) infinite; }
+  .pond-col:nth-child(2) .pond-ripple { animation-delay: -2.1s; }
+  .pond-col:nth-child(3) .pond-ripple { animation-delay: -4.3s; }
+
+  /* ── MODAL ── */
+  .modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 32px; }
+  .modal[hidden] { display: none; }
+  .modal__backdrop {
+    position: absolute; inset: 0; background: rgba(8,9,11,0.74);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    animation: backdrop-in var(--dur) var(--ease-out) both;
+  }
+  @keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes modal-pop {
+    from { opacity: 0; transform: translateY(26px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal__panel {
+    position: relative; width: 100%; max-width: 880px; max-height: 90vh; overflow: auto;
+    display: grid; grid-template-columns: 320px 1fr;
+    background: var(--surface-raised); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+    animation: modal-pop var(--dur-slow) var(--ease-spring) both;
+  }
+  .modal__preview {
+    background: var(--surface-sunken); border-right: 1px solid var(--border);
+    padding: 18px; display: flex; align-items: stretch;
+  }
+  .modal__frame {
+    width: 100%; aspect-ratio: 8.5/11; border: 0; border-radius: 6px;
+    background: #efe9dc; box-shadow: var(--shadow-lg);
+  }
+  .modal__detail { padding: 30px; display: flex; flex-direction: column; }
+  .modal__meta { display: flex; align-items: center; gap: 9px; }
+  .modal__code {
+    font-family: var(--font-mono); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; color: var(--accent);
+    border: 1px solid var(--accent-line); border-radius: 5px; padding: 3px 7px;
+  }
+  .modal__kind {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-faint);
+  }
+  .modal__title {
+    font-family: var(--font-display); font-size: 28px; font-weight: 600;
+    letter-spacing: -0.025em; color: var(--text-display);
+    margin: 13px 0 0; line-height: 1.08;
+  }
+  .modal__blurb { font-size: 15px; line-height: 1.62; color: var(--text-secondary); margin: 14px 0 0; }
+  .modal__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .modal__spacer { flex: 1; min-height: 24px; }
+  .modal__rule { height: 1px; background: var(--hairline); margin: 22px 0 18px; }
+  .modal__actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .modal__action {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: var(--control-md); padding: 0 var(--space-5);
+    font-family: var(--font-mono); font-size: var(--text-sm); letter-spacing: 0.04em;
+    border-radius: var(--radius-md); text-decoration: none;
+    transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  }
+  .modal__action--primary { background: var(--accent); color: var(--text-on-accent); }
+  .modal__action--primary:hover { background: var(--accent-hover); color: var(--text-on-accent); }
+  .modal__action--ghost {
+    background: transparent; color: var(--text-secondary); border: 1px solid var(--border-strong);
+  }
+  .modal__action--ghost:hover { color: var(--text-display); border-color: var(--accent-line); }
+  .modal__close {
+    position: absolute; top: 14px; right: 14px; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: rgba(12,14,17,0.6); color: var(--text-muted);
+    font-size: 17px; cursor: pointer;
+    transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  }
+  .modal__close:hover { color: var(--text-display); border-color: var(--accent-line); }
+
+  /* ── responsive ── */
+  @media (max-width: 860px) {
+    .pond__grid { grid-template-columns: 1fr; max-width: 380px; margin: 0 auto; gap: 36px; }
+    .modal__panel { grid-template-columns: 1fr; }
+    .modal__preview { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pond-rise, .pond-bob, .pond-ripple, .modal__panel, .modal__backdrop { animation: none !important; }
+    .pond-rise { opacity: 1 !important; transform: none !important; filter: none !important; }
+  }
+</style>
+
+<script>
+  interface ResumeDoc {
+    id: string; code: string; kind: string; title: string;
+    blurb: string; tech: string[]; file: string; download: string;
+  }
+
+  function initResume() {
+    const dataEl = document.querySelector<HTMLScriptElement>("[data-resumes]");
+    const modal = document.querySelector<HTMLElement>("[data-modal]");
+    if (!dataEl || !modal) return;
+
+    let docs: ResumeDoc[] = [];
+    try { docs = JSON.parse(dataEl.textContent || "[]"); } catch { return; }
+
+    const frame = modal.querySelector<HTMLIFrameElement>("[data-frame]");
+    const codeEl = modal.querySelector<HTMLElement>("[data-code]");
+    const kindEl = modal.querySelector<HTMLElement>("[data-kind]");
+    const titleEl = modal.querySelector<HTMLElement>("[data-title]");
+    const blurbEl = modal.querySelector<HTMLElement>("[data-blurb]");
+    const tagsEl = modal.querySelector<HTMLElement>("[data-tags]");
+    const dlEl = modal.querySelector<HTMLAnchorElement>("[data-download]");
+    const tabEl = modal.querySelector<HTMLAnchorElement>("[data-open-tab]");
+    const closeEl = modal.querySelector<HTMLElement>("[data-close]");
+
+    let lastFocus: HTMLElement | null = null;
+
+    const open = (doc: ResumeDoc, trigger: HTMLElement) => {
+      lastFocus = trigger;
+      if (codeEl) codeEl.textContent = doc.code;
+      if (kindEl) kindEl.textContent = doc.kind;
+      if (titleEl) titleEl.textContent = doc.title;
+      if (blurbEl) blurbEl.textContent = doc.blurb;
+      if (tagsEl) {
+        tagsEl.innerHTML = "";
+        for (const t of doc.tech) {
+          const span = document.createElement("span");
+          span.className = "tag tag--md";
+          span.textContent = t;
+          tagsEl.appendChild(span);
+        }
+      }
+      if (frame) frame.src = doc.file + "#toolbar=0&navpanes=0&view=FitH";
+      if (dlEl) { dlEl.href = doc.file; dlEl.setAttribute("download", doc.download); }
+      if (tabEl) tabEl.href = doc.file;
+      modal.hidden = false;
+      document.documentElement.style.overflow = "hidden";
+      if (closeEl) (closeEl as HTMLElement).focus();
+    };
+
+    const close = () => {
+      modal.hidden = true;
+      document.documentElement.style.overflow = "";
+      if (frame) frame.src = "";
+      if (lastFocus) lastFocus.focus();
+    };
+
+    document.querySelectorAll<HTMLElement>("[data-open]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-open");
+        const doc = docs.find((d) => d.id === id);
+        if (doc) open(doc, btn);
+      });
+    });
+
+    modal.querySelectorAll<HTMLElement>("[data-close]").forEach((el) =>
+      el.addEventListener("click", close)
+    );
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) close();
+    });
+  }
+
+  initResume();
+  document.addEventListener("astro:page-load", initResume);
+</script>

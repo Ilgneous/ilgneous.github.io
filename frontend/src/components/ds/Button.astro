@@ -3,7 +3,7 @@
 // outline; quiet is text-only; danger is a critical outline. Renders as a
 // <button> or <a> (pass href). Hover/press handled in CSS.
 interface Props {
-  variant?: "primary" | "ghost" | "quiet" | "danger";
+  variant?: "primary" | "ghost" | "quiet" | "danger" | "signal";
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
   full?: boolean;
@@ -101,6 +101,21 @@ const cls = ["btn", `btn--${variant}`, `btn--${size}`, full && "btn--full", disa
   /* danger */
   .btn--danger { background: transparent; color: var(--status-critical); border-color: var(--status-critical); }
   .btn--danger:hover { background: #c44f3d; color: var(--paper-50); }
+
+  /* signal */
+  .btn--signal {
+    background: var(--signal-400);
+    color: var(--graphite-1000);
+    border-color: var(--signal-400);
+    box-shadow: var(--shadow-inset-hi);
+  }
+  .btn--signal:hover {
+    background: var(--signal-300);
+    border-color: var(--signal-300);
+    transform: translateY(-1px);
+    box-shadow: var(--glow-signal), var(--shadow-inset-hi);
+  }
+  .btn--signal:active { transform: translateY(0) scale(0.98); }
 
   .btn--disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 </style>

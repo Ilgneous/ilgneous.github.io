@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import Button from "../components/ds/Button.astro";
 
-interface NavLink { href: string; label: string; }
+interface NavLink { href: string; label: string; buttonVariant?: "primary" | "ghost" | "quiet" | "danger" | "signal"; }
 interface Props {
   title?: string;
   description?: string;
@@ -16,7 +16,7 @@ const {
   navLinks = [
     { href: "/#primary", label: "Work" },
     { href: "/#about", label: "About" },
-    { href: "/#contact", label: "Contact" },
+    { href: "/resume", label: "Resume ↓", buttonVariant: "ghost" as const },
   ],
   ctaHref = "/#contact",
   ctaLabel = "Get in touch",
@@ -39,9 +39,12 @@ const {
         <span class="nav__wordmark">ILG<span class="nav__wordmark-accent">NEOUS</span></span>
       </a>
       <nav class="nav__links">
-        {navLinks.map((l) => <a href={l.href} class="nav__link">{l.label}</a>)}
+        {navLinks.map((l) => l.buttonVariant
+          ? <Button variant={l.buttonVariant} size="sm" href={l.href}>{l.label}</Button>
+          : <a href={l.href} class="nav__link">{l.label}</a>
+        )}
         <span class="nav__cta">
-          <Button variant="ghost" size="sm" href={ctaHref}>{ctaLabel}</Button>
+          <Button variant="signal" size="sm" href={ctaHref}>{ctaLabel}</Button>
         </span>
       </nav>
     </header>

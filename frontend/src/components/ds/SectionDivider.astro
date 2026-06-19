@@ -1,42 +1,193 @@
 ---
-// SectionDivider — a transmission-line rule. A thin ember-cored gradient with
-// two glowing nodes, used between major sections.
+// SectionDivider — the "Live Pulse": a live telemetry sweep that doubles as a
+// section rule. A pulsing node sits at the leading edge and acts as the
+// "writing head" — it rides the current signal value and the trace trails out
+// behind it to the left, decaying into the past (phosphor fade). The signal is
+// synthetic vehicle telemetry (slow attitude drift + vibration ripple +
+// irregular diagnostic blips), so it reads as instrumentation rather than a
+// repeating heartbeat. Honors prefers-reduced-motion (renders one static frame)
+// and pauses when scrolled out of view via IntersectionObserver.
+//
+// Drop-in replacement for the old static divider: same `nodes` / `glow` props.
 interface Props {
   nodes?: boolean;
   glow?: "ember" | "signal";
 }
 const { nodes = true, glow = "ember" } = Astro.props;
-const core = glow === "signal" ? "rgba(95,175,194,0.5)" : "var(--accent-line)";
-const point = glow === "signal" ? "var(--signal-400)" : "var(--ember-300)";
+const isSignal = glow === "signal";
+const line   = isSignal ? "rgba(95,175,194,0.5)" : "var(--accent-line)";
+const trace  = isSignal ? "var(--signal-400)"    : "var(--ember-400)";
+const point  = isSignal ? "var(--signal-400)"    : "var(--ember-300)";
+const shadow = isSignal ? "rgba(95,175,194,0.45)" : "rgba(255,140,75,0.5)";
+
+const HEAD = 0.82; // leading-edge node position, fraction of width
+const headPct = HEAD * 100;
 ---
 
-<div class="divider">
+<div
+  class="divider"
+  data-live-divider
+  role="separator"
+  aria-hidden="true"
+>
+  {/* faint channel baseline — the transmission line */}
   <div
-    class="divider__line"
-    style={`background:linear-gradient(90deg, transparent 0%, ${core} 14%, ${point} 50%, ${core} 86%, transparent 100%);`}
+    class="divider__base"
+    style={`background:linear-gradient(90deg, transparent 0%, ${line} 16%, ${line} 84%, transparent 100%);`}
   ></div>
+
+  {/* live trace, decaying into the past on the left and clipped at the head */}
+  <div
+    class="divider__clip"
+    style={`-webkit-mask-image:linear-gradient(90deg, transparent 1%, rgba(0,0,0,0.12) 12%, #000 ${headPct - 4}%, #000 ${headPct}%, transparent ${headPct + 0.5}%);mask-image:linear-gradient(90deg, transparent 1%, rgba(0,0,0,0.12) 12%, #000 ${headPct - 4}%, #000 ${headPct}%, transparent ${headPct + 0.5}%);`}
+  >
+    <svg
+      class="divider__svg"
+      viewBox="0 0 480 40"
+      preserveAspectRatio="none"
+      width="100%"
+      height="100%"
+      aria-hidden="true"
+      style={`color:${trace};filter:drop-shadow(0 0 2px ${shadow});`}
+    >
+      <path class="divider__dim" d="" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" opacity="0.16" vector-effect="non-scaling-stroke"></path>
+      <path class="divider__lit" d="" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity="0.62" vector-effect="non-scaling-stroke"></path>
+    </svg>
+  </div>
+
   {nodes ? (
-    <>
-      <span class="divider__node" style={`left:calc(50% - 80px); background:${point}; box-shadow:0 0 8px ${point};`}></span>
-      <span class="divider__node" style={`left:calc(50% + 80px); background:${point}; box-shadow:0 0 8px ${point};`}></span>
-    </>
+    <span
+      class="divider__head"
+      style={`left:${headPct}%; background:${point}; box-shadow:0 0 8px ${point};`}
+    ></span>
   ) : null}
 </div>
 
 <style>
   .divider {
     position: relative;
-    height: 1px;
+    height: 40px;
     width: 100%;
     margin: var(--space-12) 0;
   }
-  .divider__line { position: absolute; inset: 0; }
-  .divider__node {
+  .divider__base {
     position: absolute;
     top: 50%;
-    width: 4px;
-    height: 4px;
-    border-radius: var(--radius-pill);
+    left: 0;
+    right: 0;
+    height: 1px;
     transform: translateY(-50%);
+    opacity: 0.35;
+  }
+  .divider__clip { position: absolute; inset: 0; overflow: hidden; }
+  .divider__svg { display: block; }
+  .divider__head {
+    position: absolute;
+    top: 20px;
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-pill);
+    transform: translate(-50%, -50%);
+    animation: ilg-pulse 2.4s var(--ease-out) infinite;
   }
 </style>
+
+<script>
+  // Telemetry generator + RAF driver. One module-level loop drives every
+  // divider on the page; instances pause when off-screen.
+  const VBW = 480, VBH = 40, MID = VBH / 2, AMP = 13;
+  const N = 110, WINDOW = 6.2, HEAD = 0.82, HEAD_X = HEAD * VBW;
+
+  function hash(n: number) {
+    const s = Math.sin(n * 12.9898) * 43758.5453;
+    return s - Math.floor(s);
+  }
+  function blips(t: number) {
+    const P = 1.9;
+    const k0 = Math.floor(t / P);
+    let v = 0;
+    for (let k = k0 - 1; k <= k0 + 1; k++) {
+      const jitter = (hash(k * 5.7) - 0.5) * 0.5;
+      const dt = t - (k * P + jitter);
+      const h = (0.42 + 0.56 * hash(k)) * (hash(k * 9.1) > 0.82 ? -0.62 : 1);
+      const w = 0.038 + 0.03 * hash(k * 3.1);
+      const preD = 0.14 + 0.22 * hash(k * 2.3);
+      const postD = 0.20 + 0.26 * hash(k * 4.7);
+      v += h * Math.exp(-Math.pow(dt / w, 2));
+      v += -preD * h * Math.exp(-Math.pow((dt + 1.8 * w) / w, 2));
+      v += -postD * h * Math.exp(-Math.pow((dt - 2.0 * w) / (w * 1.1), 2));
+      const eh = hash(k * 7.3);
+      if (eh > 0.5) v += (0.18 + 0.32 * eh) * h * Math.exp(-Math.pow((dt - (0.28 + 0.12 * hash(k * 1.7))) / 0.04, 2));
+    }
+    return v;
+  }
+  function tele(t: number) {
+    let v = 0.15 * Math.sin(t * 0.85);
+    v += 0.07 * Math.sin(t * 1.7 + 2.3);
+    v += 0.05 * Math.sin(t * 5.7 + 1.1);
+    v += blips(t);
+    return Math.max(-1, Math.min(1, v));
+  }
+  function pathFor(t: number) {
+    const dt = WINDOW / (N - 1);
+    let d = "";
+    for (let i = 0; i < N; i++) {
+      const x = (i / (N - 1)) * HEAD_X;
+      const y = MID - tele(t - (N - 1 - i) * dt) * AMP;
+      d += (i === 0 ? "M " : "L ") + x.toFixed(1) + " " + y.toFixed(2) + " ";
+    }
+    return d;
+  }
+
+  type Inst = { root: HTMLElement; dim: SVGPathElement; lit: SVGPathElement; head: HTMLElement | null; visible: boolean };
+
+  function init() {
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const nodes = document.querySelectorAll<HTMLElement>("[data-live-divider]:not([data-live-init])");
+    const insts: Inst[] = [];
+
+    nodes.forEach((root) => {
+      root.setAttribute("data-live-init", "");
+      const dim = root.querySelector<SVGPathElement>(".divider__dim");
+      const lit = root.querySelector<SVGPathElement>(".divider__lit");
+      if (!dim || !lit) return;
+      insts.push({ root, dim, lit, head: root.querySelector<HTMLElement>(".divider__head"), visible: true });
+    });
+    if (!insts.length) return;
+
+    const frame = (inst: Inst, t: number) => {
+      const d = pathFor(t);
+      inst.dim.setAttribute("d", d);
+      inst.lit.setAttribute("d", d);
+      if (inst.head) inst.head.style.top = (MID - tele(t) * AMP) + "px";
+    };
+
+    if (reduce) {
+      insts.forEach((inst) => frame(inst, 2.0));
+      return;
+    }
+
+    let io: IntersectionObserver | null = null;
+    if ("IntersectionObserver" in window) {
+      io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          const inst = insts.find((x) => x.root === e.target);
+          if (inst) inst.visible = e.isIntersecting;
+        }
+      }, { threshold: 0 });
+      insts.forEach((inst) => io!.observe(inst.root));
+    }
+
+    const start = performance.now();
+    const loop = (now: number) => {
+      const t = (now - start) / 1000;
+      for (const inst of insts) if (inst.visible) frame(inst, t);
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }
+
+  // Run on first load and on Astro view-transition navigations.
+  init();
+  document.addEventListener("astro:page-load", init);
+</script>

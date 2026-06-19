@@ -263,12 +263,12 @@ const phases = [
 
     const live = title.querySelector(".tw-live");
     const segs = Array.from(title.querySelectorAll(".tw-live__seg"));
-    const caret = title.querySelector(".tw-caret");
+    const caret = title.querySelector<HTMLElement>(".tw-caret");
     const lead = document.querySelector(".hero__lead--type");
     if (!live) return;
 
     function finish() {
-      title.classList.add("is-done");
+      title!.classList.add("is-done");
       if (lead) lead.classList.add("is-shown");
     }
 
@@ -276,7 +276,7 @@ const phases = [
     // one span per character. Real spaces stay as real text nodes so the
     // browser wraps exactly as it does for the ghost twin.
     live.textContent = "";
-    const chars = [];
+    const chars: { span: HTMLSpanElement; c: string }[] = [];
     for (let s = 0; s < segs.length; s++) {
       const text = segs[s].getAttribute("data-text") || "";
       const accent = segs[s].classList.contains("hero__title-accent");
@@ -296,7 +296,7 @@ const phases = [
     // the last revealed character. offsetLeft/Top are relative to .tw-live,
     // which is the caret's positioned ancestor, so the caret never disturbs the
     // character flow or wrapping.
-    function placeCaret(n) {
+    function placeCaret(n: number) {
       if (!caret) return;
       const ref = chars[n - 1];
       if (!ref) {
@@ -317,7 +317,7 @@ const phases = [
     }
 
     const punct = new Set([",", ".", "!", "?", "&"]);
-    function delayFor(c) {
+    function delayFor(c: string) {
       let d = 42 + Math.random() * 38;
       if (punct.has(c)) d += 180;
       return d;
