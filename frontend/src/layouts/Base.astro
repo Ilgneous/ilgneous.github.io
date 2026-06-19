@@ -38,7 +38,10 @@ const {
         <img src="/assets/logo-mark.svg" width="30" height="30" alt="" />
         <span class="nav__wordmark">ILG<span class="nav__wordmark-accent">NEOUS</span></span>
       </a>
-      <nav class="nav__links">
+      <button class="nav__hamburger" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav__links" id="nav-menu">
         {navLinks.map((l) => l.buttonVariant
           ? <Button variant={l.buttonVariant} size="sm" href={l.href}>{l.label}</Button>
           : <a href={l.href} class="nav__link">{l.label}</a>
@@ -48,6 +51,23 @@ const {
         </span>
       </nav>
     </header>
+
+    <script>
+      const toggle = document.getElementById('nav-toggle');
+      const menu = document.getElementById('nav-menu');
+      toggle?.addEventListener('click', () => {
+        const isOpen = menu?.classList.toggle('nav__links--open');
+        toggle.setAttribute('aria-expanded', String(!!isOpen));
+        toggle.classList.toggle('nav__hamburger--open', !!isOpen);
+      });
+      menu?.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', () => {
+          menu.classList.remove('nav__links--open');
+          toggle?.setAttribute('aria-expanded', 'false');
+          toggle?.classList.remove('nav__hamburger--open');
+        });
+      });
+    </script>
 
     <main>
       <slot />
@@ -71,6 +91,7 @@ const {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         padding: 14px 32px;
         border-bottom: 1px solid var(--border);
         background: rgba(12, 14, 17, 0.78);
@@ -101,6 +122,31 @@ const {
       .nav__link:hover { color: var(--text-display); background: var(--surface-raised); }
       .nav__cta { margin-left: 8px; }
 
+      /* Hamburger — hidden on desktop */
+      .nav__hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 36px;
+        height: 36px;
+        padding: 6px;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+      }
+      .nav__hamburger span {
+        display: block;
+        height: 2px;
+        background: var(--text-muted);
+        border-radius: 2px;
+        transition: transform 180ms var(--ease-out), opacity 180ms var(--ease-out);
+      }
+      .nav__hamburger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .nav__hamburger--open span:nth-child(2) { opacity: 0; }
+      .nav__hamburger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
       .footer { border-top: 1px solid var(--border); background: var(--bg-void); margin-top: 24px; }
       .footer__inner {
         max-width: var(--container);
@@ -126,9 +172,31 @@ const {
         color: var(--text-faint);
       }
 
-      @media (max-width: 560px) {
+      @media (max-width: 620px) {
         .nav { padding: 12px 18px; }
-        .nav__link { padding: 6px 8px; }
+        .nav__hamburger { display: flex; }
+        /* Mobile nav panel */
+        .nav__links {
+          display: none;
+          flex-direction: column;
+          align-items: stretch;
+          width: 100%;
+          order: 3;
+          gap: 4px;
+          padding: 12px 0 4px;
+          border-top: 1px solid var(--border);
+          margin-top: 12px;
+        }
+        .nav__links--open { display: flex; }
+        .nav__link {
+          padding: 10px 12px;
+          font-size: 13px;
+        }
+        .nav__cta { margin-left: 0; margin-top: 4px; }
+        /* Make buttons full-width on mobile */
+        .nav__links :global(.btn) { width: 100%; justify-content: center; }
+
+        .footer__inner { padding: 24px 18px; }
       }
     </style>
   </body>

@@ -40,6 +40,12 @@
       ctx.closePath();
     }
 
+    // Acute angle of tie rod from horizontal (rack axis). Both args are [x,y] canvas points.
+    function rodAngleRad(re, J) {
+      const a = Math.abs(Math.atan2(J[1] - re[1], J[0] - re[0]));
+      return a > Math.PI / 2 ? Math.PI - a : a;
+    }
+
     // --- Linkage solver: ball joint = intersection of circle(kingpin, armLen)
     //     and circle(rackEnd, rodLen). Pick branch continuous with rest pose. ---
     function solveJoint(kp, armLen, rodLen, rackEnd, rest) {
@@ -63,8 +69,8 @@
     function geom() {
       const cx = W / 2, axleY = H * 0.46, rackY = H * 0.545;
       const half = Math.min(W, H) * 0.42, lx = cx - half, rx = cx + half;
-      const armLen = Math.min(W, H) * 0.065;
-      const beta = -12 * Math.PI / 180; // outboard-rear → slight anti-Ackermann
+      const armLen = Math.min(W, H) * 0.04; // short enough to stay within wheel footprint
+      const beta = 12 * Math.PI / 180; // inboard-rear → anti-Ackermann, ball joint inside wheel
       const restR = Math.PI / 2 + beta, restL = Math.PI / 2 - beta;
       const jR0 = [rx + armLen * Math.cos(restR), axleY + armLen * Math.sin(restR)];
       const jL0 = [lx + armLen * Math.cos(restL), axleY + armLen * Math.sin(restL)];
@@ -75,17 +81,23 @@
     }
 
     let G = null, travelLimit = 0;
+    const MAX_ROD_ANGLE = 20 * Math.PI / 180;
     function calcLimit() {
       G = geom();
       let lo = 0, hi = G.run;
       for (let i = 0; i < 28; i++) {
         const m = (lo + hi) / 2;
-        const ok = [1, -1].every((s) =>
-          solveJoint([G.rx, G.axleY], G.armLen, G.rodLen, [G.rackR0[0] + s * m, G.rackY], G.restR) &&
-          solveJoint([G.lx, G.axleY], G.armLen, G.rodLen, [G.rackL0[0] + s * m, G.rackY], G.restL));
+        const ok = [1, -1].every((s) => {
+          const reR = [G.rackR0[0] + s * m, G.rackY];
+          const reL = [G.rackL0[0] + s * m, G.rackY];
+          const sR = solveJoint([G.rx, G.axleY], G.armLen, G.rodLen, reR, G.restR);
+          const sL = solveJoint([G.lx, G.axleY], G.armLen, G.rodLen, reL, G.restL);
+          if (!sR || !sL) return false;
+          return rodAngleRad(reR, sR.J) <= MAX_ROD_ANGLE && rodAngleRad(reL, sL.J) <= MAX_ROD_ANGLE;
+        });
         if (ok) lo = m; else hi = m;
       }
-      travelLimit = lo * 0.47; // realistic FSAE lock, clear of bind singularity
+      travelLimit = lo; // 40° rod-angle cap is the binding constraint
     }
 
     function drawWheel(cx, cy, ang, active) {
@@ -185,20 +197,16 @@
 
       const active = Math.abs(steerR) > 0.03 || Math.abs(steerL) > 0.03;
 
-      // tie rods (color shifts if outside 20° cone — shouldn't happen now)
-      const rodAngle = (a, b) => {
-        let d = Math.abs(Math.atan2(b[1] - a[1], b[0] - a[0])) * 180 / Math.PI;
-        return d > 90 ? 180 - d : d;
-      };
-      const raL = rodAngle(reL, sL.J), raR = rodAngle(reR, sR.J);
+      // tie rods — orange warning above 15° signals approaching the 20° hard cap
+      const raL = DEG(rodAngleRad(reL, sL.J)), raR = DEG(rodAngleRad(reR, sR.J));
       ctx.lineWidth = 1.7;
       ctx.globalAlpha = 0.92;
-      ctx.strokeStyle = raL <= 20 ? C.paper : C.torque;
+      ctx.strokeStyle = raL <= 15 ? C.paper : C.torque;
       ctx.beginPath();
       ctx.moveTo(reL[0], reL[1]);
       ctx.lineTo(sL.J[0], sL.J[1]);
       ctx.stroke();
-      ctx.strokeStyle = raR <= 20 ? C.paper : C.torque;
+      ctx.strokeStyle = raR <= 15 ? C.paper : C.torque;
       ctx.beginPath();
       ctx.moveTo(reR[0], reR[1]);
       ctx.lineTo(sR.J[0], sR.J[1]);
