@@ -1,190 +1,119 @@
 ---
-// src/pages/projects.astro — mobile‑first + accessible
-import "../styles/global.css";
-import { getCollection } from "astro:content";
-import ProjectFilter from "../components/ProjectFilter.svelte";
-import ProjectsGraph from "../components/ProjectsGraph.svelte";
+import Base from "../layouts/Base.astro";
+import Eyebrow from "../components/ds/Eyebrow.astro";
+import SectionDivider from "../components/ds/SectionDivider.astro";
+import ProjectCard from "../components/ds/ProjectCard.astro";
 
+const base = "/assets/projects/";
 
-const items = await getCollection("projects");
-const B = import.meta.env.BASE_URL;
-
-const projects = items.map((e) => ({
-  slug: e.slug,
-  title: e.data.title,
-  href: `${B}projects/${e.slug}`,
-  tech: e.data.tech ?? [],
-  summary: e.data.summary ?? "",
-  image: e.data.image ? `${B}${e.data.image}` : `${B}images/projects/${e.slug}.jpg`,
-}));
-
-const page = {
-  title: "Projects | Sivan Syed",
-  description:
-    "Selected work across ECE, physics, robotics, and systems — with notes and build details.",
-};
+const projects = [
+  {
+    index: "01", title: "Project Ventris", status: "active" as const, href: "/projects/ventris",
+    summary: "This website!",
+    highlight: "website!", image: null,
+    tech: ["Astro", "Svelte", "JavaScript", "CSS"],
+  },
+  {
+    index: "02", title: "LEGEND Lab", status: null, href: "/projects/legend-wls-fiber-characterization",
+    summary: "Transformer Model for Pulse Shape Discrimination for radioactive sources and WLS Fiber Characterization for emission spectra and attenuation.",
+    highlight: "Transformer Model", image: base + "UVvBlueLED.png",
+    tech: ["Transformer", "PyTorch", "Signal Processing", "Python", "Optics", "SiPM", "DAQ"],
+  },
+  {
+    index: "03", title: "Surrogate ML for MHD", status: null, href: "/projects/surrogate-ml-model-mhd",
+    summary: "Feed-forward surrogate emulating MHD sims at >98% fidelity — turnaround under 20 min.",
+    highlight: ">98% fidelity", image: base + "LBFGS.png",
+    tech: ["Neural Network", "MATLAB", "Python", "Plasma Physics"],
+  },
+  {
+    index: "04", title: "E-Bike Boost Converter", status: null, href: "/projects/boost-converter",
+    summary: "Designed, simulated, and tested a high-efficiency DC-DC boost for an e-bike battery.",
+    highlight: "high-efficiency DC-DC boost", image: base + "BoostPCB.png",
+    tech: ["LTspice", "KiCad", "Power Electronics", "PCB Design"],
+  },
+  {
+    index: "05", title: "IOT Smart Alarm Clock", status: null, href: "#",
+    summary: "MQTT driven alarm clock with a ESP8266 and a web-based dashboard for scheduling and control.",
+    highlight: null, image: null,
+    tech: ["C", "ESP8266", "MQTT", "SPI", "Network Protocols"],
+  },
+  {
+    index: "06", title: "DDR-AR", status: null, href: "/projects/vision-dance-game-hacktx",
+    summary: "Augmented Reality Dance Dance Revolution on a laptop with a webcam and OpenCV.",
+    highlight: null, image: null,
+    tech: ["Computer Vision", "OpenCV", "Python", "AR", "HTML", "CSS", "JavaScript"],
+  },
+  {
+    index: "07", title: "Weather Damage Forecasting", status: null, href: "/projects/weather-damage-forecasting",
+    summary: "",
+    highlight: null, image: null,
+    tech: ["Python", "Machine Learning", "Data Science", "Pandas", "NumPy", "PyTorch", "Scikit-learn"],
+  },
+];
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>{page.title}</title>
-    <meta name="description" content={page.description} />
-    <link rel="icon" href={`${B}favicon.svg`} />
-    <style>
-      @media (prefers-reduced-motion: reduce) { .animate-shimmer { animation: none !important; } }
-    </style>
-  </head>
-  <body class="min-h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-950 to-black text-zinc-100 antialiased selection:bg-indigo-500/20 [padding-top:env(safe-area-inset-top)]">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-md focus:bg-zinc-900 focus:px-3 focus:py-2 focus:outline-none">Skip to content</a>
 
-    {/* Decorative */}
-    <div aria-hidden class="pointer-events-none fixed inset-0 -z-20">
-      <div class="absolute inset-0 [mask-image:radial-gradient(70%_50%_at_50%_0%,black,transparent)]">
-        <div class="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,theme(colors.zinc.400/20)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.zinc.400/20)_1px,transparent_1px)] [background-size:32px_32px] sm:[background-size:40px_40px] [background-position:center]"></div>
-        <div class="absolute -top-24 left-1/2 h-[26rem] w-[48rem] -translate-x-1/2 rounded-full bg-gradient-to-r from-indigo-500/8 via-violet-400/12 to-blue-500/8 blur-3xl md:h-[36rem] md:w-[72rem]"></div>
+<Base
+  title="Projects | Igneous"
+  description="Selected work across ECE, physics, robotics, and systems — with notes and build details."
+>
+  <section class="section container">
+    <SectionDivider />
+    <div class="section__head">
+      <div>
+        <Eyebrow color="accent">Lab log</Eyebrow>
+        <h2 class="section__title">Projects &amp; experiments</h2>
       </div>
+      <span class="section__aside">{projects.length} entries</span>
     </div>
-
-    {/* Header */}
-    <header class="sticky top-0 z-50 border-b border-zinc-800/60 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/55">
-      <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 md:px-12 lg:px-20 py-3 sm:py-4">
-        <a href={`${B}`} class="group flex min-w-0 items-center gap-3">
-          <img src={`${B}favicon.svg`} alt="Logo" class="size-9 flex-shrink-0 transition-transform duration-300 group-hover:rotate-6" />
-          <div class="min-w-0">
-            <h1 class="truncate text-xl font-semibold tracking-tight sm:text-2xl">Sivan Syed</h1>
-            <p class="truncate text-[11px] text-zinc-400 sm:text-xs">Physics & ECE · Robotics · Controls · Systems</p>
-          </div>
-        </a>
-
-        <nav class="hidden items-center gap-1 text-sm md:flex">
-          <a class="navlink" href={`${B}`}>Home</a>
-          <a class="navlink" href={`${B}projects`}>Projects</a>
-          <a class="navlink" href={`${B}tutoring`}>Tutoring</a>
-          <a class="navlink" href={`${B}now`}>Now</a>
-          <a class="navlink" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
-        </nav>
-
-        <button id="mobile-nav-toggle" aria-controls="mobile-menu" aria-expanded="false" class="inline-flex items-center justify-center rounded-lg border border-zinc-800/60 bg-zinc-900/40 p-2 md:hidden" title="Open menu">
-          <span class="sr-only">Open navigation</span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"/></svg>
-        </button>
-      </div>
-
-      <div id="mobile-menu" hidden class="md:hidden">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-3">
-          <nav class="grid gap-1 text-sm">
-            <a class="navlink w-full" href={`${B}`}>Home</a>
-            <a class="navlink w-full" href={`${B}projects`}>Projects</a>
-            <a class="navlink w-full" href={`${B}tutoring`}>Tutoring</a>
-            <a class="navlink w-full" href={`${B}now`}>Now</a>
-            <a class="navlink w-full" href={`/SyedS_ResumeELC_Print.pdf`} target="_blank" rel="noopener noreferrer">Resume</a>
-          </nav>
-        </div>
-      </div>
-    </header>
-
-    {/* Main */}
-    <main id="main" class="mx-auto max-w-[90rem] px-4 sm:px-6 md:px-12 lg:px-20 py-8 sm:py-10 md:py-14 space-y-16 sm:space-y-20 md:space-y-24 scroll-mt-20">
-      {/* Hero */}
-      <section class="section">
-        <header class="mb-6 sm:mb-8">
-          <p class="eyebrow-mono">// 02 &mdash; CONSTELLATION VIEW</p>
-          <div class="flex items-end justify-between flex-wrap gap-3 mt-3">
-            <h2 class="display text-3xl sm:text-4xl font-bold text-zinc-100">
-              Project graph
-            </h2>
-            <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
-              {projects.length} nodes &middot; drag to explore
-            </p>
-          </div>
-          <p class="mt-3 max-w-2xl text-[15px] sm:text-base leading-relaxed text-zinc-300/80">
-            Each star is a project. Lines connect projects that share tooling or
-            techniques &mdash; thicker lines mean more shared tags. Hover a tag below
-            to highlight everything that touched it.
-          </p>
-        </header>
-      
-        <ProjectsGraph
-          client:load
-          projects={projects}
-          height={680}
+    <div class="lab-grid">
+      {projects.map((p) => (
+        <ProjectCard
+          index={p.index}
+          title={p.title}
+          summary={p.summary}
+          highlight={p.highlight}
+          image={p.image}
+          tech={p.tech}
+          status={p.status}
+          href={p.href}
         />
-      </section>
+      ))}
+    </div>
+  </section>
+</Base>
 
-
-      <section class="mx-auto max-w-6xl">
-        <p class="text-[11px] uppercase tracking-[0.2em] text-indigo-300/50 sm:text-xs">Projects · Hardware · Software · Theory→Practice</p>
-        <h2 class="mt-2 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-          <span class="bg-gradient-to-r from-zinc-100 via-indigo-200 to-zinc-100 bg-clip-text text-transparent animate-shimmer">Selected builds & research</span>
-        </h2>
-        <p class="mt-3 max-w-3xl text-base text-zinc-300/90 sm:mt-4 sm:text-lg">
-          A mix of lab projects, prototypes, and research notes—each card links to a write‑up with diagrams, code, and lessons learned.
-        </p>
-      </section>
-
-      <hr class="section-divider-glow" />
-
-      <section class="section">
-  <header class="mb-6 sm:mb-8">
-    <p class="eyebrow-mono">// 03 &mdash; ALL PROJECTS</p>
-    <h2 class="display mt-3 text-3xl sm:text-4xl font-bold text-zinc-100">
-      Browse by topic
-    </h2>
-  </header>
-
-      {/* Filter */}
-      <section class="section">
-        <h3 class="section-title">Filter by topic</h3>
-        <div class="card">
-          <div class="card-border"></div>
-          <ProjectFilter client:load projects={projects} baseUrl={B} />
-        </div>
-      </section>
-
-      <hr class="section-divider-glow" />
-
-      {/* CTA */}
-      <section class="section">
-        <div class="card card-accent-left">
-          <div class="card-border"></div>
-          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h3 class="text-lg font-semibold">Want a deep‑dive on a project?</h3>
-              <p class="mt-1 text-sm text-zinc-300/90">I can share design docs, small‑signal derivations, or additional plots on request.</p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-              <a href={`${B}tutoring#contact`} class="btn-ghost">Ask a question</a>
-              <a href={`${B}now`} class="btn-primary">See what I'm doing now</a>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-20 pb-10 pt-6 text-sm text-zinc-500/90">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-zinc-800/70 pt-4">
-        <p>© {new Date().getFullYear()} Sivan Syed</p>
-        <a class="underline decoration-zinc-400/30 underline-offset-2 hover:decoration-indigo-300/50 transition-colors" href={`${B}`}>Back to home</a>
-      </div>
-    </footer>
-
-    <script is:inline>
-      const btn = document.getElementById('mobile-nav-toggle');
-      const menu = document.getElementById('mobile-menu');
-      if (btn && menu) {
-        btn.addEventListener('click', () => {
-          const open = btn.getAttribute('aria-expanded') === 'true';
-          btn.setAttribute('aria-expanded', String(!open));
-          menu.hidden = open;
-          btn.innerHTML = !open
-            ? `<span class="sr-only">Close navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M6.75 6.75l10.5 10.5M17.25 6.75L6.75 17.25'/></svg>`
-            : `<span class="sr-only">Open navigation</span><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='h-5 w-5'><path d='M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5'/></svg>`;
-        });
-      }
-    </script>
-  </body>
-</html>
+<style>
+  .container { max-width: var(--container); margin: 0 auto; }
+  .section { padding: 8px 32px 64px; }
+  .section__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .section__title {
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--text-display);
+    margin: 14px 0 0;
+  }
+  .section__aside {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding-bottom: 6px;
+  }
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  @media (max-width: 560px) {
+    .section { padding: 8px 18px 48px; }
+  }
+</style>

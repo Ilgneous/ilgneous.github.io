@@ -20,23 +20,23 @@ const base = "/assets/projects/";
 
 const featured = [
   {
-    index: "F1", codename: "Project Lykos", title: "Multiplayer Racing Simulator",
+    index: "F1", codename: "Project Lykos", title: "Live Racing Simulator",
     domain: "Embedded · Sim", year: "2026", status: "nominal", flip: false, image: null,
     href: "/work/lykos",
-    summary: "An embedded two-player racing sim built from the silicon up — CAN firmware at 1 Mbps, custom PCBs, hand-built cockpits, and a from-scratch renderer, in six weeks under $100.",
+    summary: "A two-player versus style racing sim inspired by my time in FSAE Longhorn Racing. CAN firmware at 1 Mbps, custom PCBs, custom pedals and steering wheels, and a from-scratch renderer. All in 6 weeks. All under $200.",
     highlight: ["1 Mbps", "from-scratch renderer"],
-    tech: ["C", "CAN bus", "TM4C123", "OnShape", "Raspberry Pi 5"],
+    tech: ["C", "CAN bus", "TM4C123GXL", "OnShape", "Raspberry Pi 5"],
     metrics: [
       { value: "2", label: "Players", accent: true },
       { value: "1", unit: "Mbps", label: "CAN baud" },
-      { value: "<$100", label: "Budget" },
+      { value: "<$200", label: "Budget" },
     ],
   },
   {
-    index: "F2", codename: "Project RipWing", title: "Safety-Critical UAV Flight Controller",
+    index: "F2", codename: "Project RipWing", title: "Edge-ML UAV Flight Controller",
     domain: "Aerospace · Embedded", year: "2026", status: "active", flip: true, image: null,
     href: "/work/ripwing",
-    summary: "A custom flight controller that catches failure before it crashes — RTOS-isolated stabilization plus an edge TinyML anomaly pipeline that cut simulated crashes by 92%.",
+    summary: "I always wanted a drone as a kid but never had the chance to get one. Here’s my attempt at making my child-self happy. A custom flight controller founded on a Quadcopter Dynamics Model that catches failures before it happens. Every decision carefully measured, from Rust software and the TinyML anomaly pipeline to the propellor blades.",
     highlight: ["TinyML", "92%"],
     tech: ["Rust", "C", "FreeRTOS", "STM32", "TinyML"],
     metrics: [
@@ -46,10 +46,10 @@ const featured = [
     ],
   },
   {
-    index: "F3", codename: "Longhorn Racing", title: "FSAE Steering & Vehicle Dynamics",
+    index: "F3", codename: "Project Dustmaker", title: "FSAE Longhorn Racing",
     domain: "Mechanical · Dynamics", year: "2025", status: "nominal", flip: false, image: base + "IRPCB.png",
     href: "/work/fsae",
-    summary: "A steering rebuild 68% lighter and sharper in the hands — carbon column, printed bevel gearboxes, deliberate anti-Ackermann — that grew into a full-vehicle kinematic and compliance model.",
+    summary: "A steering system rebuild journey with carbon-fiber and bevel gearboxes, led by and turned into a full-vehicle kinematics and compliance modeling passion. Discover where my modeling and controls passion began.",
     highlight: ["68% lighter", "full-vehicle"],
     tech: ["SolidWorks", "FEA", "Carbon Fiber", "Python", "Vehicle Dynamics"],
     metrics: [
@@ -62,42 +62,54 @@ const featured = [
 
 const projects = [
   {
-    index: "02", title: "Ping-Pong Balancer", status: "active", href: "#",
-    summary: "A 3-DoF platform that tracks and stabilizes a ball in real time via OpenCV + IK.",
-    highlight: "real time", image: null,
-    tech: ["OpenCV", "Python", "Dynamixel", "Controls", "Raspberry Pi 5"],
+    index: "01", title: "Project Ventris", status: "active", href: "/projects/ventris",
+    summary: "This website!",
+    highlight: "website!", image: null,
+    tech: ["Astro", "Svelte", "JavaScript", "CSS"],
   },
   {
-    index: "12", title: "Transformer Model for PSD", status: null, href: "#",
-    summary: "Pulse-shape discrimination for radioactive sources — >98% classification accuracy.",
-    highlight: ">98% classification accuracy", image: base + "TransformerModel.png",
-    tech: ["Transformer", "PyTorch", "Signal Processing", "Python"],
+    index: "02", title: "LEGEND Lab", status: null, href: "/projects/legend-wls-fiber-characterization",
+    summary: "Transformer Model for Pulse Shape Discrimination for radioactive sources and WLS Fiber Characterization for emission spectra and attenuation.",
+    highlight: "Transformer Model", image: base + "UVvBlueLED.png",
+    tech: ["Transformer", "PyTorch", "Signal Processing", "Python", "Optics", "SiPM", "DAQ"],
   },
   {
-    index: "14", title: "Surrogate ML for MHD", status: null, href: "#",
+    index: "03", title: "Surrogate ML for MHD", status: null, href: "/projects/surrogate-ml-model-mhd",
     summary: "Feed-forward surrogate emulating MHD sims at >98% fidelity — turnaround under 20 min.",
     highlight: ">98% fidelity", image: base + "LBFGS.png",
     tech: ["Neural Network", "MATLAB", "Python", "Plasma Physics"],
   },
   {
-    index: "03", title: "E-Bike Boost Converter", status: null, href: "#",
+    index: "04", title: "E-Bike Boost Converter", status: null, href: "/projects/boost-converter",
     summary: "Designed, simulated, and tested a high-efficiency DC-DC boost for an e-bike battery.",
     highlight: "high-efficiency DC-DC boost", image: base + "BoostPCB.png",
     tech: ["LTspice", "KiCad", "Power Electronics", "PCB Design"],
   },
   {
-    index: "05", title: "WLS Fiber Characterization", status: null, href: "#",
-    summary: "Measured emission spectra and attenuation of WLS fibers for the LEGEND experiment.",
-    highlight: null, image: base + "UVvBlueLED.png",
-    tech: ["Optics", "SiPM", "Spectrometer", "Python", "DAQ"],
+    index: "05", title: "IOT Smart Alarm Clock", status: null, href: "#",
+    summary: "MQTT driven alarm clock with a ESP8266 and a web-based dashboard for scheduling and control.",
+    highlight: null, image: null,
+    tech: ["C", "ESP8266", "MQTT", "SPI", "Network Protocols"],
+  },
+  {
+    index: "06", title: "DDR-AR", status: null, href: "/projects/vision-dance-game-hacktx",
+    summary: "Augmented Reality Dance Dance Revolution on a laptop with a webcam and OpenCV.",
+    highlight: null, image: null,
+    tech: ["Computer Vision", "OpenCV", "Python", "AR", "HTML", "CSS", "JavaScript"],
+  },
+  {
+    index: "07", title: "Weather Damage Forecasting", status: null, href: "/projects/weather-damage-forecasting",
+    summary: "",
+    highlight: null, image: null,
+    tech: ["Python", "Machine Learning", "Data Science", "Pandas", "NumPy", "PyTorch", "Scikit-learn"],
   },
 ] as const;
 
 const phases = [
-  { chip: "ACTIVE", title: "Ping-Pong Balancer", detail: "Assembling the 3-DoF platform; bringing up the vision + control loop.", state: "current" },
-  { chip: "RESEARCH", title: "LEGEND detector R&D", detail: "WLS fiber characterization — published on arXiv.", state: "done" },
-  { chip: "TEAM", title: "Longhorn Racing Electric", detail: "Steering + vehicle dynamics for the 2026 car.", state: "done" },
-  { chip: "NEXT", title: "Aerospace & hardware roles", detail: "Tailoring the toolkit toward flight & advanced hardware.", state: "target" },
+  { chip: "ACTIVE", title: "Project RipWing", detail: "Creating a high-fidelity 10-DoF Dynamics Model of the drone to consider Blade Flapping.", state: "current" },
+  { chip: "RESEARCH", title: "2D Materials - Sanjay Banerjee", detail: "Characterizing MOCVD Growth for 2D materials", state: "target" },
+  { chip: "TEAM", title: "Emerson", detail: "Electrical Engineering Design Intern", state: "current" },
+  { chip: "NEXT", title: "Controls, Aerospace, and Hardware Roles", detail: "Fine-tuning my resume and toolkit as I prepare to apply to full-time positions.", state: "current" },
 ] as const;
 ---
 
@@ -127,7 +139,7 @@ const phases = [
         <div class="hero__status">
           <span class="hero__pulse"></span>
           <span class="hero__status-text">
-            Currently building <span class="accent">Ping-Pong Balancer</span> — 3-DoF vision-stabilized platform
+            Currently building <span class="accent">Project RipWing</span> — <span class="signal">Edge-Deployed ML on UAV Flight Controller</span>
           </span>
         </div>
       </div>
@@ -135,16 +147,16 @@ const phases = [
       <Panel reticle meta="SYS / NOMINAL" padding="24px">
         <div class="readout__label">Status readout</div>
         <div class="readout__kpis">
-          <Kpi value="13" label="Projects logged" accent />
-          <Kpi value="5" label="Domains" />
-          <Kpi value="68" unit="%" label="FSAE mass cut" />
-          <Kpi value=">98" unit="%" label="Model fidelity" />
+          <Kpi value="9" label="Projects logged" accent />
+          <Kpi value="4" label="Disciplines" />
+          <Kpi value="3" label="Industry Experiences" />
+          <Kpi value="2" label="Papers Published" />
         </div>
         <div class="readout__rule"></div>
         <div class="readout__rows">
-          <div class="readout__row"><span class="readout__key">EDU</span><span class="readout__val">Physics + ECE · UT Austin</span></div>
-          <div class="readout__row"><span class="readout__key">TEAM</span><span class="readout__val">Longhorn Racing Electric</span></div>
-          <div class="readout__row"><span class="readout__key">LAB</span><span class="readout__val">LEGEND — arXiv:2509.20390</span></div>
+          <div class="readout__row"><span class="readout__key">EDU</span><span class="readout__val">Physics + ECE + Math · UT Austin</span></div>
+          <div class="readout__row"><span class="readout__key">TEAM</span><span class="readout__val">Emerson</span></div>
+          <div class="readout__row"><span class="readout__key">LAB</span><span class="readout__val">Nanoelectronics</span></div>
         </div>
       </Panel>
     </div>
@@ -183,12 +195,14 @@ const phases = [
     <div class="about">
       <div>
         <Eyebrow color="accent">The goal</Eyebrow>
-        <h2 class="about__title">Push the boundaries of science and engineering</h2>
+        <h2 class="about__title">Per aspera ad astra</h2>
         <p class="about__body">
-          I aim to contribute to bleeding-edge research and technology in
-          physics-driven engineering — fields that demand both rigorous theoretical
-          insight and innovative hardware. Whether it's condensed-matter physics,
-          plasma, or robotics, I bridge theory with practical systems that ship.
+          To keep it short and simple. My greatest fear in life is looking back
+          on my life and realizing I could have done more. More to help people. 
+          More to grow myself. More in anything. I believe I can help the most 
+          people's lives by contributing to bleeding-edge technology in 
+          physics-driven engineering. Through my intense hunger for knowledge, 
+          I bridge the gap between theory and practical systems. 
         </p>
         <div class="about__tags">
           <Tag>Electronics hardware</Tag>
@@ -212,13 +226,13 @@ const phases = [
     <div class="contact">
       <div>
         <Eyebrow color="accent">Open channel</Eyebrow>
-        <h2 class="contact__title">Let's build something<br />on the edge.</h2>
+        <h2 class="contact__title">Connect with me!<br />on the edge.</h2>
         <p class="contact__body">
           Recruiting, collaborating, or just curious about a project? Send a transmission.
         </p>
         <div class="contact__rows">
-          <div class="contact__row"><span class="contact__key">EMAIL</span><span class="contact__val">hello@ilgneous.dev</span></div>
-          <div class="contact__row"><span class="contact__key">GITHUB</span><span class="contact__val">github.com/Ilgneous</span></div>
+          <div class="contact__row"><span class="contact__key">EMAIL</span><span class="contact__val contact__val--accent">[email protected]</span></div>
+          <div class="contact__row"><span class="contact__key">GITHUB</span><a href="https://github.com/Ilgneous" target="_blank" rel="noopener noreferrer" class="contact__val contact__val--link">github.com/Ilgneous</a></div>
           <div class="contact__row"><span class="contact__key">BASE</span><span class="contact__val">Austin, TX</span></div>
         </div>
       </div>
@@ -232,12 +246,12 @@ const phases = [
             </label>
             <label class="field">
               <span class="field__label">Email</span>
-              <input class="field__input" type="email" name="email" placeholder="you@domain.com" />
+              <input class="field__input" type="email" name="email" placeholder="your.email@domain.com" />
             </label>
           </div>
           <label class="field">
             <span class="field__label">Subject</span>
-            <input class="field__input" type="text" name="subject" placeholder="Role / project / hello" />
+            <input class="field__input" type="text" name="subject" placeholder="Role / Project / Hello" />
           </label>
           <label class="field">
             <span class="field__label">Message</span>
@@ -449,6 +463,7 @@ const phases = [
     color: var(--text-muted);
   }
   .hero__status-text .accent { color: var(--text-accent); }
+  .hero__status-text .signal { color: var(--signal-500); }
 
   /* ── Status readout panel ── */
   .readout__label {
@@ -530,6 +545,9 @@ const phases = [
   .contact__row { display: flex; gap: 14px; font-family: var(--font-mono); font-size: 13px; }
   .contact__key { color: var(--text-faint); width: 56px; }
   .contact__val { color: var(--text-secondary); }
+  .contact__val--accent { color: var(--accent); }
+  .contact__val--link { color: var(--text-secondary); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 3px; transition: color var(--dur-fast) var(--ease-out); }
+  .contact__val--link:hover { color: var(--signal-300); text-decoration-color: var(--signal-400); }
 
   /* ── Form ── */
   .form { display: flex; flex-direction: column; gap: 16px; }
