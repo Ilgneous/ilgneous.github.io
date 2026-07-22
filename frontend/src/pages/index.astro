@@ -231,13 +231,14 @@ const phases = [
           Recruiting, collaborating, or just curious about a project? Send a transmission.
         </p>
         <div class="contact__rows">
-          <div class="contact__row"><span class="contact__key">EMAIL</span><span class="contact__val contact__val--accent">[email protected]</span></div>
+          <div class="contact__row"><span class="contact__key">EMAIL</span><a href="mailto:sivan.syed@gmail.com" class="contact__val contact__val--accent">sivan.syed@gmail.com</a></div>
           <div class="contact__row"><span class="contact__key">GITHUB</span><a href="https://github.com/Ilgneous" target="_blank" rel="noopener noreferrer" class="contact__val contact__val--link">github.com/Ilgneous</a></div>
           <div class="contact__row"><span class="contact__key">BASE</span><span class="contact__val">Austin, TX</span></div>
         </div>
       </div>
 
-      <Panel reticle meta="TX / READY" padding="28px">
+      <Panel reticle meta="SIGNAL / INCOMING" padding="28px">
+        <!-- Contact form — re-enable once Cloudflare Worker + Resend are wired up
         <form class="form" method="POST" action="#" onsubmit="return false;">
           <div class="form__pair">
             <label class="field">
@@ -259,6 +260,17 @@ const phases = [
           </label>
           <Button variant="primary" full type="submit">Transmit message</Button>
         </form>
+        -->
+        <div class="quote">
+          <span class="quote__mark" aria-hidden="true">&ldquo;</span>
+          <blockquote class="quote__body">
+            If you are thrown into the deep and do not swim, you will drown. So keep swimming.
+          </blockquote>
+          <footer class="quote__footer">
+            <span class="quote__rule"></span>
+            <cite class="quote__source">Red Rising — Pierce Brown</cite>
+          </footer>
+        </div>
       </Panel>
     </div>
   </section>
@@ -588,5 +600,49 @@ const phases = [
     .hero { padding: 48px 18px 40px; }
     .section { padding: 8px 18px; }
     .form__pair { grid-template-columns: 1fr; }
+  }
+
+  /* ── Quote ── */
+  .quote { position: relative; padding: 8px 4px; }
+  .quote__mark {
+    font-family: Georgia, serif;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.12;
+    position: absolute;
+    top: -16px;
+    left: -8px;
+    pointer-events: none;
+    select: none;
+  }
+  .quote__body {
+    position: relative;
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .quote__footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .quote__rule {
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+    flex-shrink: 0;
+  }
+  .quote__source {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    font-style: normal;
   }
 </style>

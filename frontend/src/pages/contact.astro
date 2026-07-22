@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import ContactForm from "../components/ContactForm.svelte";
+// import ContactForm from "../components/ContactForm.svelte";
 import { getCollection } from "astro:content";
 const B = import.meta.env.BASE_URL;
 
@@ -105,11 +105,39 @@ if (projects.length === 0) {
 
       <hr class="section-divider-glow" />
 
+      {/* Contact form — re-enable once Cloudflare Worker + Resend are wired up
       <section class="section">
         <div class="mx-auto max-w-xl">
           <div class="card">
             <div class="card-border"></div>
-            <ContactForm client:load apiBase={API} />
+            <ContactForm client:load apiBase={import.meta.env.PUBLIC_CONTACT_URL} />
+          </div>
+        </div>
+      </section>
+      */}
+
+      <section class="section">
+        <div class="mx-auto max-w-xl">
+          <div class="card relative overflow-hidden">
+            <div class="card-border"></div>
+            <div class="relative p-8 sm:p-10">
+              <span aria-hidden class="absolute -top-4 -left-2 text-8xl font-serif leading-none text-indigo-500/15 select-none">&ldquo;</span>
+              <blockquote class="relative">
+                <p class="text-lg sm:text-xl font-medium leading-relaxed text-zinc-100">
+                  If you are thrown into the deep and do not swim, you will drown. So keep swimming.
+                </p>
+                <footer class="mt-5 flex items-center gap-3">
+                  <span class="h-px w-8 bg-indigo-400/40"></span>
+                  <cite class="not-italic text-sm text-indigo-300/60 tracking-wide">Red Rising — Pierce Brown</cite>
+                </footer>
+              </blockquote>
+              <div class="mt-8 pt-6 border-t border-zinc-800/60 text-center">
+                <p class="text-sm text-zinc-400 mb-2">In the meantime, reach me directly at</p>
+                <a href="mailto:sivan.syed@gmail.com" class="text-sm text-indigo-300/80 underline decoration-indigo-400/30 underline-offset-2 hover:decoration-indigo-400/60 transition-colors">
+                  sivan.syed@gmail.com
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>

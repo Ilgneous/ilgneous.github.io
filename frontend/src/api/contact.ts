@@ -7,7 +7,7 @@ export const POST: APIRoute = async ({ request }) => {
   const { name, email, topic, message } = await request.json();
   const { error } = await resend.emails.send({
     from: 'Sivan Site <onboarding@resend.dev>', // use sandbox now; swap to your verified domain later
-    to: ['you@yourinbox.com'],
+    to: ['sivan.syed@gmail.com'],
     replyTo: email,
     subject: `[Tutoring] ${topic ?? 'General'} — ${name}`,
     text: `From: ${name} <${email}>\n\n${message}`,
