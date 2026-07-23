@@ -7,95 +7,179 @@ import Tag from "../../components/ds/Tag.astro";
 import Kpi from "../../components/ds/Kpi.astro";
 import StatusBadge from "../../components/ds/StatusBadge.astro";
 import SectionDivider from "../../components/ds/SectionDivider.astro";
-import Trajectory from "../../components/ds/Trajectory.astro";
-import Station from "../../components/ds/Station.astro";
 import EmbedFigure from "../../components/ds/EmbedFigure.astro";
 import CodeListing from "../../components/ds/CodeListing.astro";
 
-// ── Case-study config (ported from the template's renderVals / props) ──
-const githubUrl = "https://github.com/Ilgneous";
+// ── Case-study config ──
+const githubUrl = "https://github.com/Ilgneous/Lykos";
 const videoUrl = "#";
-const steeringWeight = "~480 g"; // placeholder — update with the real printed weight
 
-const tags = ["C", "CAN bus", "TM4C123", "Embedded firmware", "OnShape", "PCB design", "Raspberry Pi 5", "Real-time graphics"];
+const tags = ["C", "CAN bus", "TM4C123", "Python", "Pygame", "KiCAD", "OnShape", "Raspberry Pi 5"];
 
 const heroMeta = [
-  { key: "Role", val: "Mechanical Design Lead · Comms Protocols" },
-  { key: "Timeline", val: "Apr–May 2026 · 6 weeks" },
-  { key: "Context", val: "Passion project · FSAE-inspired" },
-  { key: "Stack", val: "C · OnShape · RPi 5 · Python" },
+  { key: "Role", val: "Mechanical design (CAD) · CAN comms", color: "var(--ember-500)" },
+  { key: "Team", val: "Shawarma Inc · embedded systems", color: "var(--signal-500)" },
+  { key: "Platform", val: "TM4C123GXL · Raspberry Pi 5", color: "var(--status-nominal)" },
+  { key: "Stack", val: "C · Python · KiCAD · OnShape", color: "var(--status-caution)" },
 ];
 
 // hero signal-path legend — each row links to its chapter
 const signalPath = [
-  { n: "01", href: "#ch-input", title: "The Cockpit", note: "Input · CAD" },
-  { n: "02", href: "#ch-sense", title: "The Board", note: "Sense · Custom PCBs" },
-  { n: "03", href: "#ch-transmit", title: "The Bus", note: "Transmit · CAN firmware" },
-  { n: "04", href: "#ch-render", title: "The Engine", note: "Render · from scratch" },
+  { n: "01", href: "#comms", title: "Communication & sensing", note: "CAN · IMU · encoders", color: "var(--ember-500)" },
+  { n: "02", href: "#pcb", title: "Circuit & PCB", note: "Custom board in KiCAD", color: "var(--signal-500)" },
+  { n: "03", href: "#dynamics", title: "Vehicle dynamics", note: "Fixed-point physics engine", color: "var(--ember-500)" },
+  { n: "04", href: "#inputs", title: "Input acquisition", note: "Gyro integration · encoders", color: "var(--signal-500)" },
+  { n: "05", href: "#handoff", title: "Physics-to-pixels", note: "Software SPI slave", color: "var(--status-caution)" },
+  { n: "06", href: "#rendering", title: "Real-time rendering", note: "Raycasting on the Pi 5", color: "var(--signal-500)" },
+  { n: "07", href: "#mechanical", title: "Mechanical design", note: "Pedalbox + wheel CAD", color: "var(--status-caution)" },
+  { n: "08", href: "#debug", title: "Integration & debug", note: "The bug that stumped us", color: "var(--status-critical)" },
+];
+
+const brief = [
+  { n: "01", text: "Read driver inputs through interfaces that actually feel good to use", color: "var(--ember-400)" },
+  { n: "02", text: "Write the renderer from scratch, no off-the-shelf engine", color: "var(--signal-400)" },
+  { n: "03", text: "Implement the CAN protocol ourselves", color: "var(--status-caution)" },
+  { n: "04", text: "Build a game engine that behaves like real physics", color: "var(--status-nominal)" },
+  { n: "05", text: "Make it a game people actually want to play", color: "var(--status-critical)" },
 ];
 
 const componentMap = [
-  { key: "MCU", val: "TM4C123 · bare-metal C" },
-  { key: "SENSE", val: "Gyro · rotary encoders" },
-  { key: "DRIVER I/O", val: "Buttons · switches · LCD · LED" },
-  { key: "FEEDBACK", val: "Speaker" },
-  { key: "BUS", val: "MCP2551 CAN transceiver" },
-  { key: "POWER", val: "USB-C in" },
+  { key: "MCU", val: "TM4C123 · bare-metal C", color: "var(--ember-400)" },
+  { key: "SENSE", val: "LSM6DS3TR-C · encoders", color: "var(--signal-400)" },
+  { key: "DRIVER I/O", val: "Buttons · switches", color: "var(--status-caution)" },
+  { key: "DISPLAY", val: "Center LCD · status LED", color: "var(--status-nominal)" },
+  { key: "FEEDBACK", val: "Speaker", color: "var(--status-critical)" },
+  { key: "BUS", val: "MCP2551 CAN transceiver", color: "var(--ember-400)" },
 ];
 
-const canInit = [
-  `<span class="com">// CAN0 @ 1 Mbps on the TM4C123</span>`,
-  `<span class="kw">void</span> CAN0_Init(<span class="kw">void</span>) {`,
-  `    SysCtlPeripheralEnable(SYSCTL_PERIPH_CAN0);`,
-  `    GPIOPinConfigure(GPIO_PB4_CAN0RX);`,
-  `    GPIOPinConfigure(GPIO_PB5_CAN0TX);`,
-  `    GPIOPinTypeCAN(GPIO_PORTB_BASE, GPIO_PIN_4 | GPIO_PIN_5);`,
-  ``,
-  `    CANInit(CAN0_BASE);`,
-  `    CANBitRateSet(CAN0_BASE, SysCtlClockGet(), <span class="num">1000000</span>);  <span class="com">// 1 Mbps</span>`,
-  `    CANEnable(CAN0_BASE);`,
-  `}`,
-];
-
-const bringup = [
-  `<span class="com">// order matters: the gyro settles before the bus</span>`,
-  `<span class="kw">void</span> system_bringup(<span class="kw">void</span>) {`,
-  `    imu_init(&lsm6ds3);  <span class="com">// I2C + gyro FIRST</span>`,
-  `    <span class="kw">while</span> (!imu_ready(&lsm6ds3));  <span class="com">// let it stop chattering</span>`,
-  ``,
-  `    CAN0_Init();  <span class="com">// now the bus comes up clean</span>`,
-  `    can_set_nonblocking(<span class="kw">true</span>);  <span class="com">// 2 wheels <-> engine, no stalls</span>`,
-  `}`,
+const frameTiles = [
+  { key: "SKY", val: "Vertical gradient, top half of the frame", color: "var(--signal-400)" },
+  { key: "ROAD", val: "Half-width shrinks with depth to a vanishing point", color: "var(--status-nominal)" },
+  { key: "CURBS", val: "Red/white on the outer eighth, compressing toward the horizon", color: "var(--status-caution)" },
+  { key: "WALLS", val: "Distance-shaded columns, red barriers vs grey walls", color: "var(--ember-400)" },
 ];
 
 const results = [
-  { value: "1", unit: " Mbps", label: "CAN baud — instant steering feedback", accent: true },
-  { value: "2", label: "Players racing in real time" },
-  { value: "6", unit: " wk", label: "Concept to playable build" },
-  { value: "<$100", label: "Total project budget" },
+  { value: "1", unit: " Mbps", label: "CAN bus, steering that feels instant", accent: true },
+  { value: "2", label: "Players racing, one shared track" },
+  { value: "921,600", label: "Pixels drawn per frame, per view" },
+  { value: "0", label: "Off-the-shelf engines or floats used" },
 ];
 
-const phases = [
-  { chip: "SHIPPED", title: "Playable v1", detail: "Two-player, real-time racing on procedurally generated maps.", state: "done" },
-  { chip: "NEXT", title: "Higher-resolution inputs", detail: "Swap encoders for rotary potentiometers — finer pedal & steering angle.", state: "current" },
-  { chip: "NEXT", title: "Richer gameplay", detail: "More map variability and a tighter, more responsive driving feel.", state: "target" },
-  { chip: "NEXT", title: "Graphics pass", detail: "Higher visual quality while holding real-time render speed.", state: "target" },
+const roadmap = [
+  {
+    n: "01", state: "done", chip: "Done", title: "Playable v1",
+    detail: "Two players, real-time, on a shared track with working collisions and road obstacles. This is the version you can sit down and race right now.",
+  },
+  {
+    n: "02", state: "done", chip: "Done", title: "Procedural tracks",
+    detail: "Random track generation, so every race runs a fresh circuit instead of the same loop. Already in and working.",
+  },
+  {
+    n: "03", state: "next", chip: "Up next", title: "Refine the renderer",
+    detail: "Push the graphics past flat colors: real surface texturing, cleaner curbs, and a stronger read on speed coming out of the raycaster.",
+  },
+  {
+    n: "04", state: "planned", chip: "Planned", title: "CAD for maintenance",
+    detail: "Rework the wheel and pedal assemblies so they come apart and get serviced without a fight. Less glue, more fasteners.",
+  },
+];
+function roadmapColor(state: string) {
+  if (state === "done") return { bg: "var(--status-nominal)", ring: "rgba(111,194,160,0.2)", chipColor: "var(--status-nominal)", chipBg: "rgba(111,194,160,0.16)", chipBorder: "rgba(111,194,160,0.4)" };
+  if (state === "next") return { bg: "var(--ember-500)", ring: "var(--accent-soft)", chipColor: "var(--ember-400)", chipBg: "var(--accent-soft)", chipBorder: "var(--accent-line)" };
+  return { bg: "var(--signal-500)", ring: "rgba(62,141,160,0.22)", chipColor: "var(--signal-400)", chipBg: "rgba(62,141,160,0.12)", chipBorder: "rgba(62,141,160,0.4)" };
+}
+
+// ── code listings ──
+const gameEngine = [
+  `<span class="com">// kinematic bicycle model, ~16 ms/step, fixed-point (1.0 = 1000)</span>`,
+  `car-&gt;speed += accel - brakeForce;`,
+  `car-&gt;speed = (car-&gt;speed * FRICTION) / SCALE;      <span class="com">// 0.99 coast-down</span>`,
+  `<span class="kw">if</span> (car-&gt;speed &gt; MAX_SPEED) car-&gt;speed = MAX_SPEED;`,
+  `car-&gt;steerAngle += steering * STEER_RATE;`,
+  `<span class="kw">if</span> (car-&gt;steerAngle &gt;  <span class="num">30</span>) car-&gt;steerAngle =  <span class="num">30</span>;   <span class="com">// steering lock</span>`,
+  `<span class="kw">if</span> (car-&gt;steerAngle &lt; <span class="num">-30</span>) car-&gt;steerAngle = <span class="num">-30</span>;`,
+  `<span class="kw">int</span> yawDelta = (car-&gt;speed * car-&gt;steerAngle * dt) / WHEELBASE;`,
+  `car-&gt;yaw += yawDelta;                   <span class="com">// wider arc the faster you go</span>`,
+  `<span class="kw">while</span> (car-&gt;yaw &lt;   <span class="num">0</span>) car-&gt;yaw += <span class="num">360</span>;  <span class="com">// index into lookup tables</span>`,
+  `<span class="kw">while</span> (car-&gt;yaw &gt;= <span class="num">360</span>) car-&gt;yaw -= <span class="num">360</span>;`,
+  `car-&gt;vx = (car-&gt;speed * cosTable[car-&gt;yaw]) / SCALE;`,
+  `car-&gt;vy = (car-&gt;speed * sinTable[car-&gt;yaw]) / SCALE;`,
+];
+
+const handleCollisions = [
+  `<span class="com">// project onto wall, compare squared dist</span>`,
+  `<span class="kw">int</span> t = ((cx*wx + cy*wy) * SCALE) / wallLen2;`,
+  `<span class="kw">if</span> (t &lt; <span class="num">0</span>) t = <span class="num">0</span>; <span class="kw">if</span> (t &gt; SCALE) t = SCALE;`,
+  `<span class="kw">int</span> dx = car-&gt;x - (w-&gt;x1 + (wx*t)/SCALE);`,
+  `<span class="kw">int</span> dy = car-&gt;y - (w-&gt;y1 + (wy*t)/SCALE);`,
+  `<span class="kw">if</span> (dx*dx + dy*dy &lt; radius*radius) {   <span class="com">// hit</span>`,
+  `&nbsp;&nbsp;int push = (radius - dist) * <span class="num">1200</span> / SCALE; <span class="com">// 1.2x</span>`,
+  `&nbsp;&nbsp;car-&gt;x += nx*push/SCALE; car-&gt;y += ny*push/SCALE;`,
+  `&nbsp;&nbsp;vTang = (vTang * <span class="num">900</span>) / SCALE;    <span class="com">// tangent damp 90%</span>`,
+  `}`,
+];
+
+const encoderRead = [
+  `<span class="com">// fold old + new 2-bit states into one 4-bit transition code</span>`,
+  `newState   = (GPIO_PORTB_DATA_R &gt;&gt; <span class="num">1</span>) &amp; <span class="num">0x03</span>;`,
+  `transition = (prevState &lt;&lt; <span class="num">2</span>) | newState;`,
+  `<span class="kw">switch</span> (transition) {`,
+  `&nbsp;&nbsp;case 0b0001: case 0b0111: case 0b1110: case 0b1000: encoderDelta++; break; <span class="com">// CW</span>`,
+  `&nbsp;&nbsp;case 0b0010: case 0b1011: case 0b1101: case 0b0100: encoderDelta--; break; <span class="com">// CCW</span>`,
+  `&nbsp;&nbsp;default: break;                 <span class="com">// noise -&gt; invalid code -&gt; ignored</span>`,
+  `}`,
+  `<span class="kw">if</span> (newState == <span class="num">0x03</span>) {                <span class="com">// settled at rest = one detent</span>`,
+  `&nbsp;&nbsp;if (encoderDelta &gt;=  <span class="num">2</span>) { encoderCount++; encoderDelta = <span class="num">0</span>; }`,
+  `&nbsp;&nbsp;if (encoderDelta &lt;= <span class="num">-2</span>) { encoderCount--; encoderDelta = <span class="num">0</span>; }`,
+  `}`,
+  `prevState = newState;`,
+];
+
+const spiSend = [
+  `<span class="com">// Pi is master; the TM4C answers each 0xFF sync with a framed packet</span>`,
+  `<span class="kw">void</span> SPI_SendTM4C(<span class="kw">int32_t</span> pos, <span class="kw">uint16_t</span> angle, <span class="kw">int16_t</span> speed) {`,
+  `&nbsp;&nbsp;uint8_t sync = <span class="num">0</span>;`,
+  `&nbsp;&nbsp;while (sync != <span class="num">0xFF</span>) sync = bitbangingbyte(<span class="num">0x00</span>); <span class="com">// wait for open</span>`,
+  `&nbsp;&nbsp;bitbangingbyte(<span class="num">'S'</span>);                            <span class="com">// start sentinel</span>`,
+  `&nbsp;&nbsp;bitbangingbyte((pos&gt;&gt;<span class="num">8</span>)&amp;<span class="num">0xFF</span>);   bitbangingbyte(pos&amp;<span class="num">0xFF</span>);`,
+  `&nbsp;&nbsp;bitbangingbyte((angle&gt;&gt;<span class="num">8</span>)&amp;<span class="num">0xFF</span>); bitbangingbyte(angle&amp;<span class="num">0xFF</span>);`,
+  `&nbsp;&nbsp;bitbangingbyte((speed&gt;&gt;<span class="num">8</span>)&amp;<span class="num">0xFF</span>); bitbangingbyte(speed&amp;<span class="num">0xFF</span>);`,
+  `&nbsp;&nbsp;bitbangingbyte(<span class="num">'X'</span>);                            <span class="com">// stop sentinel</span>`,
+  `}`,
+];
+
+const raycaster = [
+  `<span class="com">// 16x10 grid of 64-unit cells. 0 = open, 1 = grey wall, 2 = red barrier</span>`,
+  `<span class="kw">static const uint8_t</span> MAP[<span class="num">10</span>][<span class="num">16</span>] = {`,
+  `&nbsp;&nbsp;{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},`,
+  `&nbsp;&nbsp;{1,0,0,1,1,0,0,0,0,0,0,1,1,0,0,1},`,
+  `&nbsp;&nbsp;{1,0,0,0,0,0,2,0,0,2,0,0,0,0,0,1},`,
+  `&nbsp;&nbsp;{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},`,
+  `};  <span class="com">// rows trimmed for space</span>`,
+  `<span class="com">// one ray per column, swept across a 60-deg FOV on the heading</span>`,
+  `<span class="kw">for</span> (<span class="kw">int</span> x = <span class="num">0</span>; x &lt; width; x++) {`,
+  `&nbsp;&nbsp;float ray = angle - half_fov + x * angle_step;`,
+  `&nbsp;&nbsp;<span class="com">// ...DDA march to the next grid line...</span>`,
+  `&nbsp;&nbsp;int wallheight = (int)(height * pixelsize / perp); <span class="com">// 1/d falloff</span>`,
+  `&nbsp;&nbsp;int shade = (int)(<span class="num">255</span> - perp * <span class="num">0.4f</span>);       <span class="com">// closer = brighter</span>`,
+  `}`,
 ];
 
 const navLinks = [
-  { href: "#ch-input", label: "Cockpit" },
-  { href: "#ch-sense", label: "Boards" },
-  { href: "#ch-transmit", label: "Firmware" },
-  { href: "#results", label: "Telemetry" },
+  { href: "#comms", label: "Comms" },
+  { href: "#dynamics", label: "Dynamics" },
+  { href: "#rendering", label: "Rendering" },
+  { href: "#roadmap", label: "Roadmap" },
 ];
 ---
 
 <Base
   title="Project Lykos — Case Study · Ilgneous"
-  description="An embedded two-player racing simulator built from the silicon up — CAN firmware at 1 Mbps, custom PCBs, hand-built cockpits, and a from-scratch renderer, in six weeks under $100."
+  description="A versus-style embedded racing simulator — CAN firmware at 1 Mbps, custom PCBs, fixed-point vehicle dynamics, and a from-scratch raycasting renderer running on a TM4C123 + Raspberry Pi 5."
   navLinks={navLinks}
-  ctaHref="/"
-  ctaLabel="← All work"
+  ctaHref={githubUrl}
+  ctaLabel="View code →"
 >
   <!-- ── HERO ─────────────────────────────────────────────────────────── -->
   <section class="hero">
@@ -106,19 +190,20 @@ const navLinks = [
       <div>
         <div class="hero__badges">
           <Eyebrow color="accent">Case file · Lykos</Eyebrow>
-          <StatusBadge status="nominal">Shipped</StatusBadge>
+          <StatusBadge status="nominal">Playable</StatusBadge>
         </div>
-        <div class="hero__codename">CODENAME · LYKOS &nbsp;//&nbsp; EMBEDDED RACING SIMULATOR</div>
-        <h1 class="hero__title">Project&nbsp;Lykos</h1>
+        <div class="hero__codename">VERSUS RACING SIMULATOR &nbsp;//&nbsp; TM4C123 <span class="hero__plus">+</span> RASPBERRY PI 5</div>
+        <h1 class="hero__title">Project&nbsp;<span class="hero__title-accent">Lykos</span></h1>
         <p class="hero__lead">
-          Two drivers. Two hand-built cockpits. One wire running a million bits a second between
-          them — and a racing world drawn from scratch on the other side. This is the story of that
-          signal, from the moment a hand turns the wheel to the frame that hits the screen.
+          Two drivers, two seats, two monitors, and one wire running between them. Lykos is a
+          head-to-head racing sim where every input gets read off hardware we built, packed onto
+          a CAN bus, and turned into a car moving through a world we render from scratch. Here is
+          how it came together, from picking the parts to the one bug that almost sank the whole thing.
         </p>
 
         <div class="meta-grid">
           {heroMeta.map((m) => (
-            <div class="meta-cell">
+            <div class="meta-cell" style={`border-top:2px solid ${m.color};`}>
               <div class="meta-cell__key">{m.key}</div>
               <div class="meta-cell__val">{m.val}</div>
             </div>
@@ -134,10 +219,10 @@ const navLinks = [
       <!-- signal-path legend -->
       <Panel reticle meta="SIGNAL PATH" padding="24px">
         <div class="legend__label">Follow the data</div>
-        <div class="legend__intro">Each chapter is a station along the wire.</div>
+        <div class="legend__intro">A hand turns the wheel on one end, a car moves on a screen at the other. Every stop in between is a chapter.</div>
         {signalPath.map((s, i) => (
           <a href={s.href} class:list={["legend__row", "legend__row--link", i === signalPath.length - 1 && "legend__row--last"]}>
-            <span class="legend__n">{s.n}</span>
+            <span class="legend__n" style={`color:${s.color};`}>{s.n}</span>
             <span class="legend__detail">
               <span class="legend__title">{s.title}</span>
               <span class="legend__note">{s.note}</span>
@@ -153,295 +238,563 @@ const navLinks = [
     </div>
   </section>
 
-  <!-- ── PROLOGUE ─────────────────────────────────────────────────────── -->
+  <!-- ── 00 · THE BRIEF ───────────────────────────────────────────────── -->
   <section class="section">
     <div class="measure">
       <SectionDivider />
-      <div class="problem">
-        <div class="problem__aside">
-          <div class="problem__station">Station 00</div>
-          <h2 class="problem__title">The Premise</h2>
+      <div class="brief">
+        <div class="brief__aside">
+          <div class="brief__num">00</div>
+          <h2 class="brief__title">The brief</h2>
         </div>
         <div>
-          <p class="problem__lead">
-            I wanted to find out whether two people could really <span class="ink">race each other</span>
-            on hardware I'd built myself — physics that felt honest, steering that felt instant, and a
-            world generated fresh every run.
+          <p class="brief__lead">
+            Two players in separate seats, each with their own wheel, pedals, and monitor, racing
+            the same track against each other. Everything real-time lives on a
+            <span class="ink">central TM4C123GXL</span> acting as the game engine, and a
+            <span class="ink">Raspberry Pi 5</span> sits between it and the two screens, doing nothing but drawing.
           </p>
-          <p class="problem__body">
-            The spark was FSAE — a prototype rig that could one day inform real driver-feel work. But the
-            honest motivation was simpler: I wanted to build something genuinely fun, from the silicon up,
-            and understand every layer in between. No game engine off the shelf. No dev board doing the hard
-            part. Six weeks, under a hundred dollars, and a hard rule — if it moved data, I wrote it.
+          <p class="prose" style="margin-top:16px;">
+            The wish list was short and we held ourselves to it. If it moved data, we wrote it. No
+            off-the-shelf game engine, no dev board quietly doing the hard part.
           </p>
+          <div class="wishlist">
+            {brief.map((b) => (
+              <div class="wishlist__row">
+                <span class="wishlist__n" style={`color:${b.color};`}>{b.n}</span>
+                <div class="wishlist__text">{b.text}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── CH 01 · INPUT ────────────────────────────────────────────────── -->
-  <section id="ch-input" class="section">
+  <!-- ── 01 · COMMUNICATION & SENSING ─────────────────────────────────── -->
+  <section id="comms" class="section">
     <div class="measure">
-      <SectionDivider />
-      <Station station="Station 01 · Input" title="The Cockpit">
-        <p class="station__lead">
-          Where a human hand becomes a number. Everything downstream is just this moment, faithfully relayed.
-        </p>
-
-        <div class="split">
-          <div>
-            <p class="prose">
-              The wheel had to feel like a wheel — and come apart in seconds. I designed a
-              <span class="ink"> detachable steering column</span> in OnShape so the whole rig stayed light,
-              packable, and serviceable, with a gyroscope riding behind the hub to read rotation directly.
-            </p>
-            <p class="prose">
-              Every part was shaped to print clean and assemble without a jig — because "under $100" only
-              works if the fabrication is a 3D printer and a patient evening.
-            </p>
-          </div>
-          <EmbedFigure
-            kicker="EMBED · CAD RENDER"
-            title="Steering-wheel assembly"
-            subtitle="OnShape · isometric + exploded view"
-            fig="FIG.01"
-            ratio="4 / 3"
-          />
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line"></div>
         </div>
+        <div class="chapter__body">
+          <div class="chapter__num">01</div>
+          <h2 class="chapter__title">Communication &amp; sensing</h2>
+          <p class="chapter__lead">The first real decision was how all the pieces would talk to each other. Get this wrong and nothing else matters.</p>
 
-        <div class="split split--center split--flip">
-          <EmbedFigure
-            kicker="EMBED · CAD RENDER"
-            title="Adjustable pedal box"
-            subtitle="OnShape · brake + throttle, exploded view"
-            fig="FIG.02"
-            ratio="4 / 3"
-          />
-          <div>
-            <p class="prose">
-              The pedals were the fussiest mechanical problem. Drivers disagree about brake angle and how
-              hard a throttle should fight back, so the box had to be <span class="ink">adjustable</span> —
-              pedal angle, travel, and resistance all tunable.
-            </p>
-            <p class="prose">
-              I constrained the geometry <span class="ink">one degree of freedom at a time</span>, locking
-              each axis only once it behaved, so adjustability never collapsed into a wobbly mess. The result
-              holds firm under a hard stomp and still prints in parts that snap together.
-            </p>
-          </div>
-        </div>
-
-        <div class="decision">
-          <Panel accentLeft meta="DECISION · STEERING SENSE" padding="22px 24px">
-            <div class="decision__kicker">Why a fixed-range IMU</div>
-            <h3 class="decision__title">Adafruit LSM6DS3TR-C over a raw-gyro pipeline</h3>
-            <div class="decision__verdict">
-              <span class="decision__pick">LSM6DS3TR-C</span>
-              <span class="decision__vs">vs raw-gyro + Kalman filter</span>
-            </div>
-            <p class="decision__body">
-              It reads steering angle accurately with a driver simple enough to trust on day one. The trade:
-              its range caps turning at <span class="ink">−90° to +90°</span> — but skipping raw-gyro
-              integration and a stability filter bought back days I owed to writing the engine from scratch.
-            </p>
-          </Panel>
-        </div>
-      </Station>
-    </div>
-  </section>
-
-  <!-- ── CH 02 · SENSE ────────────────────────────────────────────────── -->
-  <section id="ch-sense" class="section">
-    <div class="measure">
-      <Station station="Station 02 · Sense" title="The Board">
-        <p class="station__lead">
-          A nervous system etched in copper. Each wheel carries its own brain, and turns motion into bytes.
-        </p>
-
-        <div class="split">
-          <div>
-            <p class="prose">
-              Behind every wheel sits a custom PCB built around a <span class="ink">TM4C123</span>. I laid
-              out the whole board: the gyroscope, rotary encoders, buttons and switches for the driver, an
-              LCD and status LED, a speaker for feedback, USB-C power in, and the CAN transceiver out.
-            </p>
-            <p class="prose">
-              It's the translation layer — analog twists and presses in, clean digital frames out. Getting
-              the footprints and routing right here is what let the firmware upstairs stay simple.
-            </p>
-          </div>
-          <EmbedFigure
-            kicker="EMBED · PCB IMAGE"
-            title="Steering-controller PCB"
-            subtitle="Layout / Gerber top — annotate the blocks"
-            fig="FIG.03"
-            ratio="4 / 3"
-          />
-        </div>
-
-        <div class="cmap">
-          {componentMap.map((c) => (
-            <div class="cmap__cell">
-              <span class="cmap__key">{c.key}</span>
-              <div class="cmap__val">{c.val}</div>
-            </div>
-          ))}
-        </div>
-
-        <div class="decision">
-          <Panel accentLeft meta="DECISION · POWER" padding="22px 24px">
-            <div class="decision__kicker">Tethered, but trustworthy</div>
-            <h3 class="decision__title">USB-C over an onboard battery</h3>
-            <div class="decision__verdict">
-              <span class="decision__pick">USB-C</span>
-              <span class="decision__vs">vs battery-powered</span>
-            </div>
-            <p class="decision__body">
-              Battery meant freedom to roam but a real time-cost and finite runtime mid-race. USB-C gave the
-              most reliable, repeatable delivery for demos — and a power bank drops in the moment we ever want
-              to cut the cord.
-            </p>
-          </Panel>
-        </div>
-      </Station>
-    </div>
-  </section>
-
-  <!-- ── CH 03 · TRANSMIT ─────────────────────────────────────────────── -->
-  <section id="ch-transmit" class="section">
-    <div class="measure">
-      <Station station="Station 03 · Transmit" title="The Bus">
-        <p class="station__lead">
-          One pair of wires. A million bits a second. The moment steering becomes a shared truth.
-        </p>
-
-        <p class="prose prose--wide prose--gap">
-          Two cockpits and a central game engine all need to talk at once, fast, without ever blocking each
-          other. So I wrote <span class="ink">CAN drivers from the register up</span>, ran the bus at
-          <span class="ink"> 1 Mbps</span>, and built non-blocking three-way communication between both
-          steering controllers and the engine through an MCP2551 transceiver.
-        </p>
-
-        <div class="decision">
-          <Panel accentLeft meta="DECISION · PROTOCOL" padding="22px 24px">
-            <div class="decision__kicker">The first real fork in the road</div>
-            <h3 class="decision__title">CAN over SPI, I²C, or an ESP32 link</h3>
-            <div class="decision__verdict">
-              <span class="decision__pick">CAN</span>
-              <span class="decision__vs">vs SPI · I²C · ESP32</span>
-            </div>
-            <p class="decision__body">
-              I needed fast, reliable comms over a harness long enough to span two seats. CAN's differential
-              signalling and built-in arbitration shrugs off the electrical noise of a desk full of motors and
-              wires. The trade: less raw write-speed flexibility — paid back many times over in data integrity
-              and deterministic behaviour when the bus is busy.
-            </p>
-          </Panel>
-        </div>
-
-        <div class="listing">
-          <CodeListing
-            file="can_driver.c"
-            listing="LST.01 · C"
-            lines={canInit}
-            caption="Replace with your actual driver excerpt — bit-timing + transceiver bring-up."
-          />
-        </div>
-
-        <!-- war story -->
-        <div class="warstory">
-          <div class="warstory__head">
-            <Eyebrow color="accent">Roadblock</Eyebrow>
-            <span class="chip-resolved">
-              <span class="chip-resolved__dot"></span>
-              <span class="chip-resolved__text">Resolved · bus stable</span>
-            </span>
-          </div>
-          <h3 class="warstory__title">The bus that lied</h3>
           <p class="prose prose--wide prose--gap">
-            Then the bus started lying. Frames arrived intact one moment and corrupted the next — steering
-            jitter, phantom inputs, game state drifting out from under both players. Nothing in the code looked
-            wrong, which is the worst kind of bug.
+            Whatever we picked had to be fast, because slow data means a sluggish game and latency
+            is the one thing a racer will feel instantly. It had to hold its integrity over at
+            least a meter of wire per link. And it had to be simple enough in both hardware and
+            software that we were not sinking the whole timeline into plumbing instead of the
+            game. It also had to be reliable. This is a live race, so one dropped frame of
+            steering is a driver swerving into a wall they never touched. We narrowed it to three
+            real options and scored them.
           </p>
 
-          <div class="split split--center">
-            <p class="prose">
-              So I stopped trusting the code and went to the wire. I put a
-              <span class="ink"> logic analyzer on individual pins</span> and watched the transceiver lines in
-              real time, hunting for the exact instant good data turned to garbage.
-            </p>
-            <EmbedFigure
-              kicker="EMBED · CAPTURE"
-              title="Logic-analyzer trace"
-              subtitle="CANH / CANL — clean frames, post-fix"
-              fig="FIG.04"
-              ratio="16 / 10"
-            />
+          <div class="matrix">
+            <div class="matrix__bar">
+              <span><span class="matrix__bar-faint">▸ DECISION MATRIX ·</span> comms protocol</span>
+              <span class="matrix__bar-faint" style="letter-spacing:0.12em;">TOTAL = Σ(SCORE × WEIGHT)</span>
+            </div>
+            <div class="matrix__scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Criteria</th>
+                    <th>Weight</th>
+                    <th class="center win-col">CAN bus</th>
+                    <th class="center">ESP32 MQTT</th>
+                    <th class="center">SPI</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Distance (span the rig)</td><td class="weight">×3</td><td class="center">4</td><td class="center winner">5</td><td class="center">1</td></tr>
+                  <tr><td>Speed / low latency</td><td class="weight">×3</td><td class="center">4</td><td class="center">2</td><td class="center winner">5</td></tr>
+                  <tr><td>Reliability / noise immunity</td><td class="weight">×3</td><td class="center winner">5</td><td class="center">3</td><td class="center">2</td></tr>
+                  <tr><td>Hardware complexity / cabling</td><td class="weight">×1</td><td class="center">2</td><td class="center">3</td><td class="center winner">4</td></tr>
+                  <tr><td>Software complexity</td><td class="weight">×2</td><td class="center">3</td><td class="center">2</td><td class="center winner">4</td></tr>
+                  <tr class="total-row">
+                    <td>Weighted total</td><td></td>
+                    <td class="total-win">47</td><td class="total-other">37</td><td class="total-other">36</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <p class="prose prose--wide prose--gap">
-            It was two faults wearing one mask. First, the physical connections were marginal — so I reworked
-            them into <span class="ink">reliable, strain-tolerant joints</span>. Second, the gyroscope's
-            bring-up was stepping on the CAN driver's initialization. Reordering the boot so the IMU
-            <span class="ink"> settles before the bus comes up</span> let CAN initialize clean. The bus went
-            quiet, then honest.
+            SPI was the fastest on paper, but it leans on a synchronous clock that falls apart
+            after a couple of feet thanks to parasitic inductance and capacitance. Perfect for a
+            short on-board hop, useless for spanning a whole rig. MQTT over an ESP32 killed the
+            wiring entirely and could even let a wheel go fully wireless, but it traded that for
+            unpredictable network latency and jitter, which is exactly what you cannot have in a
+            head-to-head race.
           </p>
+
+          <div class="keydecision">
+            <div class="keydecision__kicker">Key decision</div>
+            <div class="keydecision__title">We put the whole rig on a <span class="hl">CAN bus</span>.</div>
+            <p class="keydecision__body">
+              Two wires, differential signaling that shrugs off the noise from a desk full of
+              motors, and built-in arbitration so every node can talk without stepping on the
+              others. If it is good enough to run a real car, it is good enough for our sim. For
+              transceivers we used the <span class="ink">MCP2551</span>, mostly because it was
+              already on the shelf and cost us nothing.
+            </p>
+          </div>
+
+          <div class="cards2">
+            <div style="--accent-line:rgba(62,141,160,0.4);">
+              <Panel accentLeft padding="22px 24px">
+                <div class="card__kicker" style="color:var(--signal-400);">The IMU · steering sense</div>
+                <h3 class="card__title">Adafruit LSM6DS3TR-C</h3>
+                <p class="card__body">This one barely counted as a decision. A 6-DoF accelerometer and gyro on a breakout that talks over SPI and, best of all, hands back an angle without us writing any raw-data conversion. It solved steering immediately and it is a chip I will happily reuse on the next project.</p>
+              </Panel>
+            </div>
+            <div style="--accent-line:rgba(111,194,160,0.4);">
+              <Panel accentLeft padding="22px 24px">
+                <div class="card__kicker" style="color:var(--status-nominal);">Pedal sense</div>
+                <h3 class="card__title">Rotary encoder, not force</h3>
+                <p class="card__body">You can measure the force on a pedal or the angle it travels. I went with angle, using an encoder mounted coaxially with the pedal. It made the mechanical side a little trickier, but it was available immediately and made everything downstream simpler, which was the trade I wanted.</p>
+              </Panel>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02 · CIRCUIT & PCB ───────────────────────────────────────────── -->
+  <section id="pcb" class="section accent-teal">
+    <div class="measure">
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line"></div>
+        </div>
+        <div class="chapter__body">
+          <div class="chapter__num">02</div>
+          <h2 class="chapter__title">Circuit &amp; PCB</h2>
+          <p class="chapter__lead">One custom board per wheel, carrying everything the driver touches and turning it into something the TM4C can read.</p>
+
+          <div class="split">
+            <div>
+              <p class="prose">With the parts chosen, the whole circuit had to come together so the TM4C could actually interface with each of them. A lot of this was just living in datasheets, ours and each component's, making sure every chip landed on the right pin. The schematic came together in <span class="ink">KiCAD</span>.</p>
+              <p class="prose" style="margin-top:16px;">The board had real constraints. The LCD had to sit dead center to work as the driver display, the whole thing had to stay compact enough to mount on the wheel, and the buttons and encoders had to end up somewhere a driver could reach at speed. None of it was hard alone, but we knew we would be debugging this board, so we designed with that in mind.</p>
+            </div>
+            <EmbedFigure kicker="EMBED · SCHEMATIC" title="KiCAD schematic" subtitle="drop your schematic export here" fig="FIG.01" ratio="4 / 3" />
+          </div>
+
+          <div class="split split--center split--flip">
+            <EmbedFigure kicker="EMBED · PCB LAYOUT" title="2-layer board layout" subtitle="Gerber top / render" fig="FIG.02" ratio="4 / 3" />
+            <div>
+              <p class="prose">Layout comes down to the same three things every guide repeats: cut cross-talk, cut EMI, do not waste space. On a <span class="ink">2-layer board</span> that mostly meant keeping the ground plane from forming loops.</p>
+              <p class="prose" style="margin-top:16px;">I stuck to a simple rule to keep traces from fighting each other: <span class="ink">vertical runs on the top layer, horizontal on the bottom</span>. Boring, but it works, and it makes the board far easier to follow when you are the one probing it later.</p>
+            </div>
+          </div>
+
+          <div class="cmap">
+            {componentMap.map((c) => (
+              <div class="cmap__cell">
+                <span class="cmap__key" style={`color:${c.color};`}>{c.key}</span>
+                <div class="cmap__val">{c.val}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03 · VEHICLE DYNAMICS ────────────────────────────────────────── -->
+  <section id="dynamics" class="section">
+    <div class="measure">
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line"></div>
+        </div>
+        <div class="chapter__body">
+          <div class="chapter__num">03</div>
+          <h2 class="chapter__title">Vehicle dynamics</h2>
+          <p class="chapter__lead">The single source of truth for the whole game, running fixed-point physics on the central TM4C.</p>
+
+          <p class="prose prose--wide prose--gap">
+            Inputs arrive over CAN from each cockpit. The wheel node integrates its gyro into a
+            heading and sends that, the pedal node sends accelerator and brake encoder counts
+            plus the button states. The engine takes those, steps the car physics forward on a
+            fixed timestep, and ships the result over SPI to the Raspberry Pi. That split was
+            deliberate: <span class="ink">the microcontroller owns everything real-time and
+            deterministic, the Pi owns everything pixel-heavy.</span>
+          </p>
+
+          <p class="prose prose--wide prose--gap">
+            The car follows a <span class="ink">kinematic bicycle model</span>, the standard
+            low-speed approximation that collapses the four wheels into two. Position advances
+            along the heading, and the heading itself turns at a rate set by speed, steer angle,
+            and wheelbase:
+          </p>
+
+          <figure class="eqnfig">
+            <figcaption class="eqnfig__bar">EQ.01 · Kinematic bicycle model</figcaption>
+            <div class="eqnfig__body">
+              <div class="eqnfig__row"><span><i>ẋ</i> = <i>v</i> cos&#8202;<i>ψ</i></span><span class="eqnfig__comma">,</span><span><i>ẏ</i> = <i>v</i> sin&#8202;<i>ψ</i></span></div>
+              <div class="eqnfig__row"><span class="hl"><i>ψ̇</i> = <span class="frac"><span>v</span><span>L</span></span> tan&#8202;<i>δ</i></span><span class="eqnfig__note">// yaw rate rises with speed</span></div>
+              <div class="eqnfig__row"><span><i>v</i><sub>t+1</sub> = (<i>v</i><sub>t</sub> + <i>a</i> − <i>b</i>) · <i>μ</i></span><span class="eqnfig__note">// μ = 0.99 coast-down</span></div>
+            </div>
+            <div class="eqnfig__legend"><i>v</i> speed · <i>ψ</i> heading · <i>δ</i> steer angle · <i>L</i> wheelbase · <i>a,b</i> accel/brake · <i>μ</i> friction</div>
+          </figure>
+
+          <p class="prose prose--wide prose--gap">
+            The important behavior falls right out of that middle equation. Because yaw rate
+            scales with <i class="ink">v</i>, the same wheel angle carves a wider arc the faster
+            you drive, exactly like a real car. Turn-in at a crawl is sharp, turn-in at top speed
+            is lazy, and none of that had to be special-cased.
+          </p>
+
+          <div class="keydecision">
+            <div class="keydecision__kicker">Key decision</div>
+            <div class="keydecision__title">No floats anywhere. <span class="hl">1.0 is stored as 1000.</span></div>
+            <p class="keydecision__body">
+              Part of it was forced on us: the CAN driver needs the TM4C's floating-point
+              hardware turned off, so software floats would have crawled. But it is also just the
+              right call for a real-time engine. Every multiply and divide takes a known number of
+              cycles, results are bit-for-bit repeatable, and no rounding drift piles up in the
+              car's position frame after frame. Trig is a 360-entry sine and cosine table, scaled
+              by 1000, that the integer heading indexes straight into.
+            </p>
+          </div>
 
           <div class="listing">
-            <CodeListing
-              file="system_bringup.c"
-              listing="LST.02 · C"
-              lines={bringup}
-              caption="The fix that mattered most — init ordering, not init logic."
-            />
+            <CodeListing file="game_engine.c / update()" listing="LST.01 · C" lines={gameEngine} />
+          </div>
+
+          <div class="split split--top" style="margin-top:34px;">
+            <div>
+              <div class="card__kicker" style="color:var(--text-accent);">Handling the walls</div>
+              <p class="prose" style="margin-top:12px;">Track walls are line segments. Every frame the engine projects the car's center onto each segment to find the closest point, all in fixed-point dot products, and compares squared distances so it never pays for a square root unless something actually hit.</p>
+              <p class="prose" style="margin-top:16px;">On a hit the velocity is split into a normal and a tangential part. The normal part reflects and scales by a bounce factor <i class="ink">e</i>, the tangential part is kept but damped. A glancing hit scrubs a little speed and slides you along the barrier, a head-on hit bounces you off.</p>
+              <figure class="eqnfig" style="margin-top:18px;">
+                <figcaption class="eqnfig__bar">EQ.02 · Collision response</figcaption>
+                <div class="eqnfig__body eqnfig__body--center"><span><i>v</i>′ = <i>v</i> − (1 + <i>e</i>)(<i>v</i> · <i>n̂</i>) <i>n̂</i></span></div>
+                <div class="eqnfig__legend"><i>n̂</i> wall normal · <i>e</i> = 0.3 restitution · tangent damped to 90%</div>
+              </figure>
+            </div>
+            <CodeListing file="handleCollisions()" listing="LST.02 · C" lines={handleCollisions} />
           </div>
         </div>
-      </Station>
+      </div>
     </div>
   </section>
 
-  <!-- ── CH 04 · RENDER ───────────────────────────────────────────────── -->
-  <section id="ch-render" class="section">
+  <!-- ── 04 · INPUT ACQUISITION ───────────────────────────────────────── -->
+  <section id="inputs" class="section accent-teal">
     <div class="measure">
-      <Station station="Station 04 · Render" title="The Engine" fade>
-        <p class="station__lead">
-          Where the signal finally becomes a world — drawn from scratch, in real time.
-        </p>
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line"></div>
+        </div>
+        <div class="chapter__body">
+          <div class="chapter__num">04</div>
+          <h2 class="chapter__title">Input acquisition</h2>
+          <p class="chapter__lead">Turning a hand on a wheel and a foot on a pedal into clean numbers the engine can trust.</p>
 
-        <p class="prose prose--wide prose--gap">
-          Frames land at the central TM4C, which runs the physics, collisions, game state, and a fresh
-          procedurally generated track each round. It hands the result to a <span class="ink">Raspberry Pi 5</span>,
-          which renders and drives two monitors — one view per driver, racing the same world in real time.
-        </p>
-
-        <div class="decision">
-          <Panel accentLeft meta="DECISION · ENGINE" padding="22px 24px">
-            <div class="decision__kicker">The most expensive, most rewarding call</div>
-            <h3 class="decision__title">A from-scratch renderer over Unity</h3>
-            <div class="decision__verdict">
-              <span class="decision__pick">From scratch</span>
-              <span class="decision__vs">vs Unity</span>
+          <div class="split split--top">
+            <div>
+              <div class="card__kicker" style="color:var(--text-accent);">Steering</div>
+              <p class="prose" style="margin-top:12px;">Steering comes off the LSM6DS3TR-C over a 2 MHz SPI bus, with a <span class="ink">WHO_AM_I</span> check at startup so we never trust a reading until we know the chip is answering. A hardware timer samples the Z-axis rate every 10 ms, converts it with the sensor's 8.75 mdps/LSB sensitivity, and integrates it into a running yaw in millidegrees.</p>
+              <p class="prose" style="margin-top:16px;">Heading is just the accumulated integral of that rate, minus the bias we measure at startup:</p>
+              <figure class="eqnfig" style="margin-top:16px;">
+                <figcaption class="eqnfig__bar">EQ.03 · Gyro integration</figcaption>
+                <div class="eqnfig__body eqnfig__body--center eqnfig__body--tight"><span><i>ψ</i> = Σ (<i>ω</i><sub>z</sub> − <i>b</i>) · <i>Δt</i></span><span class="eqnfig__note" style="margin-left:14px;">b = mean of 500 still samples</span></div>
+              </figure>
+              <p class="prose" style="margin-top:16px;">Without subtracting <i class="ink">b</i>, drift slowly turns the wheel on its own. The yaw also saturates in software at full lock so it acts like an end-stop, with a button that re-zeros the heading if drift creeps in mid-race.</p>
             </div>
-            <p class="decision__body">
-              I wrote the renderer myself — ray tracing included — for the learning, the full control, and the
-              rendering-speed headroom real-time racing demands. The trade: less time for gameplay polish and
-              per-frame visual fidelity. What it bought: a pipeline I understood completely, fast enough to put
-              two cars on screen at once.
-            </p>
-          </Panel>
-        </div>
+            <div>
+              <div class="card__kicker" style="color:var(--status-nominal);">Pedals + buttons</div>
+              <p class="prose" style="margin-top:12px;">The encoders do not just count edges. Every edge interrupt folds the previous and current two-bit states into a 4-bit code and looks it up against the valid Gray-code transitions. Clockwise bumps a delta up, counterclockwise bumps it down, and anything invalid gets thrown out.</p>
+              <p class="prose" style="margin-top:16px;">A detent only counts once the encoder settles back to rest with a consistent delta. That gives us contact-bounce rejection <span class="ink">entirely in software, no RC filtering</span>, and it cannot miscount from noise, because noise just produces invalid codes the table ignores.</p>
+            </div>
+          </div>
 
-        <div class="video">
-          <EmbedFigure
-            kicker="EMBED · GAMEPLAY VIDEO"
-            title="Prototype · live multiplayer race"
-            subtitle="Drop a clip or an embed link here"
-            fig="FIG.05"
-            ratio="16 / 9"
-            video
-          />
+          <div class="listing" style="margin-top:26px;">
+            <CodeListing file="rotary_encoder.c / EncoderRead()" listing="LST.03 · C" lines={encoderRead} />
+          </div>
         </div>
-      </Station>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 05 · PHYSICS-TO-PIXELS ───────────────────────────────────────── -->
+  <section id="handoff" class="section accent-amber">
+    <div class="measure">
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line"></div>
+        </div>
+        <div class="chapter__body">
+          <div class="chapter__num">05</div>
+          <h2 class="chapter__title">The physics-to-pixels handoff</h2>
+          <p class="chapter__lead">The one short, on-board hop where SPI wins. This is where physics becomes pixels.</p>
+
+          <p class="prose prose--wide prose--gap">
+            The link from the engine to the Pi is SPI, with the Pi as master and the TM4C as
+            slave, exactly the short on-board hop where SPI's speed wins and its distance problem
+            never shows up. Rather than fight the hardware's slave mode, we did the slave
+            <span class="ink"> in software</span>: the TM4C watches the Pi's clock and
+            chip-select lines on GPIO and shifts each byte out bit by bit on the clock edges it
+            sees. That gave us full visibility into byte framing during bring-up, since every
+            edge is steppable on a logic analyzer, and we bumped the data-out pin to 8 mA drive
+            strength to keep the edges clean.
+          </p>
+          <p class="prose prose--wide" style="margin-top:16px;">
+            The framing is deliberately defensive. The Pi opens each exchange with a
+            <span class="ink"> 0xFF sync byte</span>, then the TM4C answers with a fixed 8-byte
+            packet: a start sentinel 'S', the 16-bit position, heading, and speed, and a stop
+            sentinel 'X'. Because every packet is bracketed by known bytes, the Pi can validate
+            it, drop anything corrupted, and resync mid-stream instead of quietly drawing from
+            misaligned bytes. We tested the whole scheme over UART against a Python parser first,
+            so by the time we brought up the real SPI link the only unknowns left were electrical.
+          </p>
+
+          <div class="packet">
+            <div class="packet__cell packet__cell--edge"><span class="packet__label" style="color:var(--status-caution);">S</span><span class="packet__sub">START</span></div>
+            <div class="packet__cell"><span class="packet__label" style="color:var(--ember-400);">POS</span><span class="packet__sub">16-BIT</span></div>
+            <div class="packet__cell"><span class="packet__label" style="color:var(--signal-400);">ANGLE</span><span class="packet__sub">16-BIT</span></div>
+            <div class="packet__cell"><span class="packet__label" style="color:var(--status-nominal);">SPEED</span><span class="packet__sub">16-BIT</span></div>
+            <div class="packet__cell packet__cell--edge"><span class="packet__label" style="color:var(--status-caution);">X</span><span class="packet__sub">STOP</span></div>
+          </div>
+
+          <div class="listing" style="margin-top:26px;">
+            <CodeListing
+              file="spi.c / SPI_SendTM4C()"
+              listing="LST.04 · C"
+              lines={spiSend}
+              caption="Bit-banged on purpose, so every clock edge is visible and steppable while bringing the link up."
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 06 · REAL-TIME RENDERING ─────────────────────────────────────── -->
+  <section id="rendering" class="section accent-teal">
+    <div class="measure">
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line"></div>
+        </div>
+        <div class="chapter__body">
+          <div class="chapter__num">06</div>
+          <h2 class="chapter__title">Real-time rendering</h2>
+          <p class="chapter__lead">Where the signal finally becomes a world, drawn from scratch on the Raspberry Pi 5.</p>
+
+          <p class="prose prose--wide prose--gap">
+            The renderer is split across two languages on purpose. All the per-pixel work is one
+            C file compiled to a shared library, and Python with Pygame handles everything else:
+            opening the display, polling SPI for fresh game state, and calling into the C through
+            ctypes with a pointer to the frame buffer. The math is simple. At 1280x720 the
+            renderer fills <span class="ink">921,600 pixels every frame</span>, which a Python
+            per-pixel loop cannot come close to doing in real time, while C fills the same buffer
+            with room to spare.
+          </p>
+
+          <div class="cmdline"><span class="cmdline__prompt">$</span> gcc -O2 -shared -fPIC -o raycaster.so raycaster.c -lm</div>
+
+          <div class="keydecision">
+            <div class="keydecision__kicker">Key decision</div>
+            <div class="keydecision__title"><span class="hl">Raycasting</span>, not real 3D.</div>
+            <p class="keydecision__body">
+              The driver view uses the same trick behind corridor games like Wolfenstein 3D,
+              which buys a convincing first-person view for a fraction of the cost of true 3D.
+              The track is a <span class="ink">16×10 grid of 64-unit cells</span>, each one open,
+              a grey wall, or a red barrier. For every one of the 1280 columns on screen the
+              renderer casts one ray, sweeping across a 60-degree field of view, and marches it to
+              each grid line it crosses.
+            </p>
+          </div>
+
+          <p class="prose prose--wide">
+            Two equations carry the whole look. Each ray's angle is offset from the player's
+            heading across the field of view, and the sampled distance gets corrected to the
+            <span class="ink"> perpendicular</span> distance so flat walls do not bow outward at
+            the screen edges. Wall height is then simply inverse to that distance, which is the
+            1/<i class="ink">d</i> falloff of a real perspective projection:
+          </p>
+
+          <figure class="eqnfig" style="margin-top:22px;">
+            <figcaption class="eqnfig__bar">EQ.04 · Raycast projection</figcaption>
+            <div class="eqnfig__body">
+              <div class="eqnfig__row"><span><i>θ</i><sub>x</sub> = <i>θ</i> − FOV/2 + <i>x</i> · <span class="frac"><span>FOV</span><span>W</span></span></span><span class="eqnfig__note">// ray per column x</span></div>
+              <div class="eqnfig__row"><span class="hl-signal"><i>d</i><sub>⊥</sub> = <i>d</i> · cos&#8202;(<i>θ</i><sub>x</sub> − <i>θ</i>)</span><span class="eqnfig__note">// fisheye correction</span></div>
+              <div class="eqnfig__row"><span class="hl"><i>h</i> = <span class="frac"><span><i>h</i><sub>wall</sub> · <i>p</i></span><span><i>d</i><sub>⊥</sub></span></span></span><span class="eqnfig__note">// 1/d perspective falloff</span></div>
+            </div>
+            <div class="eqnfig__legend"><i>θ</i> heading · <i>W</i> screen width · <i>d</i> ray distance · <i>d⊥</i> perpendicular dist · <i>p</i> projection scale</div>
+          </figure>
+
+          <div class="listing" style="margin-top:24px;">
+            <CodeListing file="raycaster.c" listing="LST.05 · C · abbreviated" lines={raycaster} />
+          </div>
+
+          <p class="prose prose--wide prose--gap">
+            Everything that is not a wall gets painted procedurally, with no textures at all. The
+            top half is a sky gradient. The bottom half is a perspective road, where each row
+            below the horizon converges toward a vanishing point. That banding is not decoration,
+            it is the entire sense of speed. With no textures, the only way you feel motion is
+            watching those bands sweep under the car, and because every band's phase is tied to
+            world position, the ground flows at a rate set by your actual speed. That is what
+            makes braking and accelerating feel like they matter.
+          </p>
+
+          <div class="tiles">
+            {frameTiles.map((t) => (
+              <div class="tiles__cell" style={`border-top-color:${t.color};`}>
+                <span class="tiles__key" style={`color:${t.color};`}>{t.key}</span>
+                <div class="tiles__val">{t.val}</div>
+              </div>
+            ))}
+          </div>
+
+          <div class="cards2" style="margin-top:26px;">
+            <div style="--accent-line:rgba(62,141,160,0.4);">
+              <Panel padding="22px 24px">
+                <div class="card__kicker" style="color:var(--signal-400);">One Pi, two screens</div>
+                <h3 class="card__title">Two monitors, one surface</h3>
+                <p class="card__body">Both displays run off the one Pi over dual HDMI. Instead of two windows fighting to stay in sync, we treat the monitors as a single wide display: one surface spans both, the renderer runs once per driver, each result blits to its half, and one flip presents both. One loop, one present, so the two views can never drift apart.</p>
+              </Panel>
+            </div>
+            <div style="--accent-line:rgba(111,194,160,0.4);">
+              <Panel padding="22px 24px">
+                <div class="card__kicker" style="color:var(--status-nominal);">One map, everywhere</div>
+                <h3 class="card__title">A single source of truth</h3>
+                <p class="card__body">The exact same track grid is compiled into the wheel node's firmware, where it backs the little map on the wheel-mounted LCD. So the walls the physics collides against, the walls the renderer draws, and the outline on the driver display can never disagree. Change the track in one array and it propagates everywhere.</p>
+              </Panel>
+            </div>
+          </div>
+
+          <div class="video">
+            <EmbedFigure kicker="EMBED · GAMEPLAY VIDEO" title="Live two-player race" subtitle="drop the race clip or embed link here" fig="FIG.03" ratio="16 / 9" video />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 07 · MECHANICAL DESIGN ───────────────────────────────────────── -->
+  <section id="mechanical" class="section accent-amber">
+    <div class="measure">
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line"></div>
+        </div>
+        <div class="chapter__body">
+          <div class="chapter__num">07</div>
+          <h2 class="chapter__title">Mechanical design</h2>
+          <p class="chapter__lead">Two things the driver actually holds: the pedal box and the wheel. Both designed in OnShape.</p>
+
+          <div class="split">
+            <div>
+              <div class="card__kicker" style="color:var(--text-accent);">The pedals</div>
+              <p class="prose" style="margin-top:12px;">The pedals were the fussier of the two. The whole assembly had to be constrained so the pedal had a <span class="ink">spring-actuated restoring force</span> pushing back on the driver, stay adjustable for driver preference, and still let me measure its travel to send to the MCU.</p>
+              <p class="prose" style="margin-top:16px;">What came out is a custom pedal with a rotary encoder reading its angle change, which is just how hard the driver is pressing. The trick was constraining only a few degrees of freedom at a time, part by part, so the thing stays easy to adjust and easy to reason about instead of turning into a wobbly mess.</p>
+            </div>
+            <EmbedFigure kicker="EMBED · CAD RENDER" title="Adjustable pedal box" subtitle="OnShape · exploded + assembled" fig="FIG.04" ratio="4 / 3" />
+          </div>
+
+          <div class="split split--center split--flip">
+            <EmbedFigure kicker="EMBED · CAD RENDER" title="Steering-wheel assembly" subtitle="OnShape · gyro mount + hub" fig="FIG.05" ratio="4 / 3" />
+            <div>
+              <div class="card__kicker" style="color:var(--text-accent);">The wheel</div>
+              <p class="prose" style="margin-top:12px;">The wheel was the simpler design, but the driver experience still came first. It had to hold the gyroscope properly, mount cleanly to the table, and route the button wiring without looking like a bird's nest.</p>
+              <p class="prose" style="margin-top:16px;">The one real question was <span class="ink">bushing versus bearing</span> at the hub, which came down to how much play and friction I was willing to accept in the rotation. A bearing feels better and costs more room and money, a bushing is simpler and a little stickier.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 08 · INTEGRATION & DEBUG ─────────────────────────────────────── -->
+  <section id="debug" class="section accent-red">
+    <div class="measure">
+      <div class="chapter">
+        <div class="chapter__rail">
+          <div class="chapter__dot"></div>
+          <div class="chapter__line" style="background:linear-gradient(rgba(229,96,77,0.4), rgba(111,194,160,0.4));"></div>
+        </div>
+        <div class="chapter__body">
+          <div class="chapter__num">08</div>
+          <h2 class="chapter__title">Integration &amp; debug</h2>
+          <p class="chapter__lead">Everything worked alone. Then we put it together.</p>
+
+          <div class="cards2">
+            <div style="--accent-line:rgba(111,194,160,0.4);">
+              <Panel accentLeft padding="22px 24px">
+                <div class="card__kicker" style="color:var(--status-nominal);">Test · CAN</div>
+                <h3 class="card__title">Start as basic as it gets</h3>
+                <p class="card__body">We began by sending <span class="ink">[1, 2, 3, 4]</span> from one microcontroller to another. It came through clean across two CAN transceivers, and that was enough to trust the physical layer before we built anything real on top of it.</p>
+              </Panel>
+            </div>
+            <div style="--accent-line:rgba(111,194,160,0.4);">
+              <Panel accentLeft padding="22px 24px">
+                <div class="card__kicker" style="color:var(--status-nominal);">Test · multi-node</div>
+                <h3 class="card__title">Arbitration for free</h3>
+                <p class="card__body">Adding a node meant opening a channel for another CAN ID. We set the engine to ID 0, the players to 1 and 2. If both players transmit at the same instant, Player 2 backs off and resends a hair later, so effectively nothing is lost and the race stays smooth.</p>
+              </Panel>
+            </div>
+          </div>
+
+          <!-- war story -->
+          <div class="warstory">
+            <div class="warstory__head">
+              <Eyebrow color="accent">The one that stumped us</Eyebrow>
+              <span class="chip-resolved">
+                <span class="chip-resolved__dot"></span>
+                <span class="chip-resolved__text">Resolved · driving again</span>
+              </span>
+            </div>
+            <h3 class="warstory__title">CAN and the gyro, fighting over the same pins</h3>
+            <p class="prose prose--wide prose--gap">
+              As we brought everything together, exactly one problem showed up. CAN transmitted
+              perfectly on its own. The gyroscope read perfectly on its own. Put the two together
+              and the screens stopped registering any rotation of the wheel at all. Nothing in
+              either program looked wrong, which is the worst kind of bug.
+            </p>
+
+            <div class="split split--center">
+              <p class="prose">So we stopped guessing and drew up a <span class="ink">fishbone diagram</span>, forcing ourselves through every possible cause instead of poking at the code and hoping. That is what finally isolated it. The CAN and gyroscope initialization were configuring the same pins, even though physically the two never actually interfered with each other.</p>
+              <EmbedFigure kicker="EMBED · FISHBONE" title="Root-cause fishbone diagram" subtitle="the one that pointed at pin init" fig="FIG.06" ratio="16 / 10" />
+            </div>
+
+            <p class="prose prose--wide prose--gap">
+              The fix was almost anticlimactic. Swap the order of initialization and repair the
+              pin setup so the two were not clobbering each other, and suddenly we could drive
+              again. The lesson stuck harder than the bug: when two things work alone and break
+              together, look at what they quietly share.
+            </p>
+          </div>
+
+          <!-- fine tuning -->
+          <div class="finetune">
+            <Eyebrow color="accent">Fine tuning</Eyebrow>
+            <div class="finetune__grid">
+              <p class="prose">With everything finally running, we could stop engineering and just make it fun. We threw in random events, like a <span class="ink">reverse control mode</span> that flips steering and pedals mid-race, and obstacles dropped in the road to slow a driver down. Small stuff, but it is the difference between a tech demo and a game you actually want to beat your friend at.</p>
+              <div class="finetune__list">
+                <div class="finetune__item"><span class="finetune__tag" style="color:var(--ember-400);">EVENT</span><span class="finetune__text">Reverse controls, steering + pedals flipped</span></div>
+                <div class="finetune__item"><span class="finetune__tag" style="color:var(--status-critical);">HAZARD</span><span class="finetune__text">Road obstacles that slow you down</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -451,7 +804,7 @@ const navLinks = [
       <SectionDivider />
       <div class="results__head">
         <Eyebrow color="accent">Telemetry</Eyebrow>
-        <h2 class="results__title">Signal, end to end</h2>
+        <h2 class="results__title">Where it landed</h2>
       </div>
       <div class="results__grid">
         {results.map((r) => (
@@ -461,32 +814,40 @@ const navLinks = [
         ))}
       </div>
       <p class="prose prose--wide prose--gap">
-        The 1 Mbps bus made steering feel instant, the detachable wheel — roughly
-        <span class="ink"> {steeringWeight}</span> printed — kept the rig light and serviceable, and the whole
-        experience, hardware to engine, came together in a six-week sprint under budget.
+        The 1 Mbps bus kept steering feeling instant, the fixed-point engine held its physics
+        steady without a single float, and the whole thing, hardware to renderer, came together
+        into a game two people can sit down and actually race. If it moved data, we wrote it.
       </p>
     </div>
   </section>
 
-  <!-- ── NEXT STEPS ───────────────────────────────────────────────────── -->
-  <section class="section">
+  <!-- ── ROADMAP ───────────────────────────────────────────────────────── -->
+  <section id="roadmap" class="section">
     <div class="measure">
       <SectionDivider />
-      <div class="next">
+      <div class="roadmap__head">
         <div>
-          <Eyebrow color="accent">Next steps</Eyebrow>
-          <h2 class="next__title">Lykos isn't finished</h2>
-          <p class="next__body">
-            Three more months of runway would go straight into feel and fidelity — finer input resolution,
-            richer gameplay, and a graphics pass that never gives up real-time speed.
-          </p>
+          <Eyebrow color="accent">Roadmap</Eyebrow>
+          <h2 class="roadmap__title">Lykos is not finished</h2>
         </div>
-        <Panel meta="ROADMAP" padding="26px">
-          <Eyebrow dot color="accent">Planned</Eyebrow>
-          <div class="next__traj">
-            <Trajectory phases={phases} />
-          </div>
-        </Panel>
+        <p class="roadmap__intro">Two milestones already in the car and a clear line of what is next. The bones are done, so what remains is polish and serviceability.</p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline__rail"></div>
+        {roadmap.map((r) => {
+          const c = roadmapColor(r.state);
+          return (
+            <div class="timeline__item">
+              <div class="timeline__node" style={`background:${c.bg}; box-shadow:0 0 0 4px ${c.ring};`}>{r.n}</div>
+              <div class="timeline__body">
+                <span class="timeline__chip" style={`color:${c.chipColor}; background:${c.chipBg}; border:1px solid ${c.chipBorder};`}>{r.chip}</span>
+                <h3 class="timeline__title">{r.title}</h3>
+                <p class="timeline__detail">{r.detail}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   </section>
@@ -499,10 +860,8 @@ const navLinks = [
         <div class="cta__spotlight" aria-hidden="true"></div>
         <div class="cta__left">
           <Eyebrow dot color="accent">Open channel</Eyebrow>
-          <h2 class="cta__title">Want the deep dive on Lykos?</h2>
-          <p class="cta__body">
-            Happy to walk the firmware, the CAD, or the engine — wherever along the signal path you want to go.
-          </p>
+          <h2 class="cta__title">Want the full teardown?</h2>
+          <p class="cta__body">Happy to walk the CAN drivers, the fixed-point engine, or the CAD, wherever along the signal path you want to dig in.</p>
         </div>
         <div class="cta__actions">
           <Button variant="primary" size="lg" href={githubUrl}>View the code →</Button>
@@ -519,16 +878,29 @@ const navLinks = [
   .section { padding: 8px 32px; }
   .section--cta { padding-top: 24px; }
 
-  /* shared prose. .ink is :global because it also appears inside set:html
-     (code listings) where Astro's scoped hash isn't applied. */
+  /* accent overrides — cascade into nested ds components via CSS custom props.
+     .ink is :global because it also appears inside set:html (code listings). */
   :global(.ink) { color: var(--text-display); }
+  .accent-teal {
+    --accent: var(--signal-500); --accent-hover: var(--signal-400); --accent-line: rgba(62,141,160,0.35);
+    --accent-soft: rgba(62,141,160,0.1); --text-accent: var(--signal-400);
+  }
+  .accent-amber {
+    --accent: var(--status-caution); --accent-hover: var(--status-caution); --accent-line: rgba(232,162,58,0.38);
+    --accent-soft: rgba(232,162,58,0.1); --text-accent: var(--status-caution);
+  }
+  .accent-red {
+    --accent: var(--status-critical); --accent-hover: var(--status-critical); --accent-line: rgba(229,96,77,0.4);
+    --accent-soft: rgba(229,96,77,0.1); --text-accent: var(--status-critical);
+  }
+
   .prose { font-size: 16px; line-height: 1.7; color: var(--text-secondary); margin: 0; }
-  .prose + .prose { margin-top: 16px; }
   .prose--wide { max-width: 64ch; }
   .prose--gap { margin-top: 26px; }
 
-  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin-top: 34px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin-top: 30px; }
   .split--center { align-items: center; margin-top: 26px; }
+  .split--top { align-items: start; }
 
   /* ── HERO ── */
   .hero { position: relative; overflow: hidden; padding: 72px 32px 56px; }
@@ -538,177 +910,199 @@ const navLinks = [
     mask-image: radial-gradient(120% 92% at 50% 0%, #000 35%, transparent 80%);
   }
   .hero__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
-  .hero__inner {
-    position: relative;
-    display: grid;
-    grid-template-columns: 1.55fr 1fr;
-    gap: 52px;
-    align-items: start;
-  }
+  .hero__inner { position: relative; display: grid; grid-template-columns: 1.55fr 1fr; gap: 52px; align-items: start; }
   .hero__badges { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
   .hero__codename {
     font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.18em;
     text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px;
   }
+  .hero__plus { color: var(--signal-400); }
   .hero__title {
     font-size: clamp(48px, 6.4vw, 92px); font-weight: 600; line-height: 0.92;
     letter-spacing: -0.03em; color: var(--text-display); margin: 0;
     font-feature-settings: var(--display-features);
   }
-  .hero__lead {
-    max-width: 50ch; margin-top: 22px; font-size: clamp(18px, 1.6vw, 21px);
-    line-height: 1.5; color: var(--text-secondary);
-  }
+  .hero__title-accent { color: var(--ember-500); }
+  .hero__lead { max-width: 52ch; margin-top: 22px; font-size: clamp(18px, 1.6vw, 21px); line-height: 1.5; color: var(--text-secondary); }
   .hero__actions { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
 
-  .hero__builtwith {
-    position: relative; margin-top: 34px;
-    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-  }
-  .hero__builtwith-label {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
-    text-transform: uppercase; color: var(--text-faint); margin-right: 6px;
-  }
+  .hero__builtwith { position: relative; margin-top: 34px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .hero__builtwith-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); margin-right: 6px; }
 
-  /* hero meta grid */
   .meta-grid {
     display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px;
     margin-top: 32px; background: var(--border); border: 1px solid var(--border);
     border-radius: var(--radius-md); overflow: hidden;
   }
   .meta-cell { background: var(--surface-raised); padding: 16px 18px; }
-  .meta-cell__key {
-    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em;
-    text-transform: uppercase; color: var(--text-faint);
-  }
+  .meta-cell__key { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-faint); }
   .meta-cell__val { font-size: 15px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; }
 
-  /* signal-path legend (links) */
-  .legend__label {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px;
-  }
+  .legend__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px; }
   .legend__intro { font-size: 14px; line-height: 1.5; color: var(--text-muted); margin-bottom: 20px; }
-  .legend__row {
-    display: flex; align-items: center; gap: 14px; padding: 11px 0;
-    border-top: 1px solid var(--hairline); text-decoration: none;
-  }
+  .legend__row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-top: 1px solid var(--hairline); text-decoration: none; }
   .legend__row--last { border-bottom: 1px solid var(--hairline); }
   .legend__row--link { transition: padding-left var(--dur-fast) var(--ease-out); }
   .legend__row--link:hover { padding-left: 4px; }
   .legend__row--link:hover .legend__title { color: var(--text-accent); }
-  .legend__n { font-family: var(--font-mono); font-size: 12px; color: var(--text-accent); width: 22px; flex-shrink: 0; }
+  .legend__n { font-family: var(--font-mono); font-size: 12px; width: 22px; flex-shrink: 0; font-weight: 600; }
   .legend__detail { flex: 1; }
-  .legend__title { display: block; font-size: 15px; color: var(--text-display); font-weight: 600; transition: color var(--dur-fast) var(--ease-out); }
-  .legend__note {
-    display: block; font-family: var(--font-mono); font-size: 10.5px;
-    letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint);
-  }
+  .legend__title { display: block; font-size: 14.5px; color: var(--text-display); font-weight: 600; transition: color var(--dur-fast) var(--ease-out); }
+  .legend__note { display: block; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); }
 
-  /* ── PROLOGUE ── */
-  .problem { display: grid; grid-template-columns: 200px 1fr; gap: 36px; padding-top: 8px; }
-  .problem__station {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em;
-    text-transform: uppercase; color: var(--text-accent);
+  /* ── THE BRIEF ── */
+  .brief { display: grid; grid-template-columns: 200px 1fr; gap: 36px; padding-top: 8px; }
+  .brief__num { font-family: var(--font-mono); font-size: 44px; font-weight: 600; color: var(--paper-hairline-strong); line-height: 1; letter-spacing: -0.02em; }
+  .brief__title { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-display); margin: 6px 0 0; line-height: 1.1; }
+  .brief__lead { margin: 0; font-size: clamp(19px, 2vw, 24px); line-height: 1.5; letter-spacing: -0.01em; color: var(--text-secondary); text-wrap: pretty; }
+  .wishlist { margin-top: 24px; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .wishlist__row { display: flex; align-items: center; gap: 16px; padding: 15px 18px; background: var(--surface-raised); }
+  .wishlist__row + .wishlist__row { border-top: 1px solid var(--hairline); }
+  .wishlist__n {
+    flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center;
+    justify-content: center; font-family: var(--font-mono); font-size: 12px; font-weight: 600; background: var(--surface-hover);
   }
-  .problem__title {
-    font-size: 30px; font-weight: 600; letter-spacing: -0.02em;
-    color: var(--text-display); margin: 8px 0 0; line-height: 1.05;
-  }
-  .problem__lead {
-    margin: 0; font-size: clamp(19px, 2vw, 24px); line-height: 1.5;
-    letter-spacing: -0.01em; color: var(--text-secondary); text-wrap: pretty;
-  }
-  .problem__body { margin: 16px 0 0; font-size: 16px; line-height: 1.65; color: var(--text-muted); }
+  .wishlist__text { font-size: 15px; color: var(--text-secondary); line-height: 1.4; }
 
-  /* ── Station helpers ── */
-  .station__lead {
-    font-size: 18px; line-height: 1.55; color: var(--text-muted);
-    margin: 14px 0 0; max-width: 58ch;
+  /* ── chapter header (rail + giant number) ── */
+  .chapter { display: grid; grid-template-columns: 56px 1fr; gap: 22px; }
+  .chapter__rail { display: flex; flex-direction: column; align-items: center; padding-top: 6px; }
+  .chapter__dot {
+    width: 15px; height: 15px; border-radius: 99px; background: var(--accent);
+    box-shadow: 0 0 0 5px var(--accent-soft); border: 2px solid var(--bg); flex-shrink: 0;
   }
+  .chapter__line { flex: 1; width: 2px; background: var(--accent-line); margin-top: 6px; }
+  .chapter__body { padding-bottom: 56px; }
+  .chapter__num { font-family: var(--font-mono); font-size: 44px; font-weight: 600; color: var(--accent-line); line-height: 1; letter-spacing: -0.02em; opacity: 0.7; }
+  .chapter__title { font-size: clamp(34px, 4.4vw, 52px); font-weight: 600; letter-spacing: -0.025em; color: var(--text-display); margin: 6px 0 0; line-height: 1; }
+  .chapter__lead { font-size: 18px; line-height: 1.55; color: var(--text-secondary); margin: 14px 0 0; max-width: 60ch; }
 
-  /* component map */
-  .cmap {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px;
-    margin-top: 28px; background: var(--border); border: 1px solid var(--border);
-    border-radius: var(--radius-md); overflow: hidden;
+  /* ── decision matrix ── */
+  .matrix { margin: 24px 0 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--surface-sunken); }
+  .matrix__bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--hairline); background: var(--surface-raised); font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); }
+  .matrix__bar-faint { color: var(--text-faint); }
+  .matrix__scroll { overflow-x: auto; }
+  .matrix table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 480px; }
+  .matrix thead tr { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+  .matrix th { text-align: left; padding: 12px 16px; font-weight: 500; }
+  .matrix th.win-col { text-align: center; font-weight: 600; color: var(--text-accent); background: var(--accent-soft); }
+  .matrix td { padding: 11px 16px; color: var(--text-secondary); }
+  .matrix tbody tr { border-top: 1px solid var(--hairline); }
+  .matrix td.center { text-align: center; }
+  .matrix td.weight { color: var(--text-faint); font-family: var(--font-mono); padding: 11px 12px; }
+  .matrix td.winner { color: var(--text-display); font-weight: 700; background: var(--paper-hairline-strong); }
+  .matrix .total-row { border-top: 1px solid var(--border-strong); background: var(--surface-raised); font-family: var(--font-mono); }
+  .matrix .total-row td:first-child { color: var(--text-display); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .matrix .total-win { color: var(--text-accent); font-size: 17px; font-weight: 700; text-align: center; background: var(--accent-soft); }
+  .matrix .total-other { color: var(--text-muted); font-size: 16px; text-align: center; }
+
+  /* ── key decision banner ── */
+  .keydecision { margin: 36px 0; padding: 40px 32px; text-align: center; border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); background: linear-gradient(var(--surface-raised), var(--accent-soft)); }
+  .keydecision__kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-accent); margin-bottom: 14px; }
+  .keydecision__title { font-size: clamp(26px, 3.4vw, 42px); font-weight: 600; letter-spacing: -0.02em; color: var(--text-display); line-height: 1.12; max-width: 22ch; margin: 0 auto; }
+  .keydecision__title .hl { color: var(--text-accent); }
+  .keydecision__body { max-width: 62ch; margin: 18px auto 0; font-size: 16.5px; line-height: 1.65; color: var(--text-secondary); }
+
+  /* ── equation figures ── */
+  .eqnfig { margin: 22px 0 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--surface-sunken); }
+  .eqnfig__bar { padding: 8px 16px; border-bottom: 1px solid var(--hairline); background: var(--surface-raised); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint); }
+  .eqnfig__body {
+    padding: 26px 24px; display: flex; flex-direction: column; gap: 16px;
+    font-family: Georgia, "Times New Roman", serif; font-size: 21px; color: var(--text-display);
   }
+  .eqnfig__body--tight { padding: 20px; }
+  .eqnfig__body--center { flex-direction: row; justify-content: center; align-items: center; text-align: center; flex-wrap: wrap; gap: 8px; }
+  .eqnfig__row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .eqnfig__row i, .eqnfig__body--center i { font-style: italic; }
+  .eqnfig__comma { color: var(--border-strong); }
+  .eqnfig__note { font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+  .eqnfig__legend { padding: 11px 16px; border-top: 1px solid var(--hairline); font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .eqnfig .hl { color: var(--text-accent); }
+  .eqnfig .hl-signal { color: var(--signal-400); }
+  .frac { display: inline-flex; flex-direction: column; text-align: center; vertical-align: middle; font-size: 0.8em; line-height: 1.3; }
+  .frac span { padding: 0 6px; }
+  .frac span:last-child { border-top: 1.5px solid currentColor; }
+
+  /* ── PCB component map ── */
+  .cmap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin-top: 28px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
   .cmap__cell { background: var(--surface-raised); padding: 14px 16px; }
-  .cmap__key { font-family: var(--font-mono); font-size: 11px; color: var(--text-accent); }
+  .cmap__key { font-family: var(--font-mono); font-size: 11px; }
   .cmap__val { font-size: 13.5px; color: var(--text-secondary); margin-top: 4px; }
 
-  /* decision panel */
-  .decision { margin-top: 30px; }
-  .decision__kicker {
-    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
-    text-transform: uppercase; color: var(--text-accent);
-  }
-  .decision__title { font-size: 18px; font-weight: 600; color: var(--text-display); margin: 7px 0 0; }
-  .decision__verdict { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
-  .decision__pick {
-    font-family: var(--font-mono); font-size: 11px; color: var(--text-on-accent);
-    background: var(--accent); padding: 4px 10px; border-radius: 99px;
-  }
-  .decision__vs { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
-  .decision__body { font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin: 0; }
+  /* ── frame anatomy tiles ── */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; margin-top: 24px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+  .tiles__cell { background: var(--surface-raised); padding: 16px 18px; border-top: 2px solid transparent; }
+  .tiles__key { font-family: var(--font-mono); font-size: 11px; }
+  .tiles__val { font-size: 13.5px; color: var(--text-secondary); margin-top: 5px; line-height: 1.45; }
 
-  /* code listings */
+  /* ── packet diagram ── */
+  .packet { margin: 24px 0 0; display: flex; gap: 6px; flex-wrap: wrap; align-items: stretch; }
+  .packet__cell { flex: 1 1 90px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 12px 16px; border-radius: 8px; background: var(--surface-raised); border: 1px solid var(--border); font-family: var(--font-mono); }
+  .packet__cell--edge { flex: 0 0 auto; background: rgba(232,162,58,0.16); border-color: rgba(232,162,58,0.45); }
+  .packet__label { font-size: 14px; font-weight: 600; }
+  .packet__sub { font-size: 9px; letter-spacing: 0.1em; color: var(--text-faint); margin-top: 2px; }
+
+  /* ── command line snippet ── */
+  .cmdline { margin: 18px 0 0; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-secondary); background: var(--surface-sunken); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; overflow-x: auto; white-space: pre; }
+  .cmdline__prompt { color: var(--text-faint); }
+
+  /* ── reusable card text ── */
+  .card__kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
+  .card__title { font-size: 17px; font-weight: 600; color: var(--text-display); margin: 7px 0 0; }
+  .card__body { font-size: 15px; line-height: 1.6; color: var(--text-muted); margin: 12px 0 0; }
+  .cards2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 28px; }
+
+  /* ── code listings ── */
   .listing { margin-top: 28px; }
 
-  /* war story */
+  /* ── war story ── */
   .warstory { margin-top: 40px; border-top: 1px solid var(--hairline); padding-top: 30px; }
   .warstory__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .chip-resolved {
-    display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px;
-    border: 1px solid var(--border); border-radius: 99px; background: var(--surface-sunken);
-  }
+  .chip-resolved { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border: 1px solid var(--border); border-radius: 99px; background: var(--surface-sunken); }
   .chip-resolved__dot { width: 7px; height: 7px; border-radius: 99px; background: var(--status-nominal); }
-  .chip-resolved__text {
-    font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text-secondary);
-  }
-  .warstory__title {
-    font-size: clamp(24px, 2.6vw, 32px); font-weight: 600; letter-spacing: -0.02em;
-    color: var(--text-display); margin: 12px 0 0; line-height: 1.1;
-  }
+  .chip-resolved__text { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-secondary); }
+  .warstory__title { font-size: clamp(24px, 2.6vw, 32px); font-weight: 600; letter-spacing: -0.02em; color: var(--text-display); margin: 14px 0 0; line-height: 1.1; }
+
+  /* ── fine tuning ── */
+  .finetune { margin-top: 40px; border-top: 1px solid var(--hairline); padding-top: 30px; }
+  .finetune__grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: center; margin-top: 14px; }
+  .finetune__list { display: flex; flex-direction: column; gap: 10px; }
+  .finetune__item { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-raised); }
+  .finetune__tag { font-family: var(--font-mono); font-size: 11px; }
+  .finetune__text { font-size: 14px; color: var(--text-secondary); }
 
   .video { margin-top: 28px; }
 
   /* ── RESULTS ── */
   .results__head { margin-bottom: 6px; }
-  .results__title {
-    font-size: clamp(30px, 4vw, 46px); font-weight: 600; letter-spacing: -0.025em;
-    color: var(--text-display); margin: 14px 0 0;
-  }
-  .results__grid {
-    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px;
-    margin-top: 24px; background: var(--border); border: 1px solid var(--border);
-    border-radius: var(--radius-xl); overflow: hidden;
-  }
+  .results__title { font-size: clamp(30px, 4vw, 46px); font-weight: 600; letter-spacing: -0.025em; color: var(--text-display); margin: 14px 0 0; }
+  .results__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: 24px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-xl); overflow: hidden; }
   .results__cell { background: var(--surface-raised); padding: 26px 24px; }
 
-  /* ── NEXT ── */
-  .next { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; padding-top: 8px; }
-  .next__title {
-    font-size: clamp(28px, 3.4vw, 40px); font-weight: 600; letter-spacing: -0.025em;
-    color: var(--text-display); margin: 14px 0 0; line-height: 1.1;
+  /* ── ROADMAP ── */
+  .roadmap__head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .roadmap__title { font-size: clamp(28px, 3.4vw, 42px); font-weight: 600; letter-spacing: -0.025em; color: var(--text-display); margin: 12px 0 0; line-height: 1.05; }
+  .roadmap__intro { max-width: 42ch; margin: 0; font-size: 15.5px; line-height: 1.6; color: var(--text-secondary); }
+
+  .timeline { position: relative; margin-top: 44px; max-width: 680px; }
+  .timeline__rail { position: absolute; left: 25px; top: 26px; bottom: 52px; width: 2px; background: linear-gradient(var(--status-nominal), var(--status-nominal) 22%, var(--ember-500) 52%, var(--signal-500) 100%); }
+  .timeline__item { position: relative; display: grid; grid-template-columns: 52px 1fr; gap: 22px; align-items: start; padding-bottom: 30px; }
+  .timeline__item:last-child { padding-bottom: 0; }
+  .timeline__node {
+    width: 52px; height: 52px; border-radius: 99px; border: 3px solid var(--bg);
+    display: flex; align-items: center; justify-content: center; font-family: var(--font-mono);
+    font-size: 18px; font-weight: 700; color: #fff; position: relative; z-index: 1;
   }
-  .next__body { font-size: 15.5px; line-height: 1.65; color: var(--text-secondary); margin: 16px 0 0; }
-  .next__traj { margin-top: 20px; }
+  .timeline__body { padding-top: 2px; }
+  .timeline__chip { display: inline-block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; padding: 3px 9px; border-radius: 99px; }
+  .timeline__title { font-size: 18px; font-weight: 600; color: var(--text-secondary); margin: 10px 0 0; }
+  .timeline__detail { font-size: 14.5px; line-height: 1.6; color: var(--text-secondary); margin: 6px 0 0; max-width: 56ch; }
 
   /* ── CTA ── */
-  .cta {
-    position: relative; overflow: hidden; border: 1px solid var(--border);
-    border-radius: var(--radius-xl); background: var(--surface-raised);
-    padding: 40px 36px; display: flex; justify-content: space-between;
-    align-items: center; flex-wrap: wrap; gap: 24px;
-  }
+  .cta { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--surface-raised); padding: 40px 36px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
   .cta__spotlight { position: absolute; inset: 0; pointer-events: none; background: var(--spotlight-ember); }
   .cta__left { position: relative; }
-  .cta__title {
-    font-size: clamp(26px, 3vw, 38px); font-weight: 600; letter-spacing: -0.025em;
-    color: var(--text-display); margin: 12px 0 0; line-height: 1.05;
-  }
+  .cta__title { font-size: clamp(26px, 3vw, 38px); font-weight: 600; letter-spacing: -0.025em; color: var(--text-display); margin: 12px 0 0; line-height: 1.05; }
   .cta__body { font-size: 15.5px; line-height: 1.6; color: var(--text-muted); margin: 12px 0 0; max-width: 48ch; }
   .cta__actions { position: relative; display: flex; gap: 14px; flex-wrap: wrap; }
 
@@ -716,18 +1110,25 @@ const navLinks = [
   @media (max-width: 880px) {
     .hero__inner { grid-template-columns: 1fr; gap: 36px; }
     .split { grid-template-columns: 1fr; gap: 24px; }
-    /* figures that lead in source order drop below their prose on mobile */
     .split--flip > :global(figure),
     .split--center > :global(figure) { order: 2; }
-    .problem { grid-template-columns: 1fr; gap: 16px; }
+    .brief { grid-template-columns: 1fr; gap: 16px; }
     .cmap { grid-template-columns: 1fr 1fr; }
+    .cards2 { grid-template-columns: 1fr; }
     .results__grid { grid-template-columns: 1fr 1fr; }
-    .next { grid-template-columns: 1fr; gap: 32px; }
+    .finetune__grid { grid-template-columns: 1fr; gap: 20px; }
+  }
+  @media (max-width: 640px) {
+    .chapter { grid-template-columns: 32px 1fr; gap: 16px; }
+    .chapter__body { padding-bottom: 44px; }
   }
   @media (max-width: 560px) {
     .hero { padding: 48px 18px 40px; }
     .section { padding: 8px 18px; }
     .measure { padding: 0 18px; }
     .cmap, .results__grid { grid-template-columns: 1fr; }
+    .timeline__node { width: 44px; height: 44px; font-size: 15px; }
+    .timeline__item { grid-template-columns: 44px 1fr; gap: 16px; }
+    .timeline__rail { left: 21px; }
   }
 </style>
